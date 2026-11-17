@@ -13,5 +13,6 @@ rm -f tests/out/log.txt
 for i in $(seq 1 600); do grep -q done tests/out/log.txt 2>/dev/null && break; sleep 1; done
 grep -q done tests/out/log.txt || { echo "REAPER no terminó (¿diálogo abierto?)"; exit 1; }
 grep -i error tests/out/log.txt
+rm -rf "$LIB"   # que las señales de prueba no queden en la biblioteca del usuario
 [ -n "$1" ] && exit 0
 $PY tests/check.py

@@ -179,6 +179,7 @@ for k in range(8):
     lags = np.arange(I(H[k] - 0.01), I(H[k] + 0.01))
     best = lags[np.argmax([np.dot(y, s[l:l + 960]) / (np.linalg.norm(s[l:l + 960]) + 1e-12) for l in lags])]
     inrange(f"transitorios: chop {k + 1} empieza en el golpe {H[k]:.2f} s (ms)", (best / SR - H[k]) * 1000, -2.0, 0.5)
+inrange("loop de fabrica al 50 %: un corte por corchea (31 + inicio)", LOG["ch_loop"]["chops"], 28, 32)
 inrange("sensibilidad 0: no encuentra mas chops que con 50", LOG["ch_sens0"]["chops"], 1, 8)
 scalar("hasta el final del sample: chop 7 de 8 dura 0.25 s", last_sound(load("ch_thru")[:, 0], 1e-9) - 0.1, 0.25, 0.001)
 scalar("hasta su final: chop 7 de 8 dura 0.125 s", last_sound(load("ch_nothru")[:, 0], 1e-9) - 0.1, 0.125, 0.001)

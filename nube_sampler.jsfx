@@ -531,7 +531,7 @@ function refine_onset(h) local(i0, i1, i, e, k, mx, pv, x, d, best)
   );
   max(0, best - floor(SSR * 0.0005));
 );
-function detect_chops() local(k, p, h, h0, h1, mx, gate, thr, gapb, last, rise, rise2, gapf)
+function detect_chops() local(k, p, h, h0, h1, mx, mxp, gate, thr, gapb, last, rise, rise2, gapf)
 (
   NCH = 0;
   (LOADED && R1 > R0 + 64) ? (
@@ -546,14 +546,15 @@ function detect_chops() local(k, p, h, h0, h1, mx, gate, thr, gapb, last, rise, 
         k += 1;
       );
     ) : (
-      thr = 2 + (100 - SENS) * 0.16; gapb = ceil(0.05 * SSR / HOP);
-      h0 = max(2, ceil(R0 / HOP)); h1 = min(NODF - 1, floor(R1 / HOP));
+      thr = 1.5 + (100 - SENS) * 0.12; gapb = ceil(0.06 * SSR / HOP);
+      h0 = max(6, ceil(R0 / HOP)); h1 = min(NODF - 1, floor(R1 / HOP));
       mx = -300; h = h0; loop(max(0, h1 - h0), mx = max(mx, ODF[h]); h += 1; );
       gate = mx - 30 - SENS * 0.3;
       last = -1000; h = h0;
       while (h < h1 && NCH < MAXCH) (
-        rise = ODF[h] - min(ODF[h - 1], ODF[h - 2]);
-        rise2 = ODF[h + 1] - min(ODF[h], ODF[h - 1]);
+        // subida contra el maximo de los ultimos 6 bloques (~16 ms): las colas de un golpe no cuentan como golpes nuevos
+        mxp = ODF[h - 1]; k = 2; loop(5, mxp = max(mxp, ODF[h - k]); k += 1; );
+        rise = ODF[h] - mxp; rise2 = ODF[h + 1] - max(mxp, ODF[h]);
         (rise > thr && ODF[h] > gate && rise >= rise2 && h - last >= gapb) ? (
           p = refine_onset(h);
           (p > CHP[NCH - 1] + gapf && p < R1 - gapf) ? ( CHP[NCH] = p; NCH += 1; last = h; );
@@ -1028,7 +1029,7 @@ update_params();
 
 @slider
 slider159 > 0 ? ( a_pn = floor(slider159 + 0.5); slider159 = 0; slider_automate(slider159); load_preset(a_pn); );
-(!LIBSCAN && slider1 != LAST_SL) ? ( load_slider() ? MISSING = 0; );
+slider1 != LAST_SL ? ( load_slider() ? MISSING = 0; );
 update_params();
 VMODE != last_vmode || CHOPS != last_chops ? ( all_release(); last_vmode = VMODE; last_chops = CHOPS; MV = -1; );
 
@@ -1304,8 +1305,7 @@ function hint_for(id)
   id >= 1000 && id < 1100 ? strcpy(#hint, "Corte: arrastra para moverlo (pasa a A mano). Clic derecho = quitarlo.") :
   id >= 800 && id < 832 ? strcpy(#hint, "Pad: clic = escuchar y seleccionar el chop (sus ajustes van a la derecha).") :
   id == 840 ? strcpy(#hint, "Cambia entre los pads 1-16 y 17-32.") :
-  id == 850 || id == 851 ? strcpy(#hint, "Sample anterior / siguiente de la biblioteca (REAPER/Data/Nube Sampler).") :
-  id == 852 ? strcpy(#hint, "Biblioteca: carpeta REAPER/Data/Nube Sampler. Tambien puedes arrastrar un archivo (wav, aif, flac, mp3, ogg) a la ventana.") :
+  id == 852 ? strcpy(#hint, "El sample se elige en el selector Sample de arriba (REAPER/Data/Nube Sampler) o arrastrando un archivo a la ventana.") :
   id == 853 ? strcpy(#hint, "Reverso: todo el sample suena al reves.") :
   id == 854 ? strcpy(#hint, "Normalizar: sube el sample para que su pico llegue a 0 dB.") :
   id == 855 ? strcpy(#hint, "Afinar: pone la nota raiz y el fino segun la nota detectada, para que el sample quede afinado.") :
@@ -1329,51 +1329,22 @@ function hint_for(id)
   id == 403 ? strcpy(#hint, "Medidor de salida. Clic = reiniciar el maximo.") :
   (id == 600 || id == 601) ? strcpy(#hint, "Cambia la octava del teclado en pantalla.") :
   id >= 500 && id < 600 ? strcpy(#hint, "Teclado: clic para tocar (mas abajo en la tecla = mas fuerte). En Chops las teclas de color tienen chop.") :
-  strcpy(#hint, "Nube Sampler: elige un sample (o arrastralo a la ventana), un preset, y toca. Pasa el mouse sobre algo para ver que hace.");
+  strcpy(#hint, "Nube Sampler: elige un sample (selector Sample de arriba, o arrastralo a la ventana), un preset, y toca. Pasa el mouse sobre algo para ver que hace.");
 );
 
-// ---------------------------------------------------------- biblioteca
-// recorre los archivos del slider 1 (REAPER/Data/Nube Sampler); al pasarse del ultimo, el nombre se repite
-function lib_scan() local(i, sv, done)
+// ---------------------------------------------------------- sample
+// La interfaz no puede cambiar el slider de archivo (REAPER no lo acepta desde @gfx): la biblioteca se elige con el
+// selector "Sample" de REAPER (arriba) o arrastrando un archivo. Este menu lo explica.
+function menu_sample() local(r)
 (
-  LIBSCAN = 1; sv = slider1; i = 0; done = 0;
-  while (!done) (
-    slider1 = i; strcpy_fromslider(i, slider1);
-    (strlen(i) == 0 || (i > 0 && !strcmp(i, i - 1)) || i >= 900) ? done = 1 : i += 1;
-  );
-  LIBN = i; slider1 = sv; LIBSCAN = 0;
-);
-function folder_of(i, d) local(n, k, sl)
-(
-  n = strlen(i); sl = -1; k = 0; loop(n, str_getchar(i, k) == '/' ? sl = k; k += 1; );
-  sl > 0 ? strcpy_substr(d, i, 0, sl) : strcpy(d, "");
-  sl;
-);
-function lib_load(i) ( (i >= 0 && i < LIBN) ? ( slider1 = i; slider_automate(slider1); load_slider(); ); );
-function menu_library() local(r, i, sl)
-(
-  lib_scan();
-  #m = "#BIBLIOTECA: REAPER/Data/Nube Sampler"; strcpy(#_cur, ""); i = 0;
-  loop(LIBN,
-    sl = folder_of(i, #_f);
-    (strlen(#_f) && strcmp(#_f, #_cur)) ? ( strcat(#m, "|>"); strcat(#m, #_f); );
-    strcpy(#_cur, #_f);
-    strcat(#m, "|");
-    folder_of(i + 1, #_g);
-    (strlen(#_f) && (i == LIBN - 1 || strcmp(#_f, #_g))) ? strcat(#m, "<");
-    (SRC_KIND == 1 && slider1 == i) ? strcat(#m, "!");
-    strcpy_substr(#_n, i, sl + 1, 1000); strcat(#m, #_n);
-    i += 1;
-  );
-  LIBN == 0 ? strcat(#m, "|#(vacia: copia samples en esa carpeta)");
-  strcat(#m, "||#Tambien puedes arrastrar un archivo de audio a la ventana");
+  #m = "#ELEGIR SAMPLE||#Biblioteca: el selector Sample, arriba de esta ventana|#(carpeta REAPER/Data/Nube Sampler, con subcarpetas)||#O arrastra un archivo de audio a la ventana|#(wav, aif, flac, mp3, ogg)";
+  LOADED ? ( strcat(#m, "||#Cargado: "); strcat(#m, #spath); );
   gfx_x = dd_x; gfx_y = dd_y;
-  r = gfx_showmenu(#m);
-  (r >= 2 && r - 2 < LIBN) ? lib_load(r - 2);
+  gfx_showmenu(#m);
 );
 function menu_presets() local(r, i)
 (
-  #m = "#PRESETS DE NUBE SAMPLER (no cambian el sample)|>Clasico";
+  #m = "#PRESETS (no cambian el sample)|>Clasico";
   i = 1; loop(4, strcat(#m, i == 4 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
   strcat(#m, "|>One-shot"); loop(2, strcat(#m, i == 6 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
   strcat(#m, "|>Chops"); loop(4, strcat(#m, i == 10 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
@@ -1436,7 +1407,7 @@ function flag(id, f, str, up, c_r, cg, cb) local(x)
     up ? gfx_rect(x - (id == 702 ? 14 * SC : 0), WFY, 14 * SC, 12 * SC, 1) : gfx_rect(x - (id == 704 ? 14 * SC : 0), WFY + WFVH - 12 * SC, 14 * SC, 12 * SC, 1);
     gfx_set(0.07, 0.08, 0.1, 1); fnt(4);
     text_c(str, x - (id == 702 || id == 704 ? 14 * SC : 0), up ? WFY : WFY + WFVH - 12 * SC, 14 * SC, 12 * SC);
-    hit_add(x - 7 * SC, up ? WFY : WFY + WFVH - 14 * SC, 14 * SC, 14 * SC, id);
+    hit_add(x - (id == 702 || id == 704 ? 16 : 2) * SC, up ? WFY : WFY + WFVH - 14 * SC, 18 * SC, 14 * SC, id);
     hit_add(x - 3 * SC, WFY, 6 * SC, WFVH, id);
   );
 );
@@ -1489,9 +1460,7 @@ lb && !last_lb ? (
     SEL < NCH ? ( pad_note = CHB + SEL; kq(1, pad_note, 110, 0); drag = 1; drag_id = 800; );
   ) :
   hover_id == 840 ? PADPAGE = !PADPAGE :
-  hover_id == 850 ? ( lib_scan(); lib_load(SRC_KIND == 1 ? max(0, slider1 - 1) : 0); ) :
-  hover_id == 851 ? ( lib_scan(); lib_load(SRC_KIND == 1 ? min(LIBN - 1, slider1 + 1) : 0); ) :
-  hover_id == 852 ? menu_library() :
+  hover_id == 852 ? menu_sample() :
   hover_id == 853 ? ( sset(7, !slider7); update_params(); ) :
   hover_id == 854 ? ( sset(61, !slider61); update_params(); ) :
   hover_id == 855 ? ( DET_NOTE >= 0 ? ( sset(14, clamp(floor(DET_NOTE + 0.5), 0, 127)); sset(17, clamp(-(DET_NOTE - floor(DET_NOTE + 0.5)) * 100, -100, 100)); update_params(); ); ) :
@@ -1588,10 +1557,8 @@ LASTN >= 0 ? ( note_str(#n, LASTN); fnt(6); gfx_set(0.62, 0.80, 1.0, 1); text_r(
 
 // ---- barra del sample
 setcol(0);
-button(850, 14 * SC, sby, 24 * SC, SBH, "<", 0);
-button(851, 40 * SC, sby, 24 * SC, SBH, ">", 0);
 LOADED || MISSING ? strcpy(#s, #sname) : strcpy(#s, "Elegir sample...");
-dropdown(852, 70 * SC, sby, 300 * SC, SBH, "", #s);
+dropdown(852, 14 * SC, sby, 356 * SC, SBH, "Sample", #s);
 fnt(2); gfx_set(0.62, 0.65, 0.72, 1);
 MISSING ? ( gfx_set(1, 0.45, 0.4, 1); sprintf(#s, "No se encontro el archivo: %s", #spath); ) :
 CUR_MSG == 1 && time_precise() - msg_t < 4 ? ( gfx_set(1, 0.45, 0.4, 1); strcpy(#s, "Ese archivo no se pudo leer como audio."); ) :
@@ -1600,7 +1567,7 @@ LOADED ? (
   DET_NOTE >= 0 ? ( note_str(#n, floor(DET_NOTE + 0.5)); sprintf(#t, "  ·  nota %s %+d c", #n, floor((DET_NOTE - floor(DET_NOTE + 0.5)) * 100 + 0.5)); strcat(#s, #t); )
                 : strcat(#s, "  ·  sin nota clara");
   SLONG ? strcat(#s, "  ·  RECORTADO (muy largo)");
-) : strcpy(#s, "Arrastra un archivo de audio a la ventana o elige uno de la biblioteca");
+) : strcpy(#s, "Arrastra un archivo de audio a la ventana o elige uno en el selector Sample de arriba");
 text_l(#s, 380 * SC, sby, SBH);
 _x = WW - 14 * SC - 4 * 96 * SC;
 setcol(8); button(853, _x, sby, 92 * SC, SBH, "Reverso", slider7); _x += 96 * SC;
@@ -1610,6 +1577,7 @@ setcol(6); button(856, _x, sby, 92 * SC, SBH, SN > EMBMAX && slider62 ? "Muy lar
 
 // ---- forma de onda
 gfx_set(0.095, 0.105, 0.135, 1); gfx_rect(WFX, WFY, WFW, WFH, 1);
+hit_add(WFX, WFY, WFW, WFVH, 700);
 _cy = WFY + WFVH * 0.5 + 6 * SC; _amp = (WFVH - 26 * SC) * 0.5;
 LOADED ? (
   _span = VZ1 - VZ0; _fpx = _span / WFW; _bin = SN / PKN;
@@ -1689,9 +1657,8 @@ LOADED ? (
 ) : (
   fnt(8); gfx_set(0.55, 0.58, 0.65, 1);
   text_c(MISSING ? "Falta el archivo del sample (arrastralo de nuevo o elige otro)" : "Arrastra un sample aqui", WFX, WFY, WFW, WFH * 0.5 + 10 * SC);
-  fnt(2); text_c("o elige uno de la biblioteca (arriba). wav, aif, flac, mp3, ogg", WFX, WFY + WFH * 0.5, WFW, 30 * SC);
+  fnt(2); text_c("o elige uno en el selector Sample de arriba (biblioteca REAPER/Data/Nube Sampler). wav, aif, flac, mp3, ogg", WFX, WFY + WFH * 0.5, WFW, 30 * SC);
 );
-hit_add(WFX, WFY, WFW, WFVH, 700);
 
 // medidor de salida
 pk_l = max(m_l, pk_l * 0.999); pk_r = max(m_r, pk_r * 0.999);
