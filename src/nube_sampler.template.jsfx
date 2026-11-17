@@ -1,8 +1,8 @@
-desc:Nube Sampler - sampler (clasico, chops, one-shot, loops a tempo, estirar tono y tiempo, filtro, envolventes, LFO, lo-fi)
+desc:Nube Sampler - sampler (clasico, chops, zonas multi-sample, one-shot, loops a tempo, estirar tono y tiempo, filtro, envolventes, LFO, lo-fi)
 //tags: sampler instrument slicer chops one-shot loop timestretch 808 lofi mpc
 //author: Kev Meneses + Claude (Claude Code)
 //license: GPL-3.0-or-later
-//version: 1.0.0
+//version: 1.1.0
 
 //@GEN:SLIDERS@
 
@@ -31,10 +31,15 @@ PKN = 4096; PKL = 9000; PKH = PKL + PKN;            // forma de onda resumida (m
 SKW = 12; SKR = 2048; SKT = 17500; SKN = 2 * SKW * SKR;   // kernel sinc (Kaiser), media anchura 12, 2048 fases por muestra
 WSM = 66700;                                         // zona de busqueda del WSOLA (9000)
 ODF = 76000; MAXODF = 120000;                        // energia por bloque (deteccion de transitorios)
+ZT = 196500; ZF = 16; MAXZ = 64; ZSTR = 200;         // zonas: tabla (ZF campos por zona) y nombres en los strings 200..263
+ZTB = 197600;                                        // copia de la tabla (al reabrir)
 TMP = 200000; TMPN = 600000;                         // lectura del archivo por partes
-SMP = 800000;                                        // el sample, estereo intercalado
+SMP = 800000;                                        // el sample (o las zonas, una tras otra), estereo intercalado
 MAXF = floor((33554432 - SMP - 64) / 2);
-EMBMAX = 2000000;                                    // frames maximos para guardar el audio en el proyecto
+PADZ = 64;                                           // frames en cero entre zonas: la lectura (sinc 48 puntos) no pisa la vecina
+VZONE = -1;
+// campos de una zona: 0 inicio (frame en SMP), 1 frames, 2 nota raiz, 3 desde, 4 hasta, 5 vel min, 6 vel max,
+// 7 frecuencia de muestreo, 8 canales, 9 afinacion (cents), 10 nota del nombre (-1 = detectada)
 
 // ---------------------------------------------------------------- utilidades
 function clamp(x, a, b) ( x < a ? a : x > b ? b : x );
@@ -125,7 +130,8 @@ function rd(p, r) ( QUAL ? rd_sinc(p, r) : rd_herm(p); );
 // 25 glide por muestra, 26..33 filtro, 34 g, 35 dg, 36 g objetivo, 37 octavas por velocidad, 38 fundido de corte,
 // 39 largo de la region (u), 40 one-shot, 41 grano 0 pos, 42 grano 0 t, 43 grano 1 pos, 44 grano 1 t,
 // 45 tono actual (st), 46 corte actual, 47 crossfade (u), 48 fade in, 49 fade out, 50 grano (muestras), 51 posicion para dibujar,
-// 52 frames leidos (para el fade in), 53 avance del analisis al estirar
+// 52 frames leidos (para el fade in), 53 avance del analisis al estirar, 54 frecuencia del sample / srate,
+// 55 zona (-1 sin zona), 56 nota raiz de la voz, 57 paso de la relajacion lineal
 // u = posicion dentro de la region, en el sentido de la lectura (con reverso, u = 0 es el final de la region)
 function vread(vb, u, r) local(ll)
 (
@@ -170,7 +176,7 @@ function wsola(vb, a, c, p) local(d, j, s, s0, s1, nm, best, bs, xy, yy, y, scor
 
 function update_speed()
 (
-  SPEED = (SYNCN > 0 && R1 > R0 && SSR > 0) ? ((R1 - R0) / SSR) / (sync_beats(SYNCN) * 60 / max(tempo, 20)) : slider18 / 100;
+  SPEED = (SYNCN > 0 && !ZONES && R1 > R0 && SSR > 0) ? ((R1 - R0) / SSR) / (sync_beats(SYNCN) * 60 / max(tempo, 20)) : slider18 / 100;
   last_tempo = tempo;
 );
 
@@ -230,9 +236,11 @@ function detect_chops() local(k, p, h, h0, h1, mx, mxp, gate, thr, gapb, last, r
   CHVER += 1;
 );
 
+// bytes del audio guardado en el proyecto (S16: empaquetado de 16 bits, ver ser_write_audio)
+function emb_bytes() ( (slider62 && LOADED) ? (S16 ? ceil(SN * 2 / 3) * 2 * 4 : SN * 2 * 4) : 0; );
 function update_params() local(i, sig)
 (
-  CHOPS = slider2; ONESHOT = slider3; STRETCH = slider4;
+  CHOPS = slider2 == 1; ZONES = slider2 == 2; ONESHOT = slider3; STRETCH = slider4;
   R0 = floor(clamp(slider5, 0, 100) / 100 * SN); R1 = floor(clamp(slider6, 0, 100) / 100 * SN);
   R1 < R0 + 2 ? R1 = min(SN, R0 + 2);
   REVG = slider7; LOOPM = slider8;
@@ -248,7 +256,7 @@ function update_params() local(i, sig)
   AE_INC = slider33 > 0 ? 1 / max(1, slider33 * srate / 1000) : 1;
   AE_DC = exp(-4.605170186 / max(1, slider34 * srate / 1000));
   AE_S = slider35 / 100; AE_RC = exp(-4.605170186 / max(1, slider36 * srate / 1000)); VVOL = slider37 / 100;
-  AE_FREE = AE_S < 0.0001;
+  AE_FREE = AE_S < 0.0001; RLIN = slider_RELLIN;
   FT = slider38; CUT = slider39; KRES = 1.41421356 * (1 - 0.985 * slider40 / 100);
   DRV = 10 ^ (slider41 / 20); DRVC = 1 / sqrt(DRV); E2_CUT = slider42 / 100 * 8;
   EE_INC = slider43 > 0 ? 1 / max(1, slider43 * srate / 1000) : 1;
@@ -265,49 +273,59 @@ function update_params() local(i, sig)
   i = 0; loop(MAXCH, CTN[i] = slider(CHOP0 + 3 * i); CGN[i] = 10 ^ (slider(CHOP0 + 3 * i + 1) / 20); CRV[i] = slider(CHOP0 + 3 * i + 2); i += 1; );
   LVOL = LFD == 2 && LFA != 0; LPAN = LFD == 3 && LFA != 0;
   update_speed();
+  slider_EMBMB = floor(emb_bytes() * 4 / 3 / 100000 + 0.5) / 10;     // en el .rpp va en base64 (4/3)
   sig = SN * 3 + R0 * 7 + R1 * 13 + CDET * 1000003 + SENS * 17 + NPARTS * 101 + MANVER * 7919;
   sig != LAST_SIG ? ( LAST_SIG = sig; detect_chops(); );
 );
 
 // ---------------------------------------------------------------- carga del sample
+function is_16bit() local(i, x, ok)
+( ok = 1; i = 0; while (ok && i < SN * 2) ( x = SMP[i] * 32768; (x != floor(x) || x < -32768 || x > 32767) ? ok = 0; i += 1; ); ok; );
 // raiz por YIN sobre un tramo del medio (sin transitorio)
-function detect_root() local(w, maxlag, minlag, s0, tau, j, d, x, sum, dn, best, found, a, b, c, den, f, en)
+// nota de un tramo: frames DB .. DB + DN de SMP, a DSR Hz (-1 = sin nota clara)
+function detect_note() local(w, maxlag, minlag, s0, tau, j, d, x, sum, dnm, best, found, a, b, c, den, f, en, bd, res)
 (
-  DET_NOTE = -1;
-  w = floor(2048 * SSR / 48000); maxlag = floor(SSR / 40); minlag = max(2, floor(SSR / 2500));
-  s0 = max(floor(SSR * 0.05), floor(SN * 0.15));
-  s0 + w + maxlag + 2 > SN ? s0 = SN - w - maxlag - 2;
+  res = -1;
+  w = floor(2048 * DSR / 48000); maxlag = floor(DSR / 40); minlag = max(2, floor(DSR / 2500));
+  s0 = max(floor(DSR * 0.05), floor(DN * 0.15));
+  s0 + w + maxlag + 2 > DN ? s0 = DN - w - maxlag - 2;
   s0 >= 0 ? (
+    s0 += DB;
     en = 0; j = 0; loop(w, x = SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]; en += x * x; j += 1; );
     en > w * 0.00001 ? (
       sum = 0; tau = 1; found = 0; best = 0;
       while (tau <= maxlag && !found) (
         d = 0; j = 0;
         loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); d += x * x; j += 1; );
-        sum += d; dn = d * tau / max(sum, 0.0000000001);
-        (tau >= minlag && dn < 0.12) ? (
+        sum += d; dnm = d * tau / max(sum, 0.0000000001);
+        (tau >= minlag && dnm < 0.12) ? (
           // baja hasta el minimo local
-          best = tau; WSX[200] = d;
+          best = tau; bd = d;
           tau += 1;
           d = 0; j = 0;
           loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); d += x * x; j += 1; );
-          while (d < WSX[200] && tau < maxlag) (
-            best = tau; WSX[200] = d; tau += 1;
+          while (d < bd && tau < maxlag) (
+            best = tau; bd = d; tau += 1;
             d = 0; j = 0;
             loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); d += x * x; j += 1; );
           );
           // parabola con los vecinos best-1, best, best+1
           a = 0; j = 0; tau = best - 1;
           loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); a += x * x; j += 1; );
-          b = WSX[200]; c = d;
+          b = bd; c = d;
           den = a - 2 * b + c;
           f = best + (abs(den) > 0.0000000001 ? 0.5 * (a - c) / den : 0);
-          DET_NOTE = 69 + 12 * log(SSR / f / 440) / log(2);
+          res = 69 + 12 * log(DSR / f / 440) / log(2);
           found = 1;
         ) : tau += 1;
       );
     );
   );
+  res;
+);
+function detect_root()
+(
+  DB = 0; DN = SN; DSR = SSR; DET_NOTE = detect_note();
   slider_DETECT = DET_NOTE < 0 ? -1 : floor(DET_NOTE * 100 + 0.5) / 100;
 );
 function after_load() local(i, m, x, h, e, pv, d, k)
@@ -331,34 +349,47 @@ function after_load() local(i, m, x, h, e, pv, d, k)
   );
   ODF[NODF] = ODF[NODF + 1] = -100;
   detect_root();
+  S16 = is_16bit();
   LOADED = SN > 1; LOADING = 0;
   slider_FRAMES = SN;
   VZ0 = 0; VZ1 = SN; WAVEVER += 1;
   LAST_SIG = -1; update_params();
 );
 function all_kill_now() local(v) ( v = 0; loop(MAXV, (V0 + v * VS)[0] = 0; v += 1; ); NS = 0; MV = -1; );
-function load_handle(h) local(nc, sr, avail, fr, n, i, k, tf, ok)
+// lee un archivo abierto a SMP desde el frame off (hasta maxf frames). Deja RD_NC, RD_SR, RD_LONG (no cupo entero).
+// Devuelve los frames leidos (0 = no es audio). Mata las voces antes de escribir.
+function read_into(h, off, mf) local(nc, sr, avail, fr, n, i, k, tf, d)
 (
-  nc = 0; sr = 0; ok = 0;
+  nc = 0; sr = 0; fr = 0;
   file_riff(h, nc, sr);
   (nc >= 1 && sr >= 1) ? (
     avail = file_avail(h);
-    fr = min(floor(avail / nc), MAXF);
+    fr = min(floor(avail / nc), mf);
     fr > 1 ? (
-      LOADING = 1; all_kill_now(); LOADED = 0;
+      LOADING = 1; all_kill_now();
       tf = floor(TMPN / nc); k = 0;
       while (k < fr) (
         n = min(tf, fr - k);
         file_mem(h, TMP, n * nc);
-        i = 0;
-        nc == 1 ? loop(n, SMP[2 * (k + i)] = SMP[2 * (k + i) + 1] = TMP[i]; i += 1; )
-                : loop(n, SMP[2 * (k + i)] = TMP[i * nc]; SMP[2 * (k + i) + 1] = TMP[i * nc + 1]; i += 1; );
+        i = 0; d = SMP + 2 * (off + k);
+        nc == 1 ? loop(n, d[2 * i] = d[2 * i + 1] = TMP[i]; i += 1; )
+                : loop(n, d[2 * i] = TMP[i * nc]; d[2 * i + 1] = TMP[i * nc + 1]; i += 1; );
         k += n;
       );
-      SN = fr; SNCH = nc; SSR = sr; SLONG = floor(avail / nc) > MAXF;
-      after_load(); ok = 1;
-    );
+      RD_NC = nc; RD_SR = sr; RD_LONG = floor(avail / nc) > mf;
+    ) : fr = 0;
   );
+  fr;
+);
+function load_handle(h) local(fr, ok)
+(
+  ok = 0;
+  fr = read_into(h, 0, MAXF);
+  fr > 1 ? (
+    LOADED = 0; ZN = 0; slider_NZONES = 0;
+    SN = fr; SNCH = RD_NC; SSR = RD_SR; SLONG = RD_LONG;
+    after_load(); ok = 1;
+  ) : LOADING = 0;
   ok;
 );
 // nombre para mostrar: lo que va despues de la ultima "/" y sin la extension
@@ -368,15 +399,27 @@ function set_name(src) local(i, n, c, sl, dot)
   loop(n, c = str_getchar(src, i); c == '/' ? ( sl = i; dot = n; ); c == '.' ? dot = i; i += 1; );
   strcpy_substr(#sname, src, sl + 1, dot - sl - 1);
 );
+// si no se puede abrir el sample del selector: falta la biblioteca (enlace roto de install.sh) o el archivo
 function load_slider() local(h, ok)
 (
   ok = 0;
   h = file_open(slider1);
   h >= 0 ? ( ok = load_handle(h); file_close(h); );
-  ok ? ( SRC_KIND = 1; strcpy_fromslider(#spath, slider1); set_name(#spath); MISSING = 0; );
+  ok ? ( SRC_KIND = 1; strcpy_fromslider(#spath, slider1); set_name(#spath); MISSING = 0; LIBMISS = 0; )
+     : ( strcpy_fromslider(#libpath, slider1); LIBMISS = h < 0 ? (strlen(#libpath) ? 1 : 2) : 3; );
   LAST_SL = slider1;
   ok;
 );
+// nombre para mostrar con zonas: "ep_036 ... ep_084 (17 zonas)"
+function zone_name() local(a)
+(
+  ZN > 0 ? (
+    set_name(ZSTR); strcpy(#_za, #sname);
+    ZN > 1 ? ( set_name(ZSTR + ZN - 1); strcat(#_za, " ... "); strcat(#_za, #sname); );
+    sprintf(#_zb, " (%d zonas)", ZN); strcat(#_za, #_zb); strcpy(#sname, #_za);
+  );
+);
+function zones_loaded() ( ZN > 0 ? ( zone_name(); LIBMISS = 0; MISSING = 0; sset(2, 2); update_params(); ); );
 function load_path(p) local(h, ok)
 (
   ok = 0;
@@ -386,6 +429,188 @@ function load_path(p) local(h, ok)
   ok;
 );
 
+// ---------------------------------------------------------------- zonas
+// nota en el nombre del archivo: "ep_048.wav" -> 48, "Rhodes C4.wav" -> 60, "Pad F#3" / "Pad Gb3" -> 54 (C4 = 60).
+// Deja en NM_A / NM_B donde empieza y termina el pedazo de la nota en el nombre (para buscar los hermanos), NM_KIND
+// 1 = numero (NM_W cifras), 2 = nombre de nota. -1 si no hay.
+function name_note(str) local(n, sl, dot, i, c, c2, e, b, v, pc, acc, k, neg)
+(
+  n = strlen(str); sl = -1; dot = n; i = 0;
+  loop(n, c = str_getchar(str, i); c == '/' ? ( sl = i; dot = n; ); c == '.' ? dot = i; i += 1; );
+  // ultimo grupo de cifras antes de la extension
+  e = dot - 1; while (e > sl && !(str_getchar(str, e) >= '0' && str_getchar(str, e) <= '9')) ( e -= 1; );
+  v = -1; NM_KIND = 0;
+  e > sl ? (
+    b = e; while (b - 1 > sl && str_getchar(str, b - 1) >= '0' && str_getchar(str, b - 1) <= '9') ( b -= 1; );
+    k = 0; i = b; loop(e - b + 1, k = k * 10 + str_getchar(str, i) - '0'; i += 1; );
+    neg = b - 1 > sl && str_getchar(str, b - 1) == '-';
+    i = neg ? b - 2 : b - 1;
+    acc = 0; c = i > sl ? str_getchar(str, i) : 0;
+    (c == '#' || c == 'b') && i - 1 > sl ? (
+      c2 = str_getchar(str, i - 1);
+      ((c2 >= 'A' && c2 <= 'G') || (c2 >= 'a' && c2 <= 'g')) ? ( acc = c == '#' ? 1 : -1; i -= 1; c = c2; );
+    );
+    c >= 'a' && c <= 'g' ? c -= 32;
+    pc = c == 'C' ? 0 : c == 'D' ? 2 : c == 'E' ? 4 : c == 'F' ? 5 : c == 'G' ? 7 : c == 'A' ? 9 : c == 'B' ? 11 : -1;
+    // letra de nota suelta (al inicio o despues de algo que no es letra): nombre de nota
+    (pc >= 0 && (i - 1 <= sl || !((str_getchar(str, i - 1) >= 'A' && str_getchar(str, i - 1) <= 'Z') || (str_getchar(str, i - 1) >= 'a' && str_getchar(str, i - 1) <= 'z')))) ? (
+      v = ((neg ? -k : k) + 1) * 12 + pc + acc; NM_KIND = 2; NM_A = i; NM_B = e + 1;
+    ) : (
+      v = k; NM_KIND = 1; NM_A = b; NM_B = e + 1; NM_W = e - b + 1;
+    );
+    (v < 0 || v > 127) ? ( v = -1; NM_KIND = 0; );
+  );
+  v;
+);
+function zone_end() local(z) ( ZN > 0 ? ( z = ZT + (ZN - 1) * ZF; z[0] + z[1]; ) : 0; );
+// agrega el archivo p como zona (raiz = nota del nombre, o detectada; si no hay, 60). 1 = ok, 0 = no es audio, -1 = no cabe
+function zone_add(p) local(h, off, fr, z, nn, i, r)
+(
+  r = 0;
+  ZN < MAXZ ? (
+    off = zone_end() + PADZ;
+    off + PADZ + 1024 > MAXF ? r = -1 : (
+      h = file_open(p);
+      h >= 0 ? (
+        fr = read_into(h, off, MAXF - off - PADZ);
+        file_close(h);
+        fr > 1 ? (
+          i = 0; loop(2 * PADZ, SMP[2 * (off - PADZ) + i] = SMP[2 * (off + fr) + i] = 0; i += 1; );
+          z = ZT + ZN * ZF;
+          z[0] = off; z[1] = fr; z[3] = 0; z[4] = 127; z[5] = 1; z[6] = 127; z[7] = RD_SR; z[8] = RD_NC; z[9] = 0;
+          nn = name_note(p); z[10] = nn;
+          nn < 0 ? ( DB = off; DN = fr; DSR = RD_SR; nn = detect_note();
+                     nn >= 0 ? ( z[9] = floor((nn - floor(nn + 0.5)) * 100 + 0.5); nn = floor(nn + 0.5); ) : nn = 60; );
+          z[2] = clamp(nn, 0, 127);
+          strcpy(ZSTR + ZN, p);
+          ZN += 1; RD_LONG ? ZCUT += 1;
+          r = 1;
+        );
+      );
+    );
+  ) : r = -1;
+  r;
+);
+function zone_swap(a, b) local(i, t, pa, pb)
+(
+  pa = ZT + a * ZF; pb = ZT + b * ZF;
+  i = 0; loop(ZF, t = pa[i]; pa[i] = pb[i]; pb[i] = t; i += 1; );
+  strcpy(#_zs, ZSTR + a); strcpy(ZSTR + a, ZSTR + b); strcpy(ZSTR + b, #_zs);
+);
+// ordena por raiz (y por velocidad) y reparte el teclado: cada zona llega hasta la mitad del camino a la siguiente
+// raiz (como un RS5k por zona: 36, 39, 42 -> 0-37, 38-40, 41-43); la primera baja hasta 0 y la ultima sube hasta 127.
+// Las zonas con la misma raiz (capas de velocidad) comparten el rango.
+function zones_autorange() local(i, j, z, lo, r, hi)
+(
+  i = 1; loop(ZN - 1, j = i;
+    while (j > 0 && ((ZT + (j - 1) * ZF)[2] > (ZT + j * ZF)[2] || ((ZT + (j - 1) * ZF)[2] == (ZT + j * ZF)[2] && (ZT + (j - 1) * ZF)[5] > (ZT + j * ZF)[5]))) ( zone_swap(j - 1, j); j -= 1; );
+    i += 1; );
+  lo = 0; i = 0;
+  while (i < ZN) (
+    r = (ZT + i * ZF)[2]; j = i; while (j < ZN && (ZT + j * ZF)[2] == r) ( j += 1; );
+    hi = j >= ZN ? 127 : floor((r + (ZT + j * ZF)[2]) / 2);
+    while (i < j) ( z = ZT + i * ZF; z[3] = lo; z[4] = hi; i += 1; );
+    lo = hi + 1;
+  );
+);
+// despues de cargar zonas: SMP queda con todas, una tras otra
+function zones_done()
+(
+  ZN > 0 ? (
+    SN = zone_end() + PADZ; SNCH = ZT[8]; SSR = ZT[7]; SLONG = ZCUT > 0;
+    after_load(); ZSEL = clamp(ZSEL, 0, ZN - 1);
+  ) : ( LOADING = 0; );
+  slider_NZONES = ZN;
+);
+function zones_clear() ( ZN = 0; ZCUT = 0; ZSKIP = 0; ZSEL = 0; );
+// carpeta del sample actual: busca los archivos con el mismo nombre y otra nota (ep_036 ... ep_084, o Rhodes C3 ... Rhodes C5)
+function is_blk(n) local(k) ( k = n % 12; k == 1 || k == 3 || k == 6 || k == 8 || k == 10; );
+// nombre de nota: fl = 0 con sostenido (C#4), 1 con bemol (Db4)
+function note_name_s(d, n, fl) local(k)
+(
+  k = n % 12;
+  strcpy(d, k == 0 ? "C" : k == 1 ? (fl ? "Db" : "C#") : k == 2 ? "D" : k == 3 ? (fl ? "Eb" : "D#") : k == 4 ? "E" : k == 5 ? "F" :
+            k == 6 ? (fl ? "Gb" : "F#") : k == 7 ? "G" : k == 8 ? (fl ? "Ab" : "G#") : k == 9 ? "A" : k == 10 ? (fl ? "Bb" : "A#") : "B");
+  sprintf(#_o, "%d", floor(n / 12) - 1); strcat(d, #_o);
+);
+function zones_from_folder(src) local(nn, n, k, kind, w, ok, cnt, try)
+(
+  nn = name_note(src); cnt = 0;
+  nn >= 0 ? (
+    kind = NM_KIND; w = NM_W;
+    strcpy_substr(#_zpre, src, 0, NM_A); strcpy_substr(#_zsuf, src, NM_B, strlen(src) - NM_B);
+    zones_clear(); LOADED = 0;
+    n = 0;
+    loop(128,
+      try = kind == 1 ? 1 : (is_blk(n) ? 2 : 1);
+      k = 0;
+      while (k < try) (
+        strcpy(#_zp, #_zpre);
+        kind == 1 ? sprintf(#_zn, w >= 3 ? "%03d" : w == 2 ? "%02d" : "%d", n) : note_name_s(#_zn, n, k);
+        strcat(#_zp, #_zn); strcat(#_zp, #_zsuf);
+        ok = zone_add(#_zp);
+        ok == 1 ? ( (ZT + (ZN - 1) * ZF)[2] = n; (ZT + (ZN - 1) * ZF)[9] = 0; cnt += 1; k = try; ) : ok < 0 ? ( ZSKIP += 1; k = try; );
+        k += 1;
+      );
+      n += 1;
+    );
+    zones_autorange(); zones_done();
+  );
+  cnt;
+);
+
+// ---------------------------------------------------------------- audio guardado en el proyecto
+// Si todo el audio es de 16 bits (valores exactos k / 32768) se guarda empaquetado sin perdida: 3 muestras de 16 bits
+// en 2 numeros de 24 bits (los float32 del proyecto los guardan exactos) = 2/3 del tamano.
+function ser_write_audio() local(n, i, j, k, m, u0, u1, u2, pk)
+(
+  pk = S16; file_var(0, pk);
+  pk ? (
+    n = ceil(SN * 2 / 3); i = 0;
+    while (i < n) (
+      m = min(floor(TMPN / 2), n - i); k = 0; j = 3 * i;
+      loop(m,
+        u0 = j < SN * 2 ? SMP[j] * 32768 + 32768 : 32768; u1 = j + 1 < SN * 2 ? SMP[j + 1] * 32768 + 32768 : 32768;
+        u2 = j + 2 < SN * 2 ? SMP[j + 2] * 32768 + 32768 : 32768;
+        TMP[k] = u0 + 65536 * (u1 & 255); TMP[k + 1] = (u1 >> 8) + 256 * u2;
+        k += 2; j += 3; );
+      file_mem(0, TMP, 2 * m); i += m;
+    );
+  ) : file_mem(0, SMP, SN * 2);
+);
+function ser_read_audio(nf) local(pk, n, i, j, k, m, a, b, tot)
+(
+  pk = 0; file_var(0, pk);
+  pk ? (
+    n = ceil(nf * 2 / 3); i = 0; tot = nf * 2;
+    while (i < n) (
+      m = min(floor(TMPN / 2), n - i); file_mem(0, TMP, 2 * m); k = 0; j = 3 * i;
+      loop(m,
+        a = TMP[k]; b = TMP[k + 1];
+        j < tot ? SMP[j] = ((a & 65535) - 32768) / 32768;
+        j + 1 < tot ? SMP[j + 1] = (((a >> 16) | ((b & 255) << 8)) - 32768) / 32768;
+        j + 2 < tot ? SMP[j + 2] = ((b >> 8) - 32768) / 32768;
+        k += 2; j += 3; );
+      i += m;
+    );
+  ) : file_mem(0, SMP, nf * 2);
+);
+// al reabrir sin el audio guardado: vuelve a leer cada archivo de las zonas (copia la tabla, la vacia y la rearma)
+function zones_reload(n) local(i, z, b, ok)
+(
+  i = 0; loop(n * ZF, ZTB[i] = ZT[i]; i += 1; );
+  i = 0; loop(n, strcpy(ZSTR + 100 + i, ZSTR + i); i += 1; );
+  zones_clear(); LOADED = 0; ZMISS = 0;
+  i = 0;
+  loop(n,
+    b = ZTB + i * ZF;
+    ok = zone_add(ZSTR + 100 + i);
+    ok == 1 ? ( z = ZT + (ZN - 1) * ZF; z[2] = b[2]; z[3] = b[3]; z[4] = b[4]; z[5] = b[5]; z[6] = b[6]; z[9] = b[9]; z[10] = b[10]; )
+            : ( ZMISS += 1; strcpy(#zmiss, ZSTR + 100 + i); );
+    i += 1;
+  );
+  zones_done();
+);
 // ---------------------------------------------------------------- notas
 function vctrl(vb) local(semi, r, oct, fc)
 (
@@ -394,7 +619,7 @@ function vctrl(vb) local(semi, r, oct, fc)
   vb[45] = semi;
   semi += TONEG + G_PITCH + vb[16] * E2_TONO + (vb[19] >= 0 ? CTN[vb[19]] : 0);
   r = 2 ^ (semi / 12);
-  STRETCH && vb[19] != -2 ? ( vb[21] = r * SRR; vb[53] = SPEED * SRR; ) : vb[21] = r * SRR * (vb[19] == -2 ? 1 : SPEED);
+  STRETCH && vb[19] != -2 ? ( vb[21] = r * vb[54]; vb[53] = SPEED * vb[54]; ) : vb[21] = r * vb[54] * (vb[19] == -2 ? 1 : SPEED);
   FT < 4 ? (
     oct = vb[16] * E2_CUT + KT * (vb[1] - 60) / 12 + vb[37] + G_CUT;
     fc = clamp(CUT * 2 ^ oct, 10, min(20000, srate * 0.48));
@@ -403,28 +628,38 @@ function vctrl(vb) local(semi, r, oct, fc)
   vb[51] = vb[10] ? vb[9] - 1 - vb[5] : vb[8] + vb[5];
 );
 function vkill(vb) ( (vb[0] && !vb[38]) ? vb[38] = KILLN; );
-function vrel(vb) ( vb[3] = 0; vb[18] = 0; vb[15] = 4; vb[17] = 4; );
+// relajacion lineal (como RS5k): baja en linea recta desde donde esta hasta 0 en el tiempo de relajacion
+function vrel(vb) ( vb[3] = 0; vb[18] = 0; vb[15] = 4; vb[17] = 4; vb[57] = vb[14] / max(1, slider36 * srate / 1000); );
 
-function start_voice(vb, n, vel, idx, from) local(rv, b0, b1, ul, lm, ls, le, t, i)
+// zona: la global VZONE (>= 0) antes de llamar; se vuelve a -1. Inicio / fin / loop (%) son de cada zona.
+function start_voice(vb, n, vel, idx, from) local(rv, b0, b1, ul, lm, ls, le, t, i, z, zs, zl, rt, vsr, zls, zle)
 (
-  rv = REVG;
+  rv = REVG; rt = ROOT; vsr = SRR; zls = LPS; zle = LPE;
   idx >= 0 ? ( b0 = CHP[idx]; b1 = PLAYTHRU ? R1 : CHP[idx + 1]; rv = (rv + CRV[idx]) == 1; ) :
-  idx == -2 ? ( b0 = PREV_POS; b1 = SN; rv = 0; ) : ( b0 = R0; b1 = R1; );
+  idx == -2 ? ( b0 = PREV_POS; b1 = SN; rv = 0; ) :
+  VZONE >= 0 ? (
+    z = ZT + VZONE * ZF; zs = z[0]; zl = z[1];
+    b0 = zs + floor(clamp(slider5, 0, 100) / 100 * zl); b1 = zs + floor(clamp(slider6, 0, 100) / 100 * zl);
+    b1 < b0 + 2 ? b1 = min(zs + zl, b0 + 2);
+    zls = zs + floor(slider9 / 100 * zl); zle = zs + floor(slider10 / 100 * zl);
+    rt = z[2] - z[9] / 100; vsr = z[7] / srate;
+  ) : ( b0 = R0; b1 = R1; );
+  vb[55] = VZONE; VZONE = -1; vb[56] = rt; vb[54] = vsr;
   ul = b1 - b0;
   (LOADED && ul >= 2) ? (
     vb[0] = 1; vb[1] = n; vb[2] = vel; vb[3] = 1; vb[4] = (AGE += 1); vb[5] = 0; vb[6] = 1;
     vb[8] = b0; vb[9] = b1; vb[10] = rv; vb[39] = ul; vb[19] = idx;
     vb[40] = idx != -2 && ONESHOT;
     lm = (idx == -1 && !ONESHOT) ? LOOPM : 0;
-    lm ? ( ls = clamp(LPS, b0, b1); le = clamp(LPE, b0, b1); le - ls < 16 ? lm = 0; );
+    lm ? ( ls = clamp(zls, b0, b1); le = clamp(zle, b0, b1); le - ls < 16 ? lm = 0; );
     lm ? ( rv ? ( vb[11] = b1 - le; vb[12] = b1 - ls; ) : ( vb[11] = ls - b0; vb[12] = le - b0; ); );
     (STRETCH && lm == 2) ? lm = 1;
     vb[13] = lm;
     vb[47] = lm == 1 ? max(0, min(XFS, min(vb[11], (vb[12] - vb[11]) * 0.5))) : 0;
     vb[48] = idx == -2 ? 0 : FINF; vb[49] = idx == -2 ? 0 : FOUTF; vb[52] = 0;
-    t = idx == -1 ? (n - ROOT) * KTRK : 0;
+    t = idx == -1 ? (n - rt) * KTRK : 0;
     vb[23] = t;
-    vb[22] = idx == -1 ? (from - ROOT) * KTRK : t;
+    vb[22] = idx == -1 ? (from - rt) * KTRK : t;
     vb[24] = (GLIDE > 0 && vb[22] != t) ? 0 : 1;
     vb[25] = GLIDE > 0 ? 1 / (GLIDE * srate / 1000) : 1;
     vb[14] = 0; vb[15] = 1; vb[16] = 0; vb[17] = 1; vb[18] = 0; vb[38] = 0;
@@ -456,6 +691,13 @@ function alloc_voice() local(v, vb, best, live, ba)
 function kill_note(n) local(v, vb) ( v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && vb[1] == n && vb[19] != -2) ? vkill(vb); v += 1; ); );
 function kill_chops() local(v, vb) ( v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && vb[19] >= 0) ? vkill(vb); v += 1; ); );
 
+// primera zona que cubre la nota y la velocidad (-1 = ninguna, o no estamos en Zonas)
+function zone_for(n, vel) local(i, z, r)
+(
+  r = -1;
+  (ZONES && ZN > 0) ? ( i = 0; while (i < ZN && r < 0) ( z = ZT + i * ZF; (n >= z[3] && n <= z[4] && vel >= z[5] && vel <= z[6]) ? r = i; i += 1; ); );
+  r;
+);
 function stk_remove(n) local(i, j)
 (
   i = 0; j = 0;
@@ -469,12 +711,12 @@ function mono_on(n, vel) local(vb, leg, from)
   leg = VMODE == 2 && mv_live() && MV[3] && NS > 0;
   STK[NS] = n; STV[NS] = vel; NS < 60 ? NS += 1;
   leg ? (
-    MV[22] = MV[22] + (MV[23] - MV[22]) * MV[24]; MV[23] = (n - ROOT) * KTRK;
+    MV[22] = MV[22] + (MV[23] - MV[22]) * MV[24]; MV[23] = (n - MV[56]) * KTRK;
     MV[24] = GLIDE > 0 ? 0 : 1; MV[1] = n; LASTN = n;
   ) : (
     from = (GLIDE > 0 && LASTN >= 0 && VMODE == 1) ? LASTN : n;
     mv_live() ? vkill(MV);
-    vb = alloc_voice(); start_voice(vb, n, vel, -1, from); MV = vb[0] ? vb : -1;
+    vb = alloc_voice(); VZONE = zone_for(n, vel); start_voice(vb, n, vel, -1, from); MV = vb[0] ? vb : -1;
   );
 );
 function mono_off(n) local(vb, top, nn)
@@ -485,19 +727,28 @@ function mono_off(n) local(vb, top, nn)
     NS > 0 ? (
       nn = STK[NS - 1];
       VMODE == 2 ? (
-        MV[22] = MV[22] + (MV[23] - MV[22]) * MV[24]; MV[23] = (nn - ROOT) * KTRK; MV[24] = GLIDE > 0 ? 0 : 1; MV[1] = nn; LASTN = nn;
+        MV[22] = MV[22] + (MV[23] - MV[22]) * MV[24]; MV[23] = (nn - MV[56]) * KTRK; MV[24] = GLIDE > 0 ? 0 : 1; MV[1] = nn; LASTN = nn;
       ) : (
-        vkill(MV); vb = alloc_voice(); start_voice(vb, nn, STV[NS - 1], -1, n); MV = vb[0] ? vb : -1;
+        vkill(MV); vb = alloc_voice(); VZONE = zone_for(nn, STV[NS - 1]); start_voice(vb, nn, STV[NS - 1], -1, n); MV = vb[0] ? vb : -1;
       );
     ) : ( !MV[40] ? ( PEDAL ? MV[18] = 1 : vrel(MV); ); );
   );
 );
 
-function note_on(n, vel) local(vb, idx, from)
+function note_on(n, vel) local(vb, idx, from, i, z)
 (
   HELD[n] = 1;
   LFRT ? ( lph = 0; lsh = rand(2) - 1; );
   LOADED ? (
+    (ZONES && ZN > 0 && !VMODE) ? (
+      // todas las zonas que cubren la nota y la velocidad suenan juntas (capas)
+      kill_note(n);
+      from = (GLIDE > 0 && LASTN >= 0) ? LASTN : n;
+      i = 0;
+      loop(ZN, z = ZT + i * ZF;
+        (n >= z[3] && n <= z[4] && vel >= z[5] && vel <= z[6]) ? ( vb = alloc_voice(); VZONE = i; start_voice(vb, n, vel, -1, from); );
+        i += 1; );
+    ) :
     CHOPS ? (
       idx = n - CHB;
       (idx >= 0 && idx < NCH) ? (
@@ -570,7 +821,7 @@ function vtick(vb) local(l, st, e2, u, inc, sl, sr, x, w0, w1, g, gl, k, a1, a2,
   l = vb[14]; st = vb[15];
   st == 1 ? ( l += AE_INC; l >= 1 ? ( l = 1; st = 2; ); ) :
   st == 2 ? ( l = AE_S + (l - AE_S) * AE_DC; abs(l - AE_S) < 0.00001 ? ( l = AE_S; st = 3; ); ) :
-  st == 4 ? ( l *= AE_RC; );
+  st == 4 ? ( RLIN ? ( l = max(0, l - vb[57]); ) : l *= AE_RC; );
   (st >= 2 && (st == 4 || AE_FREE) && l < 0.0001) ? done = 1;
   vb[14] = l; vb[15] = st;
   e2 = vb[16]; st = vb[17];
@@ -690,32 +941,43 @@ update_params();
 @slider
 slider_PRESET > 0 ? ( a_pn = floor(slider_PRESET + 0.5); slider_PRESET = 0; slider_automate(slider_PRESET); load_preset(a_pn); );
 slider1 != LAST_SL ? ( load_slider() ? MISSING = 0; );
+// accion por script: zonas con la carpeta del sample del selector
+slider_ZLOAD > 0 ? ( slider_ZLOAD = 0; slider_automate(slider_ZLOAD); strcpy_fromslider(#a_zp, slider1); zones_from_folder(#a_zp); zones_loaded(); );
 update_params();
-VMODE != last_vmode || CHOPS != last_chops ? ( all_release(); last_vmode = VMODE; last_chops = CHOPS; MV = -1; );
+VMODE != last_vmode || slider2 != last_mode ? ( all_release(); last_vmode = VMODE; last_mode = slider2; MV = -1; );
 
 @serialize
+// v1 (Nube Sampler 1.0): ruta, cortes a mano, audio (float). v2 (1.1): + zonas; audio sin limite de largo, empaquetado si es de 16 bits.
 a_wr = file_avail(0) < 0;
 a_wr ? (
-  a_ver = 1; file_var(0, a_ver); file_var(0, SRC_KIND); file_var(0, LAST_SL); file_string(0, #spath);
+  a_ver = 2; file_var(0, a_ver); file_var(0, SRC_KIND); file_var(0, LAST_SL); file_string(0, #spath);
   file_var(0, NMAN); a_i = 0; loop(NMAN, file_var(0, MANP[a_i]); a_i += 1; );
-  a_emb = slider62 && LOADED && SN <= EMBMAX; file_var(0, a_emb);
-  a_emb ? ( file_var(0, SN); file_var(0, SNCH); file_var(0, SSR); file_mem(0, SMP, SN * 2); );
+  file_var(0, ZN); a_i = 0; loop(ZN, a_j = 0; loop(ZF, file_var(0, ZT[a_i * ZF + a_j]); a_j += 1; ); file_string(0, ZSTR + a_i); a_i += 1; );
+  a_emb = slider62 && LOADED; file_var(0, a_emb);
+  a_emb ? ( file_var(0, SN); file_var(0, SNCH); file_var(0, SSR); ser_write_audio(); );
 ) : (
   a_ver = 0; file_var(0, a_ver);
   a_ver >= 1 ? (
     file_var(0, a_kind); file_var(0, a_sl); file_string(0, #a_path);
     file_var(0, NMAN); NMAN = clamp(NMAN, 0, MAXCH); a_i = 0; loop(NMAN, file_var(0, MANP[a_i]); a_i += 1; ); MANVER += 1;
-    a_ok = 1;
-    a_kind == 2 ? ( a_ok = load_path(#a_path); !a_ok ? ( all_kill_now(); LOADED = 0; SN = 0; slider_FRAMES = 0; MISSING = 1; SRC_KIND = 2;
-      strcpy(#spath, #a_path); set_name(#spath); LAST_SIG = -1; update_params(); ); );
+    a_zn = 0;
+    a_ver >= 2 ? ( file_var(0, a_zn); a_zn = clamp(a_zn, 0, MAXZ);
+      a_i = 0; loop(a_zn, a_j = 0; loop(ZF, file_var(0, ZT[a_i * ZF + a_j]); a_j += 1; ); file_string(0, ZSTR + a_i); a_i += 1; ); );
     a_emb = 0; file_var(0, a_emb);
     a_emb ? (
       a_n = 0; file_var(0, a_n); file_var(0, a_ch); file_var(0, a_sr);
       (a_n > 1 && a_n <= MAXF) ? (
         LOADING = 1; all_kill_now();
-        file_mem(0, SMP, a_n * 2); SN = a_n; SNCH = a_ch; SSR = a_sr;
-        after_load(); MISSING = 0; a_kind == 2 ? SRC_KIND = 2;
-      );
+        a_ver >= 2 ? ser_read_audio(a_n) : file_mem(0, SMP, a_n * 2);
+        SN = a_n; SNCH = a_ch; SSR = a_sr; ZN = a_zn; slider_NZONES = ZN; ZMISS = 0;
+        after_load(); MISSING = 0; LIBMISS = 0; SRC_KIND = a_kind; strcpy(#spath, #a_path); set_name(#spath);
+        ZN > 0 ? zone_name();
+      ) : a_emb = 0;
+    );
+    !a_emb ? (
+      a_zn > 0 ? zones_reload(a_zn) :
+      a_kind == 2 ? ( a_ok = load_path(#a_path); !a_ok ? ( all_kill_now(); LOADED = 0; SN = 0; slider_FRAMES = 0; MISSING = 1; SRC_KIND = 2;
+        strcpy(#spath, #a_path); set_name(#spath); LAST_SIG = -1; update_params(); ); );
     );
     LAST_SL = slider1;
   );

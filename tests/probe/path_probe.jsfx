@@ -1,0 +1,10 @@
+desc:Nube Sampler - sonda de rutas (pruebas)
+slider1:/Nube Sampler:Nube/Keys - Rhodes C4.wav:Sample
+slider2:0<0,1000,1>-largo de la ruta
+slider3:0<0,1,1>-empieza con /
+slider4:-1<-1,1000,1>-file_open absoluto con la ruta
+slider5:-1<-1,1000,1>-file_open relativo "Nube/Kalimba C5.wav"
+@slider
+strcpy_fromslider(#s, slider1); slider2 = strlen(#s); slider3 = str_getchar(#s, 0) == '/';
+h = file_open(#s); slider4 = h; h >= 0 ? file_close(h);
+h = file_open("Nube/Kalimba C5.wav"); slider5 = h; h >= 0 ? file_close(h);

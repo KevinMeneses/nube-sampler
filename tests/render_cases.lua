@@ -4,7 +4,7 @@
 -- Las señales tienen que estar en REAPER/Data/Nube Sampler/zz_pruebas (lo hace tests/run.sh).
 local ROOT = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$")
 local OUT = ROOT .. "/out"
-local FX = "JS:Nube Sampler/nube_sampler.jsfx"
+local FX = dofile(debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") .. "/fx.lua")
 local LIB = reaper.GetResourcePath() .. "/Data/Nube Sampler/zz_pruebas"
 local P = dofile(ROOT .. "/params_gen.lua")
 os.execute('mkdir -p "' .. OUT .. '"')

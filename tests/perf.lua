@@ -1,6 +1,6 @@
 -- CPU: render de 30 s con 8 notas sostenidas (loop del pad de fábrica) en varios modos. Escribe tests/out/perf.txt.
 local OUT = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") .. "/out"
-local FX = "JS:Nube Sampler/nube_sampler.jsfx"
+local FX = dofile(debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") .. "/fx.lua")
 os.execute('mkdir -p "' .. OUT .. '"')
 local f = io.open(OUT .. "/perf.txt", "w")
 reaper.Main_OnCommand(40859, 0)

@@ -17,7 +17,7 @@ local pat = {36, 37, 38, 37, 39, 37, 40, 41, 36, 37, 42, 37, 43, 44, 45, 46}
 for k, p in ipairs(pat) do note((k - 1) * beat, (k - 1) * beat + beat * 0.9, p, 100) end
 for _, p in ipairs({60, 64, 67}) do note(8 * beat, 15.5 * beat, p, 90) end
 reaper.MIDI_Sort(take)
-local fx = reaper.TrackFX_AddByName(tr, "JS:Nube Sampler/nube_sampler.jsfx", false, -1)
+local fx = reaper.TrackFX_AddByName(tr, dofile(debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") .. "/fx.lua"), false, -1)
 local _, _, mx = reaper.TrackFX_GetParam(tr, fx, 0)
 for i = 0, mx do local _, s = reaper.TrackFX_FormatParamValue(tr, fx, 0, i, ""); if s == sample then reaper.TrackFX_SetParam(tr, fx, 0, i) end end
 if preset > 0 then reaper.TrackFX_SetParam(tr, fx, 158, preset) end
