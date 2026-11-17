@@ -149,6 +149,7 @@ for i = 0, maxi do local _, s = reaper.TrackFX_FormatParamValue(tr, fx0, 0, i, "
 reaper.TrackFX_Delete(tr, fx0)
 
 local function render(name)
+  T.ensure(tab)
   local file = OUT .. "/" .. name .. ".wav"
   os.remove(file)
   reaper.GetSetProjectInfo(0, "RENDER_SETTINGS", 0, true)
@@ -158,7 +159,7 @@ local function render(name)
   reaper.GetSetProjectInfo(0, "RENDER_TAILFLAG", 0, true)
   reaper.GetSetProjectInfo_String(0, "RENDER_FILE", OUT, true)
   reaper.GetSetProjectInfo_String(0, "RENDER_PATTERN", name, true)
-  reaper.Main_OnCommand(42230, 0)
+  T.render(tab)
 end
 local function rd(fx, p) local _, s = reaper.TrackFX_GetFormattedParamValue(tr, fx, p - 1, ""); return s end
 

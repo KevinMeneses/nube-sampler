@@ -24,6 +24,19 @@ function T.open(path)
   return {path = path, prev = prev}
 end
 
+-- Volver a la pestaña propia. Durante un render (42230) REAPER procesa mensajes y un script de OTRA sesión puede
+-- arrancar en medio y cambiar la pestaña activa: llamar antes y después de cada render (y de Main_openProject).
+function T.ensure(tab)
+  local p = find(tab.path)
+  if p and reaper.EnumProjects(-1, "") ~= p then reaper.SelectProjectInstance(p) end
+  return p
+end
+
+-- render de la pestaña propia (los ajustes RENDER_* ya puestos en el proyecto 0 por quien llama, con T.ensure antes)
+function T.render(tab)
+  T.ensure(tab); reaper.Main_OnCommand(42230, 0); T.ensure(tab)
+end
+
 -- reabrir otro .rpp en la pestaña propia (cambia la ruta con la que se la busca)
 function T.reopen(tab, rpp)
   local p = find(tab.path); if p then reaper.SelectProjectInstance(p) end

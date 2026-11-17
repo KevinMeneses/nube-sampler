@@ -87,7 +87,9 @@ READOUTS = [("Notas sonando (lectura)", 0, 64, 1), ("Largo del sample (lectura, 
             ("Chops (lectura)", 0, 32, 1), ("Nota detectada (lectura)", -1, 128, 0.01)]
 # 1.1: van al final para que los proyectos guardados con la 1.0 no corran sus valores
 EXTRA = [("Zonas (lectura)", 0, 64, 1), ("Audio guardado en el proyecto (lectura, MB)", 0, 1000, 0.1),
-         ("Zonas: cargar la carpeta del sample", 0, 1, 1), ("Curva de relajacion", 0, 1, 1, "Exponencial,Lineal (como RS5k)")]
+         ("Zonas: cargar la carpeta del sample", 0, 1, 1), ("Curva de relajacion", 0, 1, 1, "Exponencial,Lineal (como RS5k)"),
+         ("Zona seleccionada (lectura)", 0, 64, 1), ("Zona sel.: raiz (lectura)", 0, 127, 1),
+         ("Zona sel.: desde (lectura)", 0, 127, 1), ("Zona sel.: hasta (lectura)", 0, 127, 1)]
 RD0 = PRESET_SLIDER + 1
 EX0 = RD0 + len(READOUTS)
 
@@ -149,6 +151,7 @@ def lua():
     return (f"-- generado por tools/build.py\nreturn {{ N = {N}, PRESET = {PRESET_SLIDER}, NPRESETS = {len(presets_enum())},\n"
             f"  CHOP0 = {CHOP0}, NACT = {RD0}, FRAMES = {RD0 + 1}, NCHOPS = {RD0 + 2}, DETECT = {RD0 + 3},\n"
             f"  NZONES = {EX0}, EMBMB = {EX0 + 1}, ZLOAD = {EX0 + 2}, RELLIN = {EX0 + 3},\n"
+            f"  ZSEL = {EX0 + 4}, ZROOT = {EX0 + 5}, ZLO = {EX0 + 6}, ZHI = {EX0 + 7},\n"
             f"  LOGP = {{{logp}}} }}\n")
 
 
@@ -169,6 +172,7 @@ def main():
     txt = txt.replace("slider_NCHOPS", f"slider{RD0 + 2}").replace("slider_DETECT", f"slider{RD0 + 3}")
     txt = txt.replace("slider_PRESET", f"slider{PRESET_SLIDER}")
     txt = txt.replace("slider_NZONES", f"slider{EX0}").replace("slider_EMBMB", f"slider{EX0 + 1}").replace("slider_ZLOAD", f"slider{EX0 + 2}").replace("slider_RELLIN", f"slider{EX0 + 3}")
+    for k, nm in enumerate(("ZSEL", "ZROOT", "ZLO", "ZHI")): txt = txt.replace(f"slider_{nm}", f"slider{EX0 + 4 + k}")
     DST.write_text(txt)
     (ROOT / "tests/params_gen.lua").write_text(lua())
     print(f"ok: {DST.name} ({txt.count(chr(10))} lineas, {N} sliders de parametros, {len(presets_enum())} presets)")

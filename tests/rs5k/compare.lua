@@ -46,6 +46,7 @@ for _, vel in ipairs({100, 76}) do
 end
 reaper.MIDI_Sort(take)
 local function render(name)
+  T.ensure(tab)
   os.remove(OUT .. "/" .. name .. ".wav")
   reaper.SetOnlyTrackSelected(tr)
   reaper.GetSetProjectInfo(0, "RENDER_SETTINGS", 3, true); reaper.GetSetProjectInfo(0, "RENDER_BOUNDSFLAG", 0, true)
@@ -53,7 +54,7 @@ local function render(name)
   reaper.GetSetProjectInfo(0, "RENDER_SRATE", 48000, true); reaper.GetSetProjectInfo(0, "RENDER_CHANNELS", 2, true)
   reaper.GetSetProjectInfo(0, "RENDER_TAILFLAG", 0, true)
   reaper.GetSetProjectInfo_String(0, "RENDER_FILE", OUT, true); reaper.GetSetProjectInfo_String(0, "RENDER_PATTERN", name, true)
-  reaper.Main_OnCommand(42230, 0)
+  T.render(tab)
 end
 -- 1) los 17 RS5k tal cual
 local _, ch = reaper.GetTrackStateChunk(tr, "", false)

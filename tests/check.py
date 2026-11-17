@@ -247,7 +247,7 @@ scalar("nota detectada: 220 Hz a 44.1 kHz = 57.00", LOG["det_44k"]["nota"], 57.0
 a = load("reopen_a")
 inrange("guardar y reabrir: suena igual", np.abs(load("reopen_b") - a).max(), 0, 1e-7)
 inrange("audio guardado en el proyecto: suena igual sin el archivo", np.abs(load("embed") - a).max(), 0, 1e-7)
-inrange("sin guardarlo y sin el archivo: ya no suena igual", np.abs(load("noembed") - a).max(), 1e-3, 10)
+inrange("sin guardarlo y sin el archivo: silencio (no el sample por defecto)", db(np.abs(load("noembed")).max() + 1e-20), -400, -120)
 
 a = load("embed16_ref")
 inrange("audio de 16 bits guardado (empaquetado): exacto sin el archivo", np.abs(load("embed16") - a).max(), 0, 1e-7)

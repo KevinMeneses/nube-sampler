@@ -33,6 +33,7 @@ WSM = 66700;                                         // zona de busqueda del WSO
 ODF = 76000; MAXODF = 120000;                        // energia por bloque (deteccion de transitorios)
 ZT = 196500; ZF = 16; MAXZ = 64; ZSTR = 200;         // zonas: tabla (ZF campos por zona) y nombres en los strings 200..263
 ZTB = 197600;                                        // copia de la tabla (al reabrir)
+ZPL = 199000;                                        // zona sonando (para dibujar)
 TMP = 200000; TMPN = 600000;                         // lectura del archivo por partes
 SMP = 800000;                                        // el sample (o las zonas, una tras otra), estereo intercalado
 MAXF = floor((33554432 - SMP - 64) / 2);
@@ -975,6 +976,13 @@ a_wr ? (
       ) : a_emb = 0;
     );
     !a_emb ? (
+      // si falta el archivo de la biblioteca, REAPER pone EN SILENCIO el sample por defecto del selector: comparar con la
+      // ruta guardada y avisar en vez de sonar con otro sample
+      strcpy_fromslider(#a_cur, slider1);
+      (a_zn == 0 && a_kind == 1 && strlen(#a_path) && strcmp(#a_path, #a_cur) != 0) ? (
+        all_kill_now(); LOADED = 0; SN = 0; slider_FRAMES = 0; LIBMISS = 1; strcpy(#libpath, #a_path); SRC_KIND = 1;
+        strcpy(#spath, #a_path); set_name(#spath); LAST_SIG = -1; update_params();
+      ) :
       a_zn > 0 ? zones_reload(a_zn) :
       a_kind == 2 ? ( a_ok = load_path(#a_path); !a_ok ? ( all_kill_now(); LOADED = 0; SN = 0; slider_FRAMES = 0; MISSING = 1; SRC_KIND = 2;
         strcpy(#spath, #a_path); set_name(#spath); LAST_SIG = -1; update_params(); ); );
@@ -999,8 +1007,8 @@ while (kqr != kqw) (
 while (midirecv(a_ofs, a_m1, a_m2, a_m3)) (
   qn < QMAX ? ( Q[qn * 4] = a_ofs; Q[qn * 4 + 1] = a_m1; Q[qn * 4 + 2] = a_m2; Q[qn * 4 + 3] = a_m3; qn += 1; );
 );
-a_n = 0; a_v = 0; a_i = 0; loop(MAXCH, CHPLAY[a_i] = 0; a_i += 1; );
-loop(MAXV, a_vb = V0 + a_v * VS; a_vb[0] ? ( a_n += 1; a_vb[19] >= 0 ? CHPLAY[a_vb[19]] = 1; ); a_v += 1; );
+a_n = 0; a_v = 0; a_i = 0; loop(MAXCH, CHPLAY[a_i] = 0; a_i += 1; ); a_i = 0; loop(MAXZ, ZPL[a_i] = 0; a_i += 1; );
+loop(MAXV, a_vb = V0 + a_v * VS; a_vb[0] ? ( a_n += 1; a_vb[19] >= 0 ? CHPLAY[a_vb[19]] = 1; a_vb[55] >= 0 ? ZPL[a_vb[55]] = 1; ); a_v += 1; );
 slider_NACT = a_n;
 
 @sample
@@ -1227,13 +1235,22 @@ function hint_for(id)
   id >= 1000 && id < 1100 ? strcpy(#hint, "Corte: arrastra para moverlo (pasa a A mano). Clic derecho = quitarlo.") :
   id >= 800 && id < 832 ? strcpy(#hint, "Pad: clic = escuchar y seleccionar el chop (sus ajustes van a la derecha).") :
   id == 840 ? strcpy(#hint, "Cambia entre los pads 1-16 y 17-32.") :
-  id == 852 ? strcpy(#hint, "El sample se elige en el selector Sample de arriba (REAPER/Data/Nube Sampler) o arrastrando un archivo a la ventana.") :
+  id == 852 ? strcpy(#hint, "El sample se elige en el selector Sample de arriba (REAPER/Data/Nube Sampler) o arrastrando archivos (varios = zonas).") :
   id == 853 ? strcpy(#hint, "Reverso: todo el sample suena al reves.") :
   id == 854 ? strcpy(#hint, "Normalizar: sube el sample para que su pico llegue a 0 dB.") :
-  id == 855 ? strcpy(#hint, "Afinar: pone la nota raiz y el fino segun la nota detectada, para que el sample quede afinado.") :
+  id == 855 ? strcpy(#hint, ZONES ? "Afinar: pone la raiz (y los cents) de la zona seleccionada segun la nota que se detecta en su audio." :
+                                    "Afinar: pone la nota raiz y el fino segun la nota detectada, para que el sample quede afinado.") :
   id == 857 ? strcpy(#hint, "Sigue teclado: cada tecla cambia el tono. Tono fijo: todas las teclas suenan igual (loops, baterias).") :
-  id == 856 ? strcpy(#hint, "Guardar el audio dentro del proyecto (hasta ~40 s): el proyecto suena aunque muevas o borres el archivo.") :
-  id == 860 || id == 861 ? strcpy(#hint, "Clasico: el sample entero en el teclado. Chops: cada trozo en una tecla (como una MPC).") :
+  id == 856 ? strcpy(#hint, "Guardar el audio dentro del proyecto (todo lo cargado; 16 bits ocupa 2/3): suena aunque muevas o borres los archivos.") :
+  id == 860 || id == 861 || id == 866 ? strcpy(#hint, "Clasico: un sample en todo el teclado. Chops: cada trozo en una tecla (MPC). Zonas: varios samples, cada uno en su rango.") :
+  id == 1100 ? strcpy(#hint, "Raiz de la zona: la nota en la que el sample suena tal cual. Arrastra o usa la rueda. Doble clic = la del nombre.") :
+  id == 1101 || id == 1102 ? strcpy(#hint, "Rango de notas de la zona (desde / hasta). Arrastra o usa la rueda. Doble clic = rangos automaticos.") :
+  id == 1103 || id == 1104 ? strcpy(#hint, "Rango de velocidad de la zona: para capas suave / fuerte con la misma nota. Doble clic = 1 / 127.") :
+  id == 1110 ? strcpy(#hint, "Arma las zonas con la carpeta del sample elegido: busca los archivos con el mismo nombre y otra nota (ep_036, ep_039... o Rhodes C3, D3...).") :
+  id == 1111 ? strcpy(#hint, "Rangos automaticos: cada zona llega hasta la mitad del camino a la siguiente raiz (como un RS5k por zona).") :
+  id == 1112 ? strcpy(#hint, "Quita la zona seleccionada (los rangos de las demas no cambian: usa Rangos auto).") :
+  id == 1120 ? strcpy(#hint, "Mapa: notas (izquierda a derecha) y velocidad (abajo a arriba). Clic = elegir la zona y escucharla.") :
+  id == 890 ? strcpy(#hint, "Curva de la relajacion: Exponencial (natural) o Lineal (baja en linea recta hasta 0 en el tiempo de relajacion, como RS5k).") :
   id == 862 || id == 863 ? strcpy(#hint, "Mantener: suena mientras tienes la tecla. One-shot: suena hasta el final aunque sueltes (baterias).") :
   id == 864 || id == 865 ? strcpy(#hint, "Remuestreo: tono y tiempo juntos (vinilo). Estirar: tono y tiempo independientes (loops a tempo).") :
   id >= 870 && id <= 872 ? strcpy(#hint, "Loop: Apagado, Adelante (con crossfade) o Ping-pong (ida y vuelta).") :
@@ -1257,13 +1274,42 @@ function hint_for(id)
 // ---------------------------------------------------------- sample
 // La interfaz no puede cambiar el slider de archivo (REAPER no lo acepta desde @gfx): la biblioteca se elige con el
 // selector "Sample" de REAPER (arriba) o arrastrando un archivo. Este menu lo explica.
-function menu_sample() local(r)
+function menu_sample() local(r, i, nn)
 (
-  #m = "#ELEGIR SAMPLE||#Biblioteca: el selector Sample, arriba de esta ventana|#(carpeta REAPER/Data/Nube Sampler, con subcarpetas)||#O arrastra un archivo de audio a la ventana|#(wav, aif, flac, mp3, ogg)";
-  LOADED ? ( strcat(#m, "||#Cargado: "); strcat(#m, #spath); );
+  #m = "#ELEGIR SAMPLE||#Biblioteca: el selector Sample, arriba de esta ventana|#(carpeta REAPER/Data/Nube Sampler, con subcarpetas)||#O arrastra archivos de audio a la ventana (varios = zonas)|#(wav, aif, flac, mp3, ogg)";
+  nn = SRC_KIND && strlen(#spath) ? name_note(#spath) : -1;
+  strcat(#m, nn >= 0 ? "||Armar zonas con la carpeta de este sample" : "||#Armar zonas con la carpeta (el nombre del sample necesita la nota: ep_048, Rhodes C4)");
+  ZN > 0 ? (
+    sprintf(#_mz, "||#ZONAS (%d):", ZN); strcat(#m, #_mz);
+    i = 0; loop(min(ZN, 40), strcat(#m, "|#   "); strcat(#m, ZSTR + i); i += 1; );
+  ) : LOADED ? ( strcat(#m, "||#Cargado: "); strcat(#m, #spath); );
   gfx_x = dd_x; gfx_y = dd_y;
-  gfx_showmenu(#m);
+  r = gfx_showmenu(#m);
+  // es la unica opcion que se puede elegir en este menu: cualquier r > 0 es ella
+  r > 0 && nn >= 0 ? ( strcpy(#_zsrc, #spath); zones_from_folder(#_zsrc) > 0 ? zones_loaded() : ( CUR_MSG = 2; msg_t = time_precise(); ); );
 );
+// edicion de la zona seleccionada (campos 2..6 de la tabla)
+function zset(k, v) local(z)
+(
+  ZN > 0 ? (
+    z = ZT + ZSEL * ZF;
+    v = clamp(floor(v + 0.5), k >= 5 ? 1 : 0, 127);
+    z[k] = v;
+    k == 3 && z[4] < v ? z[4] = v; k == 4 && z[3] > v ? z[3] = v;
+    k == 5 && z[6] < v ? z[6] = v; k == 6 && z[5] > v ? z[5] = v;
+    k == 2 ? z[9] = 0;
+  );
+);
+function zone_remove(k) local(i, n)
+(
+  (k >= 0 && k < ZN) ? (
+    all_kill_now();
+    i = k; loop(ZN - k - 1, n = 0; loop(ZF, (ZT + i * ZF)[n] = (ZT + (i + 1) * ZF)[n]; n += 1; ); strcpy(ZSTR + i, ZSTR + i + 1); i += 1; );
+    ZN -= 1; slider_NZONES = ZN; ZSEL = clamp(ZSEL, 0, max(0, ZN - 1)); zone_name();
+  );
+);
+function zone_at(n, vel) local(i, z, r)
+( r = -1; i = 0; loop(ZN, z = ZT + i * ZF; (n >= z[3] && n <= z[4] && vel >= z[5] && vel <= z[6]) ? r = i; i += 1; ); r; );
 function menu_presets() local(r, i)
 (
   #m = "#PRESETS (no cambian el sample)|>Clasico";
@@ -1336,8 +1382,18 @@ function flag(id, f, str, up, c_r, cg, cb) local(x)
 function pan_view(d) local(w) ( w = VZ1 - VZ0; VZ0 = clamp(VZ0 + d, 0, max(0, SN - w)); VZ1 = VZ0 + w; );
 
 // ======================================================================= arrastrar y soltar
+// un archivo: reemplaza el sample (en Zonas con zonas cargadas, se agrega como zona). Varios: zonas.
 gfx_getdropfile(0, #_drop) ? (
-  load_path(#_drop) ? ( CUR_MSG = 0; ) : ( CUR_MSG = 1; msg_t = time_precise(); );
+  _nd = 1; while (gfx_getdropfile(_nd, #_dd)) ( _nd += 1; );
+  (_nd > 1 || (ZONES && ZN > 0)) ? (
+    !(ZONES && ZN > 0) ? ( zones_clear(); LOADED = 0; );
+    _bad = 0; _i = 0;
+    loop(_nd, gfx_getdropfile(_i, #_dd); _r = zone_add(#_dd); _r == 0 ? _bad += 1 : _r < 0 ? ZSKIP += 1; _i += 1; );
+    zones_autorange(); zones_done(); zones_loaded();
+    _bad > 0 ? ( CUR_MSG = 1; msg_t = time_precise(); ) : CUR_MSG = 0;
+  ) : (
+    load_path(#_drop) ? ( CUR_MSG = 0; ) : ( CUR_MSG = 1; msg_t = time_precise(); );
+  );
   gfx_getdropfile(-1);
 );
 
@@ -1357,6 +1413,13 @@ lb && !last_lb ? (
   last_t = dbl ? 0 : _now; last_x = mx; last_y = my;
   (hover_id >= 2 && hover_id <= NPARAMS) ? (
     dbl ? ctl_default(hover_id) : ( drag = 1; drag_id = hover_id; drag_my = my; drag_n = ctl_get(hover_id); );
+  ) :
+  hover_id == 700 && LOADED && ZONES && ZN > 0 ? (
+    // zonas: clic = elegir la zona y escucharla en su raiz; doble clic = ver solo esa zona / todo
+    _f = clamp(x2f(mx), 0, SN - 1);
+    _k = 0; loop(ZN, (_f >= (ZT + _k * ZF)[0] - PADZ && _f < (ZT + _k * ZF)[0] + (ZT + _k * ZF)[1] + PADZ) ? ZSEL = _k; _k += 1; );
+    dbl ? ( (VZ0 > 0 || VZ1 < SN) ? ( VZ0 = 0; VZ1 = SN; ) : ( VZ0 = (ZT + ZSEL * ZF)[0]; VZ1 = VZ0 + (ZT + ZSEL * ZF)[1]; ); )
+        : ( pad_note = (ZT + ZSEL * ZF)[2]; kq(1, pad_note, 110, 0); drag = 1; drag_id = 800; );
   ) :
   hover_id == 700 && LOADED ? (
     _f = clamp(x2f(mx), 0, SN - 1);
@@ -1385,9 +1448,31 @@ lb && !last_lb ? (
   hover_id == 852 ? menu_sample() :
   hover_id == 853 ? ( sset(7, !slider7); update_params(); ) :
   hover_id == 854 ? ( sset(61, !slider61); update_params(); ) :
+  hover_id == 855 && ZONES && ZN > 0 ? (
+    _z = ZT + ZSEL * ZF; DB = _z[0]; DN = _z[1]; DSR = _z[7]; _dn = detect_note();
+    _dn >= 0 ? ( _z[2] = clamp(floor(_dn + 0.5), 0, 127); _z[9] = floor((_dn - floor(_dn + 0.5)) * 100 + 0.5); );
+  ) :
   hover_id == 855 ? ( DET_NOTE >= 0 ? ( sset(14, clamp(floor(DET_NOTE + 0.5), 0, 127)); sset(17, clamp(-(DET_NOTE - floor(DET_NOTE + 0.5)) * 100, -100, 100)); update_params(); ); ) :
   hover_id == 856 ? ( sset(62, !slider62); update_params(); ) :
   hover_id == 857 ? ( sset(15, !slider15); update_params(); ) :
+  hover_id == 866 ? ( sset(2, 2); update_params(); ) :
+  hover_id == 1110 ? ( strcpy(#_zsrc, #spath); (SRC_KIND && name_note(#_zsrc) >= 0) ? ( zones_from_folder(#_zsrc) > 0 ? zones_loaded(); )
+                                                                                : ( CUR_MSG = 2; msg_t = time_precise(); ); ) :
+  hover_id == 1111 ? zones_autorange() :
+  hover_id == 1112 ? zone_remove(ZSEL) :
+  (hover_id >= 1100 && hover_id <= 1104) && ZN > 0 ? (
+    _k = hover_id - 1098;
+    dbl ? (
+      _k == 2 ? ( (ZT + ZSEL * ZF)[10] >= 0 ? zset(2, (ZT + ZSEL * ZF)[10]); ) : _k <= 4 ? zones_autorange() : ( zset(5, 1); zset(6, 127); );
+    ) : ( drag = 1; drag_id = hover_id; drag_my = my; zdrag_v0 = (ZT + ZSEL * ZF)[_k]; );
+  ) :
+  hover_id == 1120 && ZN > 0 ? (
+    _n = clamp(floor(MAPLO + (mx - MAPX) / MAPW * (MAPHI - MAPLO + 1)), 0, 127);
+    _vv = clamp(floor(1 + (MAPY + MAPH - my) / MAPH * 127), 1, 127);
+    _k = zone_at(_n, _vv); _k >= 0 ? ZSEL = _k;
+    pad_note = _n; kq(1, pad_note, _vv, 0); drag = 1; drag_id = 800;
+  ) :
+  hover_id == 890 ? ( slider_RELLIN = !slider_RELLIN; slider_automate(slider_RELLIN); update_params(); ) :
   (hover_id >= 860 && hover_id <= 865) ? (
     _s = hover_id <= 861 ? 2 : hover_id <= 863 ? 3 : 4;
     sset(_s, (hover_id - 860) % 2); update_params();
@@ -1416,8 +1501,10 @@ lb && !last_lb ? (
 lb && drag ? (
   _k = shift ? 0.1 : 1;
   (drag_id >= 2 && drag_id <= NPARAMS) ? ctl_set(drag_id, drag_n + (drag_my - my) / (200 * SC) * _k) :
+  (drag_id >= 1100 && drag_id <= 1104) ? zset(drag_id - 1098, zdrag_v0 + floor((drag_my - my) / (6 * SC))) :
   (drag_id >= 701 && drag_id <= 704) ? (
-    _p = clamp(x2f(mx) / max(SN, 1) * 100, 0, 100);
+    _p = (ZONES && ZN > 0) ? clamp((x2f(mx) - (ZT + ZSEL * ZF)[0]) / max((ZT + ZSEL * ZF)[1], 1) * 100, 0, 100)
+                           : clamp(x2f(mx) / max(SN, 1) * 100, 0, 100);
     sset(drag_id == 701 ? 5 : drag_id == 702 ? 6 : drag_id == 703 ? 9 : 10, floor(_p * 1000 + 0.5) / 1000); update_params();
   ) :
   drag_id == 1000 && drag_man >= 0 ? (
@@ -1445,7 +1532,8 @@ mouse_wheel != 0 ? (
     ctl_set(hover_id, ctl_get(hover_id) + _w * (shift ? 0.002 : 0.012));
     update_params();
   ) :
-  (hover_id == 700 || (hover_id >= 701 && hover_id <= 705) || hover_id >= 1000) && LOADED ? (
+  (hover_id >= 1100 && hover_id <= 1104) && ZN > 0 ? zset(hover_id - 1098, (ZT + ZSEL * ZF)[hover_id - 1098] + sign(_w)) :
+  (hover_id == 700 || (hover_id >= 701 && hover_id <= 705) || (hover_id >= 1000 && hover_id < 1100)) && LOADED ? (
     shift ? pan_view(-_w * (VZ1 - VZ0) * 0.1) : zoom_at(clamp(x2f(mx), 0, SN), _w > 0 ? 0.8 ^ _w : 1.25 ^ (-_w));
   );
   mouse_wheel = 0;
@@ -1467,9 +1555,10 @@ _x = 160 * SC; _y = 9 * SC; _h = 26 * SC;
 CUR_PRESET > 0 ? strcpy(#s, preset_name(CUR_PRESET)) : strcpy(#s, "Presets");
 dropdown(300, _x, _y, 220 * SC, _h, "", #s); _x += 232 * SC;
 setcol(0);
-button(860, _x, _y, 64 * SC, _h, "Clasico", !CHOPS); button(861, _x + 66 * SC, _y, 64 * SC, _h, "Chops", CHOPS); _x += 142 * SC;
+button(860, _x, _y, 58 * SC, _h, "Clasico", slider2 == 0); button(861, _x + 60 * SC, _y, 58 * SC, _h, "Chops", CHOPS);
+button(866, _x + 120 * SC, _y, 58 * SC, _h, "Zonas", ZONES); _x += 188 * SC;
 setcol(7);
-button(862, _x, _y, 72 * SC, _h, "Mantener", !ONESHOT); button(863, _x + 74 * SC, _y, 72 * SC, _h, "One-shot", ONESHOT); _x += 158 * SC;
+button(862, _x, _y, 70 * SC, _h, "Mantener", !ONESHOT); button(863, _x + 72 * SC, _y, 70 * SC, _h, "One-shot", ONESHOT); _x += 152 * SC;
 setcol(2);
 button(864, _x, _y, 86 * SC, _h, "Remuestreo", !STRETCH); button(865, _x + 88 * SC, _y, 70 * SC, _h, "Estirar", STRETCH); _x += 170 * SC;
 _a = 0; _i = 0; loop(MAXV, (V0 + _i * VS)[0] ? _a += 1; _i += 1; );
@@ -1479,23 +1568,36 @@ LASTN >= 0 ? ( note_str(#n, LASTN); fnt(6); gfx_set(0.62, 0.80, 1.0, 1); text_r(
 
 // ---- barra del sample
 setcol(0);
-LOADED || MISSING ? strcpy(#s, #sname) : strcpy(#s, "Elegir sample...");
-dropdown(852, 14 * SC, sby, 356 * SC, SBH, "Sample", #s);
+LOADED || MISSING || LIBMISS == 1 ? strcpy(#s, #sname) : strcpy(#s, "Elegir sample...");
+dropdown(852, 14 * SC, sby, 356 * SC, SBH, ZN > 0 ? "Zonas" : "Sample", #s);
 fnt(2); gfx_set(0.62, 0.65, 0.72, 1);
-MISSING ? ( gfx_set(1, 0.45, 0.4, 1); sprintf(#s, "No se encontro el archivo: %s", #spath); ) :
-CUR_MSG == 1 && time_precise() - msg_t < 4 ? ( gfx_set(1, 0.45, 0.4, 1); strcpy(#s, "Ese archivo no se pudo leer como audio."); ) :
+// avisos en rojo: falta la biblioteca o el archivo (el plugin quedaria mudo sin decir nada)
+LIBMISS && !LOADED ? ( gfx_set(1, 0.45, 0.4, 1);
+  LIBMISS == 2 ? strcpy(#s, "No hay biblioteca (REAPER/Data/Nube Sampler)") : strcpy(#s, "No se encuentra el sample (detalle abajo)"); ) :
+MISSING ? ( gfx_set(1, 0.45, 0.4, 1); strcpy(#s, "No se encontro el archivo (detalle abajo)"); ) :
+ZMISS > 0 ? ( gfx_set(1, 0.45, 0.4, 1); sprintf(#s, "Faltan %d archivos de las zonas (usa En proyecto)", ZMISS); ) :
+CUR_MSG == 1 && time_precise() - msg_t < 4 ? ( gfx_set(1, 0.45, 0.4, 1); strcpy(#s, "Algun archivo no se pudo leer como audio."); ) :
+CUR_MSG == 2 && time_precise() - msg_t < 5 ? ( gfx_set(1, 0.45, 0.4, 1); strcpy(#s, "El nombre no trae la nota (ep_048, Rhodes C4)"); ) :
+(ZSKIP > 0 || SLONG) ? ( gfx_set(1, 0.65, 0.35, 1);
+  ZSKIP > 0 ? sprintf(#s, "No cupieron %d archivos (max. ~%.0f s en total)", ZSKIP, MAXF / max(SSR, 1))
+            : sprintf(#s, "Recortado: se cargaron %.0f s (memoria llena)", MAXF / max(SSR, 1)); ) :
+LOADED && ZN > 0 ? (
+  sprintf(#s, "%d zonas  ·  %.1f kHz  ·  %.1f s de audio", ZN, SSR / 1000, (SN - (ZN + 1) * PADZ) / SSR);
+  _z = ZT + ZSEL * ZF; set_name(ZSTR + ZSEL); note_str(#n, _z[2]);
+  sprintf(#t, "  ·  zona %d: %s (raiz %s)", ZSEL + 1, #sname, #n); strcat(#s, #t); zone_name();
+) :
 LOADED ? (
   sprintf(#s, "%.1f kHz  ·  %s  ·  %.2f s", SSR / 1000, SNCH == 1 ? "mono" : SNCH == 2 ? "estereo" : "multicanal (usa 1-2)", SN / SSR);
   DET_NOTE >= 0 ? ( note_str(#n, floor(DET_NOTE + 0.5)); sprintf(#t, "  ·  nota %s %+d c", #n, floor((DET_NOTE - floor(DET_NOTE + 0.5)) * 100 + 0.5)); strcat(#s, #t); )
                 : strcat(#s, "  ·  sin nota clara");
-  SLONG ? strcat(#s, "  ·  RECORTADO (muy largo)");
 ) : strcpy(#s, "Arrastra un archivo de audio a la ventana o elige uno en el selector Sample de arriba");
-text_l(#s, 380 * SC, sby, SBH);
 _x = WW - 14 * SC - 4 * 96 * SC;
+gfx_x = 380 * SC; gfx_y = sby; gfx_drawstr(#s, 4, _x - 8 * SC, sby + SBH);    // recortado antes de los botones
 setcol(8); button(853, _x, sby, 92 * SC, SBH, "Reverso", slider7); _x += 96 * SC;
 setcol(2); button(854, _x, sby, 92 * SC, SBH, "Normalizar", slider61); _x += 96 * SC;
 setcol(5); button(855, _x, sby, 92 * SC, SBH, "Afinar", 0); _x += 96 * SC;
-setcol(6); button(856, _x, sby, 92 * SC, SBH, SN > EMBMAX && slider62 ? "Muy largo" : "En proyecto", slider62);
+slider62 && LOADED ? sprintf(#t, "En proyecto %.0f MB", slider_EMBMB) : strcpy(#t, "En proyecto");
+setcol(6); button(856, _x, sby, 92 * SC, SBH, #t, slider62);
 
 // ---- forma de onda
 gfx_set(0.095, 0.105, 0.135, 1); gfx_rect(WFX, WFY, WFW, WFH, 1);
@@ -1503,6 +1605,24 @@ hit_add(WFX, WFY, WFW, WFVH, 700);
 _cy = WFY + WFVH * 0.5 + 6 * SC; _amp = (WFVH - 26 * SC) * 0.5;
 LOADED ? (
   _span = VZ1 - VZ0; _fpx = _span / WFW; _bin = SN / PKN;
+  // region, loop: en Zonas se muestran dentro de la zona seleccionada (los % son de cada zona)
+  _zm = ZONES && ZN > 0;
+  _zm ? ( _z = ZT + ZSEL * ZF; DR0 = _z[0] + floor(clamp(slider5, 0, 100) / 100 * _z[1]); DR1 = _z[0] + floor(clamp(slider6, 0, 100) / 100 * _z[1]);
+          DLS = _z[0] + floor(slider9 / 100 * _z[1]); DLE = _z[0] + floor(slider10 / 100 * _z[1]); )
+      : ( DR0 = R0; DR1 = R1; DLS = LPS; DLE = LPE; );
+  _zm ? (
+    _k = 0;
+    loop(ZN, _z = ZT + _k * ZF;
+      _x0 = max(WFX, f2x(_z[0])); _x1 = min(WFX + WFW, f2x(_z[0] + _z[1]));
+      _x1 > _x0 ? (
+        _k == ZSEL ? gfx_set(0.42, 0.78, 1.0, 0.16) : gfx_set(1, 1, 1, _k % 2 ? 0.05 : 0.0);
+        gfx_rect(_x0, WFY, _x1 - _x0, WFVH, 1);
+        ZPL[_k] ? ( gfx_set(1, 0.85, 0.4, 0.14); gfx_rect(_x0, WFY, _x1 - _x0, WFVH, 1); );
+        note_str(#n, _z[2]); fnt(4); gfx_set(0.9, 0.92, 0.96, _k == ZSEL ? 1 : 0.7);
+        _x1 - _x0 > 26 * SC ? text_l(#n, _x0 + 3 * SC, WFY + 2 * SC, 12 * SC);
+      );
+      _k += 1; );
+  );
   // regiones de los chops (alternadas) y seleccion
   CHOPS ? (
     _k = 0;
@@ -1533,18 +1653,20 @@ LOADED ? (
       _pv = _v;
     );
     _xx = WFX + _i;
-    _in = _fa >= R0 && _fa < R1;
+    _in = _zm ? 1 : _fa >= R0 && _fa < R1;
     _in ? gfx_set(0.42, 0.78, 1.0, 0.95) : gfx_set(0.42, 0.50, 0.62, 0.55);
     gfx_line(_xx, _cy - _mxv * _amp, _xx, _cy - _mn * _amp + 1);
     _i += 1;
   );
   gfx_set(1, 1, 1, 0.06); gfx_line(WFX, _cy, WFX + WFW - 1, _cy);
   // zona fuera de la region
+  !_zm ? (
   _x0 = f2x(R0); _x0 > WFX ? ( gfx_set(0, 0, 0, 0.35); gfx_rect(WFX, WFY, min(_x0, WFX + WFW) - WFX, WFVH, 1); );
   _x1 = f2x(R1); _x1 < WFX + WFW ? ( gfx_set(0, 0, 0, 0.35); gfx_rect(max(_x1, WFX), WFY, WFX + WFW - max(_x1, WFX), WFVH, 1); );
-  // regla de tiempo
-  _sec = SN / SSR; _tick = _span / SSR < 2 ? 0.1 : _span / SSR < 10 ? 0.5 : _span / SSR < 40 ? 2 : 10;
-  fnt(7); _t = ceil(VZ0 / SSR / _tick) * _tick;
+  );
+  // regla de tiempo (en Zonas no: cada zona tiene su propio tiempo)
+  _sec = SN / SSR; _zm ? _tick = 1000000 : _tick = _span / SSR < 2 ? 0.1 : _span / SSR < 10 ? 0.5 : _span / SSR < 40 ? 2 : 10;
+  fnt(7); _t = _zm ? VZ1 : ceil(VZ0 / SSR / _tick) * _tick;
   while (_t * SSR < VZ1) ( _xx = f2x(_t * SSR); gfx_set(1, 1, 1, 0.10); gfx_line(_xx, WFY, _xx, WFY + 5 * SC);
     gfx_set(0.5, 0.53, 0.6, 1); sprintf(#s, _tick < 1 ? "%.1f" : "%d", _t); text_l(#s, _xx + 2 * SC, WFY, 12 * SC); _t += _tick; );
   // cortes de los chops
@@ -1564,10 +1686,10 @@ LOADED ? (
   );
   // banderas: inicio / fin arriba, loop abajo
   (!CHOPS && LOOPM && !ONESHOT) ? (
-    _x0 = f2x(LPS); _x1 = f2x(LPE); gfx_set(0.93, 0.86, 0.40, 0.08); gfx_rect(max(WFX, _x0), WFY, max(0, min(WFX + WFW, _x1) - max(WFX, _x0)), WFVH, 1);
-    flag(703, LPS, "L", 0, 0.93, 0.86, 0.40); flag(704, LPE, "L", 0, 0.93, 0.86, 0.40);
+    _x0 = f2x(DLS); _x1 = f2x(DLE); gfx_set(0.93, 0.86, 0.40, 0.08); gfx_rect(max(WFX, _x0), WFY, max(0, min(WFX + WFW, _x1) - max(WFX, _x0)), WFVH, 1);
+    flag(703, DLS, "L", 0, 0.93, 0.86, 0.40); flag(704, DLE, "L", 0, 0.93, 0.86, 0.40);
   );
-  flag(701, R0, "S", 1, 0.50, 0.92, 0.70); flag(702, R1, "E", 1, 0.97, 0.50, 0.42);
+  flag(701, DR0, "S", 1, 0.50, 0.92, 0.70); flag(702, DR1, "E", 1, 0.97, 0.50, 0.42);
   // cabezales de las voces que suenan
   _v = 0; loop(MAXV, _vb = V0 + _v * VS; _vb[0] ? ( _xx = f2x(_vb[51]); (_xx >= WFX && _xx < WFX + WFW) ? ( gfx_set(1, 1, 1, 0.8 * _vb[14] + 0.2); gfx_line(_xx, WFY + 14 * SC, _xx, WFY + WFVH); ); ); _v += 1; );
   // tira de vista completa
@@ -1578,8 +1700,17 @@ LOADED ? (
   hit_add(WFX, _oy, WFW, OVH, 705);
 ) : (
   fnt(8); gfx_set(0.55, 0.58, 0.65, 1);
-  text_c(MISSING ? "Falta el archivo del sample (arrastralo de nuevo o elige otro)" : "Arrastra un sample aqui", WFX, WFY, WFW, WFH * 0.5 + 10 * SC);
-  fnt(2); text_c("o elige uno en el selector Sample de arriba (biblioteca REAPER/Data/Nube Sampler). wav, aif, flac, mp3, ogg", WFX, WFY + WFH * 0.5, WFW, 30 * SC);
+  (MISSING || LIBMISS) ? ( gfx_set(1, 0.55, 0.5, 1);
+    LIBMISS == 2 ? strcpy(#t, "No hay biblioteca: REAPER/Data/Nube Sampler no existe o esta vacia") :
+    LIBMISS == 1 ? sprintf(#t, "No se encuentra REAPER/Data/%s", #libpath) : sprintf(#t, "No se encuentra %s", #spath);
+    text_c(#t, WFX, WFY, WFW, WFH * 0.5 + 10 * SC);
+    fnt(2); gfx_set(0.62, 0.65, 0.72, 1);
+    text_c(LIBMISS ? "El plugin no suena. Si falta toda la biblioteca, corre install.sh (repo de Nube Sampler); si no, elige el sample de nuevo." :
+                     "El plugin no suena. Arrastra el archivo de nuevo o elige otro (o activa En proyecto la proxima vez).", WFX, WFY + WFH * 0.5, WFW, 30 * SC);
+  ) : (
+    text_c("Arrastra un sample aqui (varios = zonas)", WFX, WFY, WFW, WFH * 0.5 + 10 * SC);
+    fnt(2); text_c("o elige uno en el selector Sample de arriba (biblioteca REAPER/Data/Nube Sampler). wav, aif, flac, mp3, ogg", WFX, WFY + WFH * 0.5, WFW, 30 * SC);
+  );
 );
 
 // medidor de salida
@@ -1623,7 +1754,7 @@ pknob(5, _kx, _ky, KRAD, "Inicio", LOADED); _kx += KS;
 pknob(6, _kx, _ky, KRAD, "Fin", LOADED); _kx += KS;
 pknob(12, _kx, _ky, KRAD, "Fade in", 1); _kx += KS;
 pknob(13, _kx, _ky, KRAD, "Fade out", 1); _kx += KS;
-pknob(14, _kx, _ky, KRAD, "Raiz", !CHOPS && KTRK); _kx += KS;
+pknob(14, _kx, _ky, KRAD, "Raiz", slider2 == 0 && KTRK); _kx += KS;
 pknob(16, _kx, _ky, KRAD, "Tono", 1); _kx += KS;
 pknob(17, _kx, _ky, KRAD, "Fino", 1);
 button(857, _x + _w - 8 * SC - 92 * SC, _y + 5 * SC, 92 * SC, 17 * SC, KTRK ? "Sigue teclado" : "Tono fijo", KTRK);
@@ -1646,8 +1777,64 @@ _dx = _kx + KS * 0.5 + 8 * SC; _dw = _x + _w - 10 * SC - _dx;
 dropdown(875, _dx, _y + 32 * SC, _dw, 22 * SC, "A tempo", sync_name(SYNCN));
 fnt(7); gfx_set(0.62, 0.65, 0.72, 1);
 SYNCN > 0 && LOADED ? ( sprintf(#s, "%.1f BPM del sample", sync_beats(SYNCN) * 60 / ((R1 - R0) / SSR)); text_l(#s, _dx + 4 * SC, _y + 64 * SC, 12 * SC); ) :
+ZONES && ZN > 0 ? ( _z = ZT + ZSEL * ZF; sprintf(#s, "zona %d: %.2f s", ZSEL + 1, _z[1] * (clamp(slider6, 0, 100) - clamp(slider5, 0, 100)) / 100 / _z[7]); text_l(#s, _dx + 4 * SC, _y + 64 * SC, 12 * SC); ) :
 LOADED ? ( sprintf(#s, "region: %.2f s", (R1 - R0) / SSR); text_l(#s, _dx + 4 * SC, _y + 64 * SC, 12 * SC); );
 
+// fila 2 en Zonas: ZONAS (acciones), MAPA (nota x velocidad) y la zona seleccionada
+function vbox(id, x, y, w, h, label, str) (
+  fnt(7); gfx_set(0.62, 0.65, 0.72, 1); text_c(label, x, y - 14 * SC, w, 12 * SC);
+  hov = hover_id == id; gfx_set(hov ? 0.24 : 0.15, hov ? 0.26 : 0.16, hov ? 0.31 : 0.20, 1); frect(x, y, w, h, 4 * SC);
+  fnt(1); gfx_set(0.92, 0.93, 0.96, ZN > 0 ? 1 : 0.4); text_c(str, x, y, w, h);
+  hit_add(x, y, w, h, id);
+);
+ZONES ? (
+SW[0] = 190 * SC; SW[1] = 420 * SC; SW[2] = 5 * 62 * SC + 24 * SC; row_layout(3);
+_x = 14 * SC; _y = r2y;
+_w = SW[0]; sec(_x, _y, _w, RH, "ZONAS", 7);
+_bw = _w - 20 * SC;
+button(1110, _x + 10 * SC, _y + 26 * SC, _bw, 20 * SC, "Cargar la carpeta", 0);
+button(1111, _x + 10 * SC, _y + 50 * SC, _bw * 0.5 - 2 * SC, 20 * SC, "Rangos auto", 0);
+button(1112, _x + 10 * SC + _bw * 0.5 + 2 * SC, _y + 50 * SC, _bw * 0.5 - 2 * SC, 20 * SC, "Quitar zona", 0);
+fnt(7); gfx_set(0.62, 0.65, 0.72, 1);
+ZN > 0 ? sprintf(#s, "%d zonas  ·  arrastra archivos para agregar", ZN) : strcpy(#s, "Elige un sample con la nota en el nombre");
+text_l(#s, _x + 10 * SC, _y + 76 * SC, 14 * SC);
+// mapa
+_x += _w + GAP; _w = SW[1]; sec(_x, _y, _w, RH, "MAPA", 7);
+fnt(7); gfx_set(0.55, 0.58, 0.65, 1); text_r("nota  ->   velocidad ^", _x, _y + 6 * SC, _w - 10 * SC, 12 * SC);
+MAPX = _x + 10 * SC; MAPY = _y + 24 * SC; MAPW = _w - 20 * SC; MAPH = RH - 34 * SC;
+gfx_set(0.13, 0.14, 0.18, 1); gfx_rect(MAPX, MAPY, MAPW, MAPH, 1);
+MAPLO = 0; MAPHI = 127;
+ZN > 0 ? ( _a = 127; _b = 0; _k = 0; loop(ZN, _a = min(_a, (ZT + _k * ZF)[2]); _b = max(_b, (ZT + _k * ZF)[2]); _k += 1; );
+           MAPLO = max(0, _a - 12); MAPHI = min(127, _b + 12); );
+_nw = MAPW / (MAPHI - MAPLO + 1);
+// octavas (C)
+_n = ceil(MAPLO / 12) * 12; while (_n <= MAPHI) ( _xx = MAPX + (_n - MAPLO) * _nw; gfx_set(1, 1, 1, 0.07); gfx_line(_xx, MAPY, _xx, MAPY + MAPH);
+  note_str(#n, _n); fnt(7); gfx_set(0.45, 0.48, 0.55, 1); text_l(#n, _xx + 2 * SC, MAPY + MAPH - 12 * SC, 12 * SC); _n += 12; );
+_k = 0;
+loop(ZN, _z = ZT + _k * ZF;
+  _x0 = MAPX + (max(_z[3], MAPLO) - MAPLO) * _nw; _x1 = MAPX + (min(_z[4], MAPHI) - MAPLO + 1) * _nw;
+  _y1 = MAPY + MAPH - (_z[5] - 1) / 127 * MAPH; _y0 = MAPY + MAPH - _z[6] / 127 * MAPH;
+  _x1 > _x0 ? (
+    ZPL[_k] ? gfx_set(1, 0.85, 0.45, 0.85) : _k == ZSEL ? gfx_set(0.42, 0.78, 1.0, 0.85) : gfx_set(0.55, 0.30, 0.45, _k % 2 ? 0.55 : 0.75);
+    gfx_rect(_x0 + 1, _y0 + 1, _x1 - _x0 - 2, _y1 - _y0 - 2, 1);
+    _xx = MAPX + (_z[2] - MAPLO + 0.5) * _nw; (_z[2] >= MAPLO && _z[2] <= MAPHI) ? ( gfx_set(1, 1, 1, 0.9); gfx_line(_xx, _y0 + 2, _xx, _y1 - 3); );
+  );
+  _k += 1; );
+hit_add(MAPX, MAPY, MAPW, MAPH, 1120);
+// zona seleccionada
+_x += _w + GAP; _w = SW[2];
+ZN > 0 ? ( set_name(ZSTR + ZSEL); sprintf(#t, "ZONA %d: %s", ZSEL + 1, #sname); zone_name(); ) : strcpy(#t, "ZONA");
+sec(_x, _y, _w, RH, #t, 7);
+_z = ZT + ZSEL * ZF; _bw = 56 * SC; _bx = _x + (_w - 5 * 62 * SC) * 0.5 + 3 * SC; _by = _y + 46 * SC;
+ZN > 0 ? ( note_str(#n, _z[2]); _z[9] != 0 ? ( sprintf(#t, " %+d c", _z[9]); strcat(#n, #t); ); ) : strcpy(#n, "-");
+vbox(1100, _bx, _by, _bw, 24 * SC, "Raiz", #n); _bx += 62 * SC;
+ZN > 0 ? note_str(#n, _z[3]) : strcpy(#n, "-"); vbox(1101, _bx, _by, _bw, 24 * SC, "Desde", #n); _bx += 62 * SC;
+ZN > 0 ? note_str(#n, _z[4]) : strcpy(#n, "-"); vbox(1102, _bx, _by, _bw, 24 * SC, "Hasta", #n); _bx += 62 * SC;
+ZN > 0 ? sprintf(#n, "%d", _z[5]) : strcpy(#n, "-"); vbox(1103, _bx, _by, _bw, 24 * SC, "Vel min", #n); _bx += 62 * SC;
+ZN > 0 ? sprintf(#n, "%d", _z[6]) : strcpy(#n, "-"); vbox(1104, _bx, _by, _bw, 24 * SC, "Vel max", #n);
+ZN > 0 ? ( fnt(7); gfx_set(0.55, 0.58, 0.65, 1); sprintf(#s, "%.1f kHz  ·  %.2f s%s", _z[7] / 1000, _z[1] / _z[7], _z[10] < 0 ? "  ·  raiz detectada" : "");
+  text_l(#s, _x + 12 * SC, _y + 76 * SC, 14 * SC); );
+) : (
 // fila 2: CHOPS y pads
 SW[0] = 3 * KS + 250 * SC; SW[1] = 8 * 42 * SC + 60 * SC; SW[2] = 2 * KS + 90 * SC; row_layout(3);
 _x = 14 * SC; _y = r2y; _ky = krow(_y);
@@ -1683,6 +1870,8 @@ pknob(CHOP0 + 3 * SEL, _kx, _ky, KRAD, "Tono", SEL < NCH); _kx += KS;
 pknob(CHOP0 + 3 * SEL + 1, _kx, _ky, KRAD, "Ganancia", SEL < NCH);
 button(885, _kx + KS * 0.5 + 8 * SC, _y + 40 * SC, _x + _w - 10 * SC - (_kx + KS * 0.5 + 8 * SC), 20 * SC, "Reverso", slider(CHOP0 + 3 * SEL + 2));
 
+);
+
 // fila 3: FILTRO, AMP, ENV 2
 SW[0] = 6 * KS + 16 * SC; SW[1] = 5 * KS + 16 * SC; SW[2] = 5 * KS + 16 * SC; row_layout(3);
 _x = 14 * SC; _y = r3y; _ky = krow(_y);
@@ -1702,6 +1891,7 @@ pknob(34, _kx, _ky, KRAD, "Decae", 1); _kx += KS;
 pknob(35, _kx, _ky, KRAD, "Sostiene", 1); _kx += KS;
 pknob(36, _kx, _ky, KRAD, "Relaja", !ONESHOT); _kx += KS;
 pknob(37, _kx, _ky, KRAD, "Velocidad", 1);
+button(890, _x + _w - 8 * SC - 104 * SC, _y + 5 * SC, 104 * SC, 17 * SC, slider_RELLIN ? "Relaja lineal" : "Relaja exponencial", slider_RELLIN);
 _x += _w + GAP; _w = SW[2]; sec(_x, _y, _w, RH, "ENV 2", 5);
 _kx = _x + (_w - 5 * KS) * 0.5 + KS * 0.5;
 pknob(43, _kx, _ky, KRAD, "Ataque", 1); _kx += KS;
@@ -1746,7 +1936,9 @@ gfx_set(0.10, 0.11, 0.14, 1); frect(14 * SC, kby, 70 * SC, KBH, 6 * SC);
 button(600, 20 * SC, kby + 6 * SC, 26 * SC, 20 * SC, "<", 0);
 button(601, 52 * SC, kby + 6 * SC, 26 * SC, 20 * SC, ">", 0);
 note_str(#n, KBO); fnt(2); gfx_set(0.70, 0.73, 0.80, 1); text_c(#n, 14 * SC, kby + 28 * SC, 70 * SC, 20 * SC);
-function keymapped(n) ( CHOPS ? (n >= CHB && n < CHB + NCH) : 1; );
+function keymapped(n) ( CHOPS ? (n >= CHB && n < CHB + NCH) : (ZONES && ZN > 0) ? (n >= (ZT + ZSEL * ZF)[3] && n <= (ZT + ZSEL * ZF)[4]) : 1; );
+function is_zroot(n) local(i, r) ( r = 0; ZONES ? ( i = 0; loop(ZN, (ZT + i * ZF)[2] == n ? r = 1; i += 1; ); ); r; );
+_kmode = CHOPS || (ZONES && ZN > 0);
 _nw = 0; _i = 0; loop(37, !is_black(KBO + _i) ? _nw += 1; _i += 1; );
 _ww = _kw / _nw; _wx = _kx0; _i = 0;
 loop(37,
@@ -1754,10 +1946,10 @@ loop(37,
   !is_black(_n) ? (
     _on = HELD[_n] || (kb_on && kb_note == _n);
     _hv = hover_id == 500 + _i;
-    _on ? acc(1) : CHOPS && keymapped(_n) ? gfx_set(_hv ? 0.98 : 0.93, _hv ? 0.88 : 0.80, _hv ? 0.95 : 0.90, 1) :
-          gfx_set(_hv ? 0.86 : 0.80, _hv ? 0.88 : 0.82, _hv ? 0.92 : 0.86, CHOPS ? 0.55 : 1);
+    _on ? acc(1) : _kmode && keymapped(_n) ? gfx_set(_hv ? 0.98 : 0.93, _hv ? 0.88 : 0.80, _hv ? 0.95 : 0.90, 1) :
+          gfx_set(_hv ? 0.86 : 0.80, _hv ? 0.88 : 0.82, _hv ? 0.92 : 0.86, _kmode ? 0.55 : 1);
     gfx_rect(_wx + 1, kby, _ww - 2, KBH, 1);
-    (!CHOPS && _n == ROOT) ? ( setcol(5); acc(1); gfx_circle(_wx + _ww * 0.5, kby + KBH - 22 * SC, 3 * SC, 1, 1); setcol(0); );
+    ((slider2 == 0 && _n == ROOT) || (ZONES && is_zroot(_n))) ? ( setcol(5); acc(1); gfx_circle(_wx + _ww * 0.5, kby + KBH - 22 * SC, 3 * SC, 1, 1); setcol(0); );
     (_n % 12 == 0) ? ( note_str(#n, _n); fnt(7); gfx_set(0.35, 0.37, 0.42, 1); text_c(#n, _wx, kby + KBH - 14 * SC, _ww, 12 * SC); );
     hit_add(_wx, kby, _ww, KBH, 500 + _i);
     _wx += _ww;
@@ -1770,14 +1962,18 @@ loop(37,
   is_black(_n) ? (
     _on = HELD[_n] || (kb_on && kb_note == _n);
     _bx = _wx - _ww * 0.3; _hv = hover_id == 500 + _i;
-    _on ? acc(1) : CHOPS && keymapped(_n) ? gfx_set(0.55, 0.30, 0.45, 1) : gfx_set(_hv ? 0.24 : 0.12, _hv ? 0.25 : 0.13, _hv ? 0.30 : 0.16, 1);
+    _on ? acc(1) : _kmode && keymapped(_n) ? gfx_set(0.55, 0.30, 0.45, 1) : gfx_set(_hv ? 0.24 : 0.12, _hv ? 0.25 : 0.13, _hv ? 0.30 : 0.16, 1);
     gfx_rect(_bx, kby, _ww * 0.6, KBH * 0.6, 1);
+    (ZONES && is_zroot(_n)) ? ( setcol(5); acc(1); gfx_circle(_bx + _ww * 0.3, kby + KBH * 0.6 - 8 * SC, 2.5 * SC, 1, 1); setcol(0); );
     hit_add(_bx, kby, _ww * 0.6, KBH * 0.6, 500 + _i);
   ) : _wx += _ww;
   _i += 1;
 );
 kb_vel = clamp(floor(40 + 87 * (my - kby) / KBH), 1, 127);
 
+// lecturas de la zona seleccionada (aqui y no en @block: @block no corre con el transporte detenido)
+slider_ZSEL = ZN > 0 ? ZSEL + 1 : 0; _z = ZT + ZSEL * ZF;
+slider_ZROOT = ZN > 0 ? _z[2] : 0; slider_ZLO = ZN > 0 ? _z[3] : 0; slider_ZHI = ZN > 0 ? _z[4] : 0;
 // ---- pie
 hint_for(hover_id);
 gfx_set(0.06, 0.065, 0.085, 1); gfx_rect(0, WH - FOOTH, WW, FOOTH, 1);
