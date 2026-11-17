@@ -28,4 +28,16 @@ t = t_(4.8); x = 0.2 * np.sin(2 * np.pi * 300 * t)
 for b in range(8):
     k = (t >= b * 0.6) & (t < b * 0.6 + 0.004); x[k] += 0.7 * np.hanning(k.sum()) * rng.uniform(-1, 1, k.sum())
 w("loop100", x)
-print("ok", len(list(D.glob("*.wav"))), "señales")
+# zonas: una carpeta con la nota en número (z_048, z_060, z_072 a 44.1 kHz) y otra con nombres de nota (C3, F#3, Bb3).
+# Cada zona con su nivel (-6, -12, -18 dB) para saber cuál sonó.
+for sub in ("zonas", "notas", "rampz"): (D / sub).mkdir(exist_ok=True)
+def mtof(n): return 440 * 2 ** ((n - 69) / 12)
+for n, a, sr in ((48, 0.5, SR), (60, 0.25, SR), (72, 0.125, 44100)):
+    w(f"zonas/z_{n:03d}", a * np.sin(2 * np.pi * mtof(n) * t_(2.0, sr)), sr)
+w("zonas/otro", 0.5 * np.sin(2 * np.pi * 100 * t_(1.0)))                 # sin nota en el nombre: no entra
+for nm, n, a in (("C3", 48, 0.5), ("F#3", 54, 0.25), ("Bb3", 58, 0.125)):
+    w(f"notas/n {nm}", a * np.sin(2 * np.pi * mtof(n) * t_(2.0)))
+w("rampz/r_060", np.arange(48000) / 48000 * 0.9); w("rampz/r_072", np.arange(48000) / 48000 * 0.45)
+# ruido de 16 bits: se guarda en el proyecto empaquetado (3 muestras en 2 números) y tiene que volver exacto
+sf.write(D / "pcm16.wav", np.round(rng.uniform(-0.5, 0.5, (48000, 2)) * 32768) / 32768, SR, subtype="PCM_16")
+print("ok", len(list(D.rglob("*.wav"))), "señales")

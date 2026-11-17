@@ -6,9 +6,9 @@ python3 tools/build.py >/dev/null || exit 1
 python3 tools/check_order.py || exit 1
 python3 tools/check_names.py || exit 1
 source tests/fxname.sh
-[ -f tests/samples/loop100.wav ] || $PY tests/make_signals.py || exit 1
+[ -f tests/samples/pcm16.wav ] || $PY tests/make_signals.py || exit 1
 LIB="$HOME/Library/Application Support/REAPER/Data/Nube Sampler/zz_pruebas"
-mkdir -p "$LIB" && cp tests/samples/*.wav "$LIB/"
+mkdir -p "$LIB" && cp -R tests/samples/. "$LIB/"
 mkdir -p tests/out; echo "$*" > tests/out/only.txt
 rm -f tests/out/log.txt
 /Applications/REAPER.app/Contents/MacOS/REAPER -nonewinst "$PWD/tests/render_cases.lua" >/dev/null 2>&1 &
