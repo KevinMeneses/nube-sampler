@@ -1,0 +1,1862 @@
+desc:Nube Sampler - sampler (clasico, chops, one-shot, loops a tempo, estirar tono y tiempo, filtro, envolventes, LFO, lo-fi)
+//tags: sampler instrument slicer chops one-shot loop timestretch 808 lofi mpc
+//author: Kev Meneses + Claude (Claude Code)
+//license: GPL-3.0-or-later
+//version: 1.0.0
+
+slider1:/Nube Sampler:Nube/Keys - Rhodes C4.wav:Sample
+slider2:0<0,1,1{Clasico,Chops}>-Modo
+slider3:0<0,1,1{Mantener,One-shot}>-Disparo
+slider4:0<0,1,1{Remuestreo,Estirar}>-Reproduccion
+slider5:0<0,100,0.001>-Inicio (%)
+slider6:100<0,100,0.001>-Fin (%)
+slider7:0<0,1,1{No,Si}>-Reverso
+slider8:0<0,2,1{Apagado,Adelante,Ping-pong}>-Loop
+slider9:0<0,100,0.001>-Loop inicio (%)
+slider10:100<0,100,0.001>-Loop fin (%)
+slider11:10<0,500,0.1>-Crossfade del loop (ms)
+slider12:0<0,2000,0.1>-Fade in (ms)
+slider13:0<0,5000,0.1>-Fade out (ms)
+slider14:60<0,127,1>-Nota raiz
+slider15:1<0,1,1{No,Si}>-Seguir teclado
+slider16:0<-24,24,1>-Tono (st)
+slider17:0<-100,100,0.1>-Fino (cents)
+slider18:100<10,400,0.1:log=100>-Velocidad (%)
+slider19:0<0,7,1{Apagado,1 tiempo,2 tiempos,1 compas,2 compases,4 compases,8 compases,16 compases}>-A tempo
+slider20:50<10,200,0.1:log=50>-Grano (ms)
+slider21:0<0,1,1{Normal,Alta}>-Calidad
+slider22:0<0,2,1{Transitorios,Partes iguales,A mano}>-Chops deteccion
+slider23:50<0,100,0.1>-Sensibilidad (%)
+slider24:8<2,32,1>-Partes
+slider25:36<0,127,1>-Nota del primer chop
+slider26:0<0,1,1{Su final,El final del sample}>-Chop suena hasta
+slider27:0<0,1,1{Varios,Uno (choke)}>-Chops a la vez
+slider28:0<0,2,1{Poly,Mono,Legato}>-Modo de voces
+slider29:16<1,16,1>-Voces
+slider30:0<0,2000,1>-Glide (ms)
+slider31:2<0,24,1>-Pitch bend (st)
+slider32:40<0,100,0.1>-Rueda a vibrato (cents)
+slider33:0<0,10000,0.1>-Amp ataque (ms)
+slider34:600<1,20000,1:log=600>-Amp decaimiento (ms)
+slider35:100<0,100,0.1>-Amp sostenido (%)
+slider36:40<1,20000,1:log=600>-Amp relajacion (ms)
+slider37:50<0,100,0.1>-Velocidad a volumen (%)
+slider38:4<0,4,1{Pasa-bajos 24,Pasa-bajos 12,Pasa-banda,Pasa-altos 12,Apagado}>-Filtro
+slider39:8000<20,20000,1:log=1000>-Corte (Hz)
+slider40:0<0,100,0.1>-Resonancia (%)
+slider41:0<0,24,0.1>-Drive del filtro (dB)
+slider42:0<-100,100,0.1>-Env 2 a corte (%)
+slider43:0<0,10000,0.1>-Env 2 ataque (ms)
+slider44:400<1,20000,1:log=600>-Env 2 decaimiento (ms)
+slider45:0<0,100,0.1>-Env 2 sostenido (%)
+slider46:300<1,20000,1:log=600>-Env 2 relajacion (ms)
+slider47:0<-48,48,0.1>-Env 2 a tono (st)
+slider48:0<0,100,0.1>-Seguimiento de teclado (%)
+slider49:0<0,100,0.1>-Velocidad a corte (%)
+slider50:0<0,4,1{Seno,Triangulo,Sierra,Cuadrada,Aleatorio}>-LFO forma
+slider51:4<0.05,20,0.01:log=2>-LFO velocidad (Hz)
+slider52:0<0,16,1{Apagado,1/32,1/16T,1/16,1/8T,1/16.,1/8,1/4T,1/8.,1/4,1/2T,1/4.,1/2,1/2.,1/1,2/1,4/1}>-LFO a tempo
+slider53:0<0,3,1{Tono,Corte,Volumen,Paneo}>-LFO destino
+slider54:0<-100,100,0.1>-LFO cantidad (%)
+slider55:0<0,1,1{Libre,Con cada nota}>-LFO reinicio
+slider56:24<4,24,1>-Lo-fi bits
+slider57:48000<1000,48000,1:log=12000>-Lo-fi muestreo (Hz)
+slider58:0<-100,100,0.1>-Paneo (%)
+slider59:100<0,200,0.1>-Ancho estereo (%)
+slider60:0<-24,12,0.1>-Volumen (dB)
+slider61:0<0,1,1{No,Si}>-Normalizar
+slider62:0<0,1,1{No,Si}>-Guardar audio en el proyecto
+slider63:0<-24,24,1>-Chop 1 tono (st)
+slider64:0<-24,12,0.1>-Chop 1 ganancia (dB)
+slider65:0<0,1,1{No,Si}>-Chop 1 reverso
+slider66:0<-24,24,1>-Chop 2 tono (st)
+slider67:0<-24,12,0.1>-Chop 2 ganancia (dB)
+slider68:0<0,1,1{No,Si}>-Chop 2 reverso
+slider69:0<-24,24,1>-Chop 3 tono (st)
+slider70:0<-24,12,0.1>-Chop 3 ganancia (dB)
+slider71:0<0,1,1{No,Si}>-Chop 3 reverso
+slider72:0<-24,24,1>-Chop 4 tono (st)
+slider73:0<-24,12,0.1>-Chop 4 ganancia (dB)
+slider74:0<0,1,1{No,Si}>-Chop 4 reverso
+slider75:0<-24,24,1>-Chop 5 tono (st)
+slider76:0<-24,12,0.1>-Chop 5 ganancia (dB)
+slider77:0<0,1,1{No,Si}>-Chop 5 reverso
+slider78:0<-24,24,1>-Chop 6 tono (st)
+slider79:0<-24,12,0.1>-Chop 6 ganancia (dB)
+slider80:0<0,1,1{No,Si}>-Chop 6 reverso
+slider81:0<-24,24,1>-Chop 7 tono (st)
+slider82:0<-24,12,0.1>-Chop 7 ganancia (dB)
+slider83:0<0,1,1{No,Si}>-Chop 7 reverso
+slider84:0<-24,24,1>-Chop 8 tono (st)
+slider85:0<-24,12,0.1>-Chop 8 ganancia (dB)
+slider86:0<0,1,1{No,Si}>-Chop 8 reverso
+slider87:0<-24,24,1>-Chop 9 tono (st)
+slider88:0<-24,12,0.1>-Chop 9 ganancia (dB)
+slider89:0<0,1,1{No,Si}>-Chop 9 reverso
+slider90:0<-24,24,1>-Chop 10 tono (st)
+slider91:0<-24,12,0.1>-Chop 10 ganancia (dB)
+slider92:0<0,1,1{No,Si}>-Chop 10 reverso
+slider93:0<-24,24,1>-Chop 11 tono (st)
+slider94:0<-24,12,0.1>-Chop 11 ganancia (dB)
+slider95:0<0,1,1{No,Si}>-Chop 11 reverso
+slider96:0<-24,24,1>-Chop 12 tono (st)
+slider97:0<-24,12,0.1>-Chop 12 ganancia (dB)
+slider98:0<0,1,1{No,Si}>-Chop 12 reverso
+slider99:0<-24,24,1>-Chop 13 tono (st)
+slider100:0<-24,12,0.1>-Chop 13 ganancia (dB)
+slider101:0<0,1,1{No,Si}>-Chop 13 reverso
+slider102:0<-24,24,1>-Chop 14 tono (st)
+slider103:0<-24,12,0.1>-Chop 14 ganancia (dB)
+slider104:0<0,1,1{No,Si}>-Chop 14 reverso
+slider105:0<-24,24,1>-Chop 15 tono (st)
+slider106:0<-24,12,0.1>-Chop 15 ganancia (dB)
+slider107:0<0,1,1{No,Si}>-Chop 15 reverso
+slider108:0<-24,24,1>-Chop 16 tono (st)
+slider109:0<-24,12,0.1>-Chop 16 ganancia (dB)
+slider110:0<0,1,1{No,Si}>-Chop 16 reverso
+slider111:0<-24,24,1>-Chop 17 tono (st)
+slider112:0<-24,12,0.1>-Chop 17 ganancia (dB)
+slider113:0<0,1,1{No,Si}>-Chop 17 reverso
+slider114:0<-24,24,1>-Chop 18 tono (st)
+slider115:0<-24,12,0.1>-Chop 18 ganancia (dB)
+slider116:0<0,1,1{No,Si}>-Chop 18 reverso
+slider117:0<-24,24,1>-Chop 19 tono (st)
+slider118:0<-24,12,0.1>-Chop 19 ganancia (dB)
+slider119:0<0,1,1{No,Si}>-Chop 19 reverso
+slider120:0<-24,24,1>-Chop 20 tono (st)
+slider121:0<-24,12,0.1>-Chop 20 ganancia (dB)
+slider122:0<0,1,1{No,Si}>-Chop 20 reverso
+slider123:0<-24,24,1>-Chop 21 tono (st)
+slider124:0<-24,12,0.1>-Chop 21 ganancia (dB)
+slider125:0<0,1,1{No,Si}>-Chop 21 reverso
+slider126:0<-24,24,1>-Chop 22 tono (st)
+slider127:0<-24,12,0.1>-Chop 22 ganancia (dB)
+slider128:0<0,1,1{No,Si}>-Chop 22 reverso
+slider129:0<-24,24,1>-Chop 23 tono (st)
+slider130:0<-24,12,0.1>-Chop 23 ganancia (dB)
+slider131:0<0,1,1{No,Si}>-Chop 23 reverso
+slider132:0<-24,24,1>-Chop 24 tono (st)
+slider133:0<-24,12,0.1>-Chop 24 ganancia (dB)
+slider134:0<0,1,1{No,Si}>-Chop 24 reverso
+slider135:0<-24,24,1>-Chop 25 tono (st)
+slider136:0<-24,12,0.1>-Chop 25 ganancia (dB)
+slider137:0<0,1,1{No,Si}>-Chop 25 reverso
+slider138:0<-24,24,1>-Chop 26 tono (st)
+slider139:0<-24,12,0.1>-Chop 26 ganancia (dB)
+slider140:0<0,1,1{No,Si}>-Chop 26 reverso
+slider141:0<-24,24,1>-Chop 27 tono (st)
+slider142:0<-24,12,0.1>-Chop 27 ganancia (dB)
+slider143:0<0,1,1{No,Si}>-Chop 27 reverso
+slider144:0<-24,24,1>-Chop 28 tono (st)
+slider145:0<-24,12,0.1>-Chop 28 ganancia (dB)
+slider146:0<0,1,1{No,Si}>-Chop 28 reverso
+slider147:0<-24,24,1>-Chop 29 tono (st)
+slider148:0<-24,12,0.1>-Chop 29 ganancia (dB)
+slider149:0<0,1,1{No,Si}>-Chop 29 reverso
+slider150:0<-24,24,1>-Chop 30 tono (st)
+slider151:0<-24,12,0.1>-Chop 30 ganancia (dB)
+slider152:0<0,1,1{No,Si}>-Chop 30 reverso
+slider153:0<-24,24,1>-Chop 31 tono (st)
+slider154:0<-24,12,0.1>-Chop 31 ganancia (dB)
+slider155:0<0,1,1{No,Si}>-Chop 31 reverso
+slider156:0<-24,24,1>-Chop 32 tono (st)
+slider157:0<-24,12,0.1>-Chop 32 ganancia (dB)
+slider158:0<0,1,1{No,Si}>-Chop 32 reverso
+slider159:0<0,16,1{-,Clasico - Instrumento,Clasico - 808 con glide,Clasico - Pad (loop ping-pong),Clasico - Textura estirada,One-shot - Bateria,One-shot - Cromatico,Chops - Transitorios (MPC),Chops - 16 partes iguales,Chops - Vocal (mantener),Chops - A tempo (estirar),Loop - A tempo (estirar),Loop - Vinilo a tempo,Lo-fi - SP 12 bits,Lo-fi - Cassette,Reverso - Swell,Por defecto}>-Cargar preset
+slider160:0<0,64,1>-Notas sonando (lectura)
+slider161:0<0,2e+07,1>-Largo del sample (lectura, frames)
+slider162:0<0,32,1>-Chops (lectura)
+slider163:0<-1,128,0.01>-Nota detectada (lectura)
+
+in_pin:none
+out_pin:Salida L
+out_pin:Salida R
+
+options:gfx_hz=60 no_meter maxmem=33554432
+
+@init
+ext_noinit = 1;
+gfx_ext_retina = 1;
+NPARAMS = 158; PRESET_SLIDER = 159; NPRESETS = 16; CHOP0 = 63; MAXCH = 32; RD0 = 160;
+
+// ---------------------------------------------------------------- memoria
+MAXV = 24; VS = 64; V0 = 0;            // voces fisicas (las de mas sirven para los fundidos de 3 ms al cortar)
+CR = 8;                                 // tasa de control (muestras)
+PMIN = 3000; PMAX = 3200; PDEF = 3400; PSTEP = 3600; PUNIT = 3800; PCUR = 4000;
+STK = 4300; STV = 4400; HELD = 4500;                 // pila de notas (mono) y teclas apretadas
+Q = 4700; QMAX = 512;                                // cola MIDI del bloque (4 por evento)
+KQT = 6800; KQN = 6900; KQV = 7000; KQP = 7100;      // eventos de la interfaz (tipo, nota, velocidad, posicion)
+hitmem = 7300;                                       // 200 zonas x 5
+CHP = 8400; MANP = 8500; CTN = 8600; CGN = 8650; CRV = 8700; CHPLAY = 8750;
+SW = 8800; WSX = 8850;
+PKN = 4096; PKL = 9000; PKH = PKL + PKN;            // forma de onda resumida (min / max)
+SKW = 12; SKR = 2048; SKT = 17500; SKN = 2 * SKW * SKR;   // kernel sinc (Kaiser), media anchura 12, 2048 fases por muestra
+WSM = 66700;                                         // zona de busqueda del WSOLA (9000)
+ODF = 76000; MAXODF = 120000;                        // energia por bloque (deteccion de transitorios)
+TMP = 200000; TMPN = 600000;                         // lectura del archivo por partes
+SMP = 800000;                                        // el sample, estereo intercalado
+MAXF = floor((33554432 - SMP - 64) / 2);
+EMBMAX = 2000000;                                    // frames maximos para guardar el audio en el proyecto
+
+// ---------------------------------------------------------------- utilidades
+function clamp(x, a, b) ( x < a ? a : x > b ? b : x );
+function nlog(v, a, b) ( log(v / a) / log(b / a) );
+function dlog(n, a, b) ( a * (b / a) ^ n );
+function sat(x) ( x = clamp(x, -3, 3); x * (27 + x * x) / (27 + 9 * x * x); );
+
+function sset(i, v)
+(
+  i <= 80 ? i <= 41 ? i <= 21 ? i <= 11 ? i <= 6 ? i <= 4 ? i <= 3 ? i <= 2 ? ( slider2 = v; slider_automate(slider2); ) : ( slider3 = v; slider_automate(slider3); ) : ( slider4 = v; slider_automate(slider4); ) : i <= 5 ? ( slider5 = v; slider_automate(slider5); ) : ( slider6 = v; slider_automate(slider6); ) : i <= 9 ? i <= 8 ? i <= 7 ? ( slider7 = v; slider_automate(slider7); ) : ( slider8 = v; slider_automate(slider8); ) : ( slider9 = v; slider_automate(slider9); ) : i <= 10 ? ( slider10 = v; slider_automate(slider10); ) : ( slider11 = v; slider_automate(slider11); ) : i <= 16 ? i <= 14 ? i <= 13 ? i <= 12 ? ( slider12 = v; slider_automate(slider12); ) : ( slider13 = v; slider_automate(slider13); ) : ( slider14 = v; slider_automate(slider14); ) : i <= 15 ? ( slider15 = v; slider_automate(slider15); ) : ( slider16 = v; slider_automate(slider16); ) : i <= 19 ? i <= 18 ? i <= 17 ? ( slider17 = v; slider_automate(slider17); ) : ( slider18 = v; slider_automate(slider18); ) : ( slider19 = v; slider_automate(slider19); ) : i <= 20 ? ( slider20 = v; slider_automate(slider20); ) : ( slider21 = v; slider_automate(slider21); ) : i <= 31 ? i <= 26 ? i <= 24 ? i <= 23 ? i <= 22 ? ( slider22 = v; slider_automate(slider22); ) : ( slider23 = v; slider_automate(slider23); ) : ( slider24 = v; slider_automate(slider24); ) : i <= 25 ? ( slider25 = v; slider_automate(slider25); ) : ( slider26 = v; slider_automate(slider26); ) : i <= 29 ? i <= 28 ? i <= 27 ? ( slider27 = v; slider_automate(slider27); ) : ( slider28 = v; slider_automate(slider28); ) : ( slider29 = v; slider_automate(slider29); ) : i <= 30 ? ( slider30 = v; slider_automate(slider30); ) : ( slider31 = v; slider_automate(slider31); ) : i <= 36 ? i <= 34 ? i <= 33 ? i <= 32 ? ( slider32 = v; slider_automate(slider32); ) : ( slider33 = v; slider_automate(slider33); ) : ( slider34 = v; slider_automate(slider34); ) : i <= 35 ? ( slider35 = v; slider_automate(slider35); ) : ( slider36 = v; slider_automate(slider36); ) : i <= 39 ? i <= 38 ? i <= 37 ? ( slider37 = v; slider_automate(slider37); ) : ( slider38 = v; slider_automate(slider38); ) : ( slider39 = v; slider_automate(slider39); ) : i <= 40 ? ( slider40 = v; slider_automate(slider40); ) : ( slider41 = v; slider_automate(slider41); ) : i <= 61 ? i <= 51 ? i <= 46 ? i <= 44 ? i <= 43 ? i <= 42 ? ( slider42 = v; slider_automate(slider42); ) : ( slider43 = v; slider_automate(slider43); ) : ( slider44 = v; slider_automate(slider44); ) : i <= 45 ? ( slider45 = v; slider_automate(slider45); ) : ( slider46 = v; slider_automate(slider46); ) : i <= 49 ? i <= 48 ? i <= 47 ? ( slider47 = v; slider_automate(slider47); ) : ( slider48 = v; slider_automate(slider48); ) : ( slider49 = v; slider_automate(slider49); ) : i <= 50 ? ( slider50 = v; slider_automate(slider50); ) : ( slider51 = v; slider_automate(slider51); ) : i <= 56 ? i <= 54 ? i <= 53 ? i <= 52 ? ( slider52 = v; slider_automate(slider52); ) : ( slider53 = v; slider_automate(slider53); ) : ( slider54 = v; slider_automate(slider54); ) : i <= 55 ? ( slider55 = v; slider_automate(slider55); ) : ( slider56 = v; slider_automate(slider56); ) : i <= 59 ? i <= 58 ? i <= 57 ? ( slider57 = v; slider_automate(slider57); ) : ( slider58 = v; slider_automate(slider58); ) : ( slider59 = v; slider_automate(slider59); ) : i <= 60 ? ( slider60 = v; slider_automate(slider60); ) : ( slider61 = v; slider_automate(slider61); ) : i <= 71 ? i <= 66 ? i <= 64 ? i <= 63 ? i <= 62 ? ( slider62 = v; slider_automate(slider62); ) : ( slider63 = v; slider_automate(slider63); ) : ( slider64 = v; slider_automate(slider64); ) : i <= 65 ? ( slider65 = v; slider_automate(slider65); ) : ( slider66 = v; slider_automate(slider66); ) : i <= 69 ? i <= 68 ? i <= 67 ? ( slider67 = v; slider_automate(slider67); ) : ( slider68 = v; slider_automate(slider68); ) : ( slider69 = v; slider_automate(slider69); ) : i <= 70 ? ( slider70 = v; slider_automate(slider70); ) : ( slider71 = v; slider_automate(slider71); ) : i <= 76 ? i <= 74 ? i <= 73 ? i <= 72 ? ( slider72 = v; slider_automate(slider72); ) : ( slider73 = v; slider_automate(slider73); ) : ( slider74 = v; slider_automate(slider74); ) : i <= 75 ? ( slider75 = v; slider_automate(slider75); ) : ( slider76 = v; slider_automate(slider76); ) : i <= 78 ? i <= 77 ? ( slider77 = v; slider_automate(slider77); ) : ( slider78 = v; slider_automate(slider78); ) : i <= 79 ? ( slider79 = v; slider_automate(slider79); ) : ( slider80 = v; slider_automate(slider80); ) : i <= 120 ? i <= 100 ? i <= 90 ? i <= 85 ? i <= 83 ? i <= 82 ? i <= 81 ? ( slider81 = v; slider_automate(slider81); ) : ( slider82 = v; slider_automate(slider82); ) : ( slider83 = v; slider_automate(slider83); ) : i <= 84 ? ( slider84 = v; slider_automate(slider84); ) : ( slider85 = v; slider_automate(slider85); ) : i <= 88 ? i <= 87 ? i <= 86 ? ( slider86 = v; slider_automate(slider86); ) : ( slider87 = v; slider_automate(slider87); ) : ( slider88 = v; slider_automate(slider88); ) : i <= 89 ? ( slider89 = v; slider_automate(slider89); ) : ( slider90 = v; slider_automate(slider90); ) : i <= 95 ? i <= 93 ? i <= 92 ? i <= 91 ? ( slider91 = v; slider_automate(slider91); ) : ( slider92 = v; slider_automate(slider92); ) : ( slider93 = v; slider_automate(slider93); ) : i <= 94 ? ( slider94 = v; slider_automate(slider94); ) : ( slider95 = v; slider_automate(slider95); ) : i <= 98 ? i <= 97 ? i <= 96 ? ( slider96 = v; slider_automate(slider96); ) : ( slider97 = v; slider_automate(slider97); ) : ( slider98 = v; slider_automate(slider98); ) : i <= 99 ? ( slider99 = v; slider_automate(slider99); ) : ( slider100 = v; slider_automate(slider100); ) : i <= 110 ? i <= 105 ? i <= 103 ? i <= 102 ? i <= 101 ? ( slider101 = v; slider_automate(slider101); ) : ( slider102 = v; slider_automate(slider102); ) : ( slider103 = v; slider_automate(slider103); ) : i <= 104 ? ( slider104 = v; slider_automate(slider104); ) : ( slider105 = v; slider_automate(slider105); ) : i <= 108 ? i <= 107 ? i <= 106 ? ( slider106 = v; slider_automate(slider106); ) : ( slider107 = v; slider_automate(slider107); ) : ( slider108 = v; slider_automate(slider108); ) : i <= 109 ? ( slider109 = v; slider_automate(slider109); ) : ( slider110 = v; slider_automate(slider110); ) : i <= 115 ? i <= 113 ? i <= 112 ? i <= 111 ? ( slider111 = v; slider_automate(slider111); ) : ( slider112 = v; slider_automate(slider112); ) : ( slider113 = v; slider_automate(slider113); ) : i <= 114 ? ( slider114 = v; slider_automate(slider114); ) : ( slider115 = v; slider_automate(slider115); ) : i <= 118 ? i <= 117 ? i <= 116 ? ( slider116 = v; slider_automate(slider116); ) : ( slider117 = v; slider_automate(slider117); ) : ( slider118 = v; slider_automate(slider118); ) : i <= 119 ? ( slider119 = v; slider_automate(slider119); ) : ( slider120 = v; slider_automate(slider120); ) : i <= 140 ? i <= 130 ? i <= 125 ? i <= 123 ? i <= 122 ? i <= 121 ? ( slider121 = v; slider_automate(slider121); ) : ( slider122 = v; slider_automate(slider122); ) : ( slider123 = v; slider_automate(slider123); ) : i <= 124 ? ( slider124 = v; slider_automate(slider124); ) : ( slider125 = v; slider_automate(slider125); ) : i <= 128 ? i <= 127 ? i <= 126 ? ( slider126 = v; slider_automate(slider126); ) : ( slider127 = v; slider_automate(slider127); ) : ( slider128 = v; slider_automate(slider128); ) : i <= 129 ? ( slider129 = v; slider_automate(slider129); ) : ( slider130 = v; slider_automate(slider130); ) : i <= 135 ? i <= 133 ? i <= 132 ? i <= 131 ? ( slider131 = v; slider_automate(slider131); ) : ( slider132 = v; slider_automate(slider132); ) : ( slider133 = v; slider_automate(slider133); ) : i <= 134 ? ( slider134 = v; slider_automate(slider134); ) : ( slider135 = v; slider_automate(slider135); ) : i <= 138 ? i <= 137 ? i <= 136 ? ( slider136 = v; slider_automate(slider136); ) : ( slider137 = v; slider_automate(slider137); ) : ( slider138 = v; slider_automate(slider138); ) : i <= 139 ? ( slider139 = v; slider_automate(slider139); ) : ( slider140 = v; slider_automate(slider140); ) : i <= 150 ? i <= 145 ? i <= 143 ? i <= 142 ? i <= 141 ? ( slider141 = v; slider_automate(slider141); ) : ( slider142 = v; slider_automate(slider142); ) : ( slider143 = v; slider_automate(slider143); ) : i <= 144 ? ( slider144 = v; slider_automate(slider144); ) : ( slider145 = v; slider_automate(slider145); ) : i <= 148 ? i <= 147 ? i <= 146 ? ( slider146 = v; slider_automate(slider146); ) : ( slider147 = v; slider_automate(slider147); ) : ( slider148 = v; slider_automate(slider148); ) : i <= 149 ? ( slider149 = v; slider_automate(slider149); ) : ( slider150 = v; slider_automate(slider150); ) : i <= 155 ? i <= 153 ? i <= 152 ? i <= 151 ? ( slider151 = v; slider_automate(slider151); ) : ( slider152 = v; slider_automate(slider152); ) : ( slider153 = v; slider_automate(slider153); ) : i <= 154 ? ( slider154 = v; slider_automate(slider154); ) : ( slider155 = v; slider_automate(slider155); ) : i <= 157 ? i <= 156 ? ( slider156 = v; slider_automate(slider156); ) : ( slider157 = v; slider_automate(slider157); ) : i <= 158 ? ( slider158 = v; slider_automate(slider158); ) : ( slider159 = v; slider_automate(slider159); );
+);
+
+function ptable_init()
+(
+  PMIN[2] = 0; PMAX[2] = 1; PDEF[2] = 0; PSTEP[2] = 1; PUNIT[2] = 8; PCUR[2] = 0;
+  PMIN[3] = 0; PMAX[3] = 1; PDEF[3] = 0; PSTEP[3] = 1; PUNIT[3] = 8; PCUR[3] = 0;
+  PMIN[4] = 0; PMAX[4] = 1; PDEF[4] = 0; PSTEP[4] = 1; PUNIT[4] = 8; PCUR[4] = 0;
+  PMIN[5] = 0; PMAX[5] = 100; PDEF[5] = 0; PSTEP[5] = 0.001; PUNIT[5] = 1; PCUR[5] = 0;
+  PMIN[6] = 0; PMAX[6] = 100; PDEF[6] = 100; PSTEP[6] = 0.001; PUNIT[6] = 1; PCUR[6] = 0;
+  PMIN[7] = 0; PMAX[7] = 1; PDEF[7] = 0; PSTEP[7] = 1; PUNIT[7] = 8; PCUR[7] = 0;
+  PMIN[8] = 0; PMAX[8] = 2; PDEF[8] = 0; PSTEP[8] = 1; PUNIT[8] = 8; PCUR[8] = 0;
+  PMIN[9] = 0; PMAX[9] = 100; PDEF[9] = 0; PSTEP[9] = 0.001; PUNIT[9] = 1; PCUR[9] = 0;
+  PMIN[10] = 0; PMAX[10] = 100; PDEF[10] = 100; PSTEP[10] = 0.001; PUNIT[10] = 1; PCUR[10] = 0;
+  PMIN[11] = 0; PMAX[11] = 500; PDEF[11] = 10; PSTEP[11] = 0.1; PUNIT[11] = 3; PCUR[11] = 2;
+  PMIN[12] = 0; PMAX[12] = 2000; PDEF[12] = 0; PSTEP[12] = 0.1; PUNIT[12] = 3; PCUR[12] = 3;
+  PMIN[13] = 0; PMAX[13] = 5000; PDEF[13] = 0; PSTEP[13] = 0.1; PUNIT[13] = 3; PCUR[13] = 3;
+  PMIN[14] = 0; PMAX[14] = 127; PDEF[14] = 60; PSTEP[14] = 1; PUNIT[14] = 9; PCUR[14] = 0;
+  PMIN[15] = 0; PMAX[15] = 1; PDEF[15] = 1; PSTEP[15] = 1; PUNIT[15] = 8; PCUR[15] = 0;
+  PMIN[16] = -24; PMAX[16] = 24; PDEF[16] = 0; PSTEP[16] = 1; PUNIT[16] = 4; PCUR[16] = 0;
+  PMIN[17] = -100; PMAX[17] = 100; PDEF[17] = 0; PSTEP[17] = 0.1; PUNIT[17] = 5; PCUR[17] = 0;
+  PMIN[18] = 10; PMAX[18] = 400; PDEF[18] = 100; PSTEP[18] = 0.1; PUNIT[18] = 1; PCUR[18] = 1;
+  PMIN[19] = 0; PMAX[19] = 7; PDEF[19] = 0; PSTEP[19] = 1; PUNIT[19] = 8; PCUR[19] = 0;
+  PMIN[20] = 10; PMAX[20] = 200; PDEF[20] = 50; PSTEP[20] = 0.1; PUNIT[20] = 3; PCUR[20] = 1;
+  PMIN[21] = 0; PMAX[21] = 1; PDEF[21] = 0; PSTEP[21] = 1; PUNIT[21] = 8; PCUR[21] = 0;
+  PMIN[22] = 0; PMAX[22] = 2; PDEF[22] = 0; PSTEP[22] = 1; PUNIT[22] = 8; PCUR[22] = 0;
+  PMIN[23] = 0; PMAX[23] = 100; PDEF[23] = 50; PSTEP[23] = 0.1; PUNIT[23] = 1; PCUR[23] = 0;
+  PMIN[24] = 2; PMAX[24] = 32; PDEF[24] = 8; PSTEP[24] = 1; PUNIT[24] = 0; PCUR[24] = 0;
+  PMIN[25] = 0; PMAX[25] = 127; PDEF[25] = 36; PSTEP[25] = 1; PUNIT[25] = 9; PCUR[25] = 0;
+  PMIN[26] = 0; PMAX[26] = 1; PDEF[26] = 0; PSTEP[26] = 1; PUNIT[26] = 8; PCUR[26] = 0;
+  PMIN[27] = 0; PMAX[27] = 1; PDEF[27] = 0; PSTEP[27] = 1; PUNIT[27] = 8; PCUR[27] = 0;
+  PMIN[28] = 0; PMAX[28] = 2; PDEF[28] = 0; PSTEP[28] = 1; PUNIT[28] = 8; PCUR[28] = 0;
+  PMIN[29] = 1; PMAX[29] = 16; PDEF[29] = 16; PSTEP[29] = 1; PUNIT[29] = 0; PCUR[29] = 0;
+  PMIN[30] = 0; PMAX[30] = 2000; PDEF[30] = 0; PSTEP[30] = 1; PUNIT[30] = 3; PCUR[30] = 2;
+  PMIN[31] = 0; PMAX[31] = 24; PDEF[31] = 2; PSTEP[31] = 1; PUNIT[31] = 4; PCUR[31] = 0;
+  PMIN[32] = 0; PMAX[32] = 100; PDEF[32] = 40; PSTEP[32] = 0.1; PUNIT[32] = 5; PCUR[32] = 0;
+  PMIN[33] = 0; PMAX[33] = 10000; PDEF[33] = 0; PSTEP[33] = 0.1; PUNIT[33] = 3; PCUR[33] = 3;
+  PMIN[34] = 1; PMAX[34] = 20000; PDEF[34] = 600; PSTEP[34] = 1; PUNIT[34] = 3; PCUR[34] = 1;
+  PMIN[35] = 0; PMAX[35] = 100; PDEF[35] = 100; PSTEP[35] = 0.1; PUNIT[35] = 1; PCUR[35] = 0;
+  PMIN[36] = 1; PMAX[36] = 20000; PDEF[36] = 40; PSTEP[36] = 1; PUNIT[36] = 3; PCUR[36] = 1;
+  PMIN[37] = 0; PMAX[37] = 100; PDEF[37] = 50; PSTEP[37] = 0.1; PUNIT[37] = 1; PCUR[37] = 0;
+  PMIN[38] = 0; PMAX[38] = 4; PDEF[38] = 4; PSTEP[38] = 1; PUNIT[38] = 8; PCUR[38] = 0;
+  PMIN[39] = 20; PMAX[39] = 20000; PDEF[39] = 8000; PSTEP[39] = 1; PUNIT[39] = 2; PCUR[39] = 1;
+  PMIN[40] = 0; PMAX[40] = 100; PDEF[40] = 0; PSTEP[40] = 0.1; PUNIT[40] = 1; PCUR[40] = 0;
+  PMIN[41] = 0; PMAX[41] = 24; PDEF[41] = 0; PSTEP[41] = 0.1; PUNIT[41] = 6; PCUR[41] = 0;
+  PMIN[42] = -100; PMAX[42] = 100; PDEF[42] = 0; PSTEP[42] = 0.1; PUNIT[42] = 1; PCUR[42] = 0;
+  PMIN[43] = 0; PMAX[43] = 10000; PDEF[43] = 0; PSTEP[43] = 0.1; PUNIT[43] = 3; PCUR[43] = 3;
+  PMIN[44] = 1; PMAX[44] = 20000; PDEF[44] = 400; PSTEP[44] = 1; PUNIT[44] = 3; PCUR[44] = 1;
+  PMIN[45] = 0; PMAX[45] = 100; PDEF[45] = 0; PSTEP[45] = 0.1; PUNIT[45] = 1; PCUR[45] = 0;
+  PMIN[46] = 1; PMAX[46] = 20000; PDEF[46] = 300; PSTEP[46] = 1; PUNIT[46] = 3; PCUR[46] = 1;
+  PMIN[47] = -48; PMAX[47] = 48; PDEF[47] = 0; PSTEP[47] = 0.1; PUNIT[47] = 4; PCUR[47] = 0;
+  PMIN[48] = 0; PMAX[48] = 100; PDEF[48] = 0; PSTEP[48] = 0.1; PUNIT[48] = 1; PCUR[48] = 0;
+  PMIN[49] = 0; PMAX[49] = 100; PDEF[49] = 0; PSTEP[49] = 0.1; PUNIT[49] = 1; PCUR[49] = 0;
+  PMIN[50] = 0; PMAX[50] = 4; PDEF[50] = 0; PSTEP[50] = 1; PUNIT[50] = 8; PCUR[50] = 0;
+  PMIN[51] = 0.05; PMAX[51] = 20; PDEF[51] = 4; PSTEP[51] = 0.01; PUNIT[51] = 2; PCUR[51] = 1;
+  PMIN[52] = 0; PMAX[52] = 16; PDEF[52] = 0; PSTEP[52] = 1; PUNIT[52] = 8; PCUR[52] = 0;
+  PMIN[53] = 0; PMAX[53] = 3; PDEF[53] = 0; PSTEP[53] = 1; PUNIT[53] = 8; PCUR[53] = 0;
+  PMIN[54] = -100; PMAX[54] = 100; PDEF[54] = 0; PSTEP[54] = 0.1; PUNIT[54] = 1; PCUR[54] = 0;
+  PMIN[55] = 0; PMAX[55] = 1; PDEF[55] = 0; PSTEP[55] = 1; PUNIT[55] = 8; PCUR[55] = 0;
+  PMIN[56] = 4; PMAX[56] = 24; PDEF[56] = 24; PSTEP[56] = 1; PUNIT[56] = 0; PCUR[56] = 0;
+  PMIN[57] = 1000; PMAX[57] = 48000; PDEF[57] = 48000; PSTEP[57] = 1; PUNIT[57] = 2; PCUR[57] = 1;
+  PMIN[58] = -100; PMAX[58] = 100; PDEF[58] = 0; PSTEP[58] = 0.1; PUNIT[58] = 1; PCUR[58] = 0;
+  PMIN[59] = 0; PMAX[59] = 200; PDEF[59] = 100; PSTEP[59] = 0.1; PUNIT[59] = 1; PCUR[59] = 0;
+  PMIN[60] = -24; PMAX[60] = 12; PDEF[60] = 0; PSTEP[60] = 0.1; PUNIT[60] = 6; PCUR[60] = 0;
+  PMIN[61] = 0; PMAX[61] = 1; PDEF[61] = 0; PSTEP[61] = 1; PUNIT[61] = 8; PCUR[61] = 0;
+  PMIN[62] = 0; PMAX[62] = 1; PDEF[62] = 0; PSTEP[62] = 1; PUNIT[62] = 8; PCUR[62] = 0;
+  PMIN[63] = -24; PMAX[63] = 24; PDEF[63] = 0; PSTEP[63] = 1; PUNIT[63] = 4; PCUR[63] = 0;
+  PMIN[64] = -24; PMAX[64] = 12; PDEF[64] = 0; PSTEP[64] = 0.1; PUNIT[64] = 6; PCUR[64] = 0;
+  PMIN[65] = 0; PMAX[65] = 1; PDEF[65] = 0; PSTEP[65] = 1; PUNIT[65] = 8; PCUR[65] = 0;
+  PMIN[66] = -24; PMAX[66] = 24; PDEF[66] = 0; PSTEP[66] = 1; PUNIT[66] = 4; PCUR[66] = 0;
+  PMIN[67] = -24; PMAX[67] = 12; PDEF[67] = 0; PSTEP[67] = 0.1; PUNIT[67] = 6; PCUR[67] = 0;
+  PMIN[68] = 0; PMAX[68] = 1; PDEF[68] = 0; PSTEP[68] = 1; PUNIT[68] = 8; PCUR[68] = 0;
+  PMIN[69] = -24; PMAX[69] = 24; PDEF[69] = 0; PSTEP[69] = 1; PUNIT[69] = 4; PCUR[69] = 0;
+  PMIN[70] = -24; PMAX[70] = 12; PDEF[70] = 0; PSTEP[70] = 0.1; PUNIT[70] = 6; PCUR[70] = 0;
+  PMIN[71] = 0; PMAX[71] = 1; PDEF[71] = 0; PSTEP[71] = 1; PUNIT[71] = 8; PCUR[71] = 0;
+  PMIN[72] = -24; PMAX[72] = 24; PDEF[72] = 0; PSTEP[72] = 1; PUNIT[72] = 4; PCUR[72] = 0;
+  PMIN[73] = -24; PMAX[73] = 12; PDEF[73] = 0; PSTEP[73] = 0.1; PUNIT[73] = 6; PCUR[73] = 0;
+  PMIN[74] = 0; PMAX[74] = 1; PDEF[74] = 0; PSTEP[74] = 1; PUNIT[74] = 8; PCUR[74] = 0;
+  PMIN[75] = -24; PMAX[75] = 24; PDEF[75] = 0; PSTEP[75] = 1; PUNIT[75] = 4; PCUR[75] = 0;
+  PMIN[76] = -24; PMAX[76] = 12; PDEF[76] = 0; PSTEP[76] = 0.1; PUNIT[76] = 6; PCUR[76] = 0;
+  PMIN[77] = 0; PMAX[77] = 1; PDEF[77] = 0; PSTEP[77] = 1; PUNIT[77] = 8; PCUR[77] = 0;
+  PMIN[78] = -24; PMAX[78] = 24; PDEF[78] = 0; PSTEP[78] = 1; PUNIT[78] = 4; PCUR[78] = 0;
+  PMIN[79] = -24; PMAX[79] = 12; PDEF[79] = 0; PSTEP[79] = 0.1; PUNIT[79] = 6; PCUR[79] = 0;
+  PMIN[80] = 0; PMAX[80] = 1; PDEF[80] = 0; PSTEP[80] = 1; PUNIT[80] = 8; PCUR[80] = 0;
+  PMIN[81] = -24; PMAX[81] = 24; PDEF[81] = 0; PSTEP[81] = 1; PUNIT[81] = 4; PCUR[81] = 0;
+  PMIN[82] = -24; PMAX[82] = 12; PDEF[82] = 0; PSTEP[82] = 0.1; PUNIT[82] = 6; PCUR[82] = 0;
+  PMIN[83] = 0; PMAX[83] = 1; PDEF[83] = 0; PSTEP[83] = 1; PUNIT[83] = 8; PCUR[83] = 0;
+  PMIN[84] = -24; PMAX[84] = 24; PDEF[84] = 0; PSTEP[84] = 1; PUNIT[84] = 4; PCUR[84] = 0;
+  PMIN[85] = -24; PMAX[85] = 12; PDEF[85] = 0; PSTEP[85] = 0.1; PUNIT[85] = 6; PCUR[85] = 0;
+  PMIN[86] = 0; PMAX[86] = 1; PDEF[86] = 0; PSTEP[86] = 1; PUNIT[86] = 8; PCUR[86] = 0;
+  PMIN[87] = -24; PMAX[87] = 24; PDEF[87] = 0; PSTEP[87] = 1; PUNIT[87] = 4; PCUR[87] = 0;
+  PMIN[88] = -24; PMAX[88] = 12; PDEF[88] = 0; PSTEP[88] = 0.1; PUNIT[88] = 6; PCUR[88] = 0;
+  PMIN[89] = 0; PMAX[89] = 1; PDEF[89] = 0; PSTEP[89] = 1; PUNIT[89] = 8; PCUR[89] = 0;
+  PMIN[90] = -24; PMAX[90] = 24; PDEF[90] = 0; PSTEP[90] = 1; PUNIT[90] = 4; PCUR[90] = 0;
+  PMIN[91] = -24; PMAX[91] = 12; PDEF[91] = 0; PSTEP[91] = 0.1; PUNIT[91] = 6; PCUR[91] = 0;
+  PMIN[92] = 0; PMAX[92] = 1; PDEF[92] = 0; PSTEP[92] = 1; PUNIT[92] = 8; PCUR[92] = 0;
+  PMIN[93] = -24; PMAX[93] = 24; PDEF[93] = 0; PSTEP[93] = 1; PUNIT[93] = 4; PCUR[93] = 0;
+  PMIN[94] = -24; PMAX[94] = 12; PDEF[94] = 0; PSTEP[94] = 0.1; PUNIT[94] = 6; PCUR[94] = 0;
+  PMIN[95] = 0; PMAX[95] = 1; PDEF[95] = 0; PSTEP[95] = 1; PUNIT[95] = 8; PCUR[95] = 0;
+  PMIN[96] = -24; PMAX[96] = 24; PDEF[96] = 0; PSTEP[96] = 1; PUNIT[96] = 4; PCUR[96] = 0;
+  PMIN[97] = -24; PMAX[97] = 12; PDEF[97] = 0; PSTEP[97] = 0.1; PUNIT[97] = 6; PCUR[97] = 0;
+  PMIN[98] = 0; PMAX[98] = 1; PDEF[98] = 0; PSTEP[98] = 1; PUNIT[98] = 8; PCUR[98] = 0;
+  PMIN[99] = -24; PMAX[99] = 24; PDEF[99] = 0; PSTEP[99] = 1; PUNIT[99] = 4; PCUR[99] = 0;
+  PMIN[100] = -24; PMAX[100] = 12; PDEF[100] = 0; PSTEP[100] = 0.1; PUNIT[100] = 6; PCUR[100] = 0;
+  PMIN[101] = 0; PMAX[101] = 1; PDEF[101] = 0; PSTEP[101] = 1; PUNIT[101] = 8; PCUR[101] = 0;
+  PMIN[102] = -24; PMAX[102] = 24; PDEF[102] = 0; PSTEP[102] = 1; PUNIT[102] = 4; PCUR[102] = 0;
+  PMIN[103] = -24; PMAX[103] = 12; PDEF[103] = 0; PSTEP[103] = 0.1; PUNIT[103] = 6; PCUR[103] = 0;
+  PMIN[104] = 0; PMAX[104] = 1; PDEF[104] = 0; PSTEP[104] = 1; PUNIT[104] = 8; PCUR[104] = 0;
+  PMIN[105] = -24; PMAX[105] = 24; PDEF[105] = 0; PSTEP[105] = 1; PUNIT[105] = 4; PCUR[105] = 0;
+  PMIN[106] = -24; PMAX[106] = 12; PDEF[106] = 0; PSTEP[106] = 0.1; PUNIT[106] = 6; PCUR[106] = 0;
+  PMIN[107] = 0; PMAX[107] = 1; PDEF[107] = 0; PSTEP[107] = 1; PUNIT[107] = 8; PCUR[107] = 0;
+  PMIN[108] = -24; PMAX[108] = 24; PDEF[108] = 0; PSTEP[108] = 1; PUNIT[108] = 4; PCUR[108] = 0;
+  PMIN[109] = -24; PMAX[109] = 12; PDEF[109] = 0; PSTEP[109] = 0.1; PUNIT[109] = 6; PCUR[109] = 0;
+  PMIN[110] = 0; PMAX[110] = 1; PDEF[110] = 0; PSTEP[110] = 1; PUNIT[110] = 8; PCUR[110] = 0;
+  PMIN[111] = -24; PMAX[111] = 24; PDEF[111] = 0; PSTEP[111] = 1; PUNIT[111] = 4; PCUR[111] = 0;
+  PMIN[112] = -24; PMAX[112] = 12; PDEF[112] = 0; PSTEP[112] = 0.1; PUNIT[112] = 6; PCUR[112] = 0;
+  PMIN[113] = 0; PMAX[113] = 1; PDEF[113] = 0; PSTEP[113] = 1; PUNIT[113] = 8; PCUR[113] = 0;
+  PMIN[114] = -24; PMAX[114] = 24; PDEF[114] = 0; PSTEP[114] = 1; PUNIT[114] = 4; PCUR[114] = 0;
+  PMIN[115] = -24; PMAX[115] = 12; PDEF[115] = 0; PSTEP[115] = 0.1; PUNIT[115] = 6; PCUR[115] = 0;
+  PMIN[116] = 0; PMAX[116] = 1; PDEF[116] = 0; PSTEP[116] = 1; PUNIT[116] = 8; PCUR[116] = 0;
+  PMIN[117] = -24; PMAX[117] = 24; PDEF[117] = 0; PSTEP[117] = 1; PUNIT[117] = 4; PCUR[117] = 0;
+  PMIN[118] = -24; PMAX[118] = 12; PDEF[118] = 0; PSTEP[118] = 0.1; PUNIT[118] = 6; PCUR[118] = 0;
+  PMIN[119] = 0; PMAX[119] = 1; PDEF[119] = 0; PSTEP[119] = 1; PUNIT[119] = 8; PCUR[119] = 0;
+  PMIN[120] = -24; PMAX[120] = 24; PDEF[120] = 0; PSTEP[120] = 1; PUNIT[120] = 4; PCUR[120] = 0;
+  PMIN[121] = -24; PMAX[121] = 12; PDEF[121] = 0; PSTEP[121] = 0.1; PUNIT[121] = 6; PCUR[121] = 0;
+  PMIN[122] = 0; PMAX[122] = 1; PDEF[122] = 0; PSTEP[122] = 1; PUNIT[122] = 8; PCUR[122] = 0;
+  PMIN[123] = -24; PMAX[123] = 24; PDEF[123] = 0; PSTEP[123] = 1; PUNIT[123] = 4; PCUR[123] = 0;
+  PMIN[124] = -24; PMAX[124] = 12; PDEF[124] = 0; PSTEP[124] = 0.1; PUNIT[124] = 6; PCUR[124] = 0;
+  PMIN[125] = 0; PMAX[125] = 1; PDEF[125] = 0; PSTEP[125] = 1; PUNIT[125] = 8; PCUR[125] = 0;
+  PMIN[126] = -24; PMAX[126] = 24; PDEF[126] = 0; PSTEP[126] = 1; PUNIT[126] = 4; PCUR[126] = 0;
+  PMIN[127] = -24; PMAX[127] = 12; PDEF[127] = 0; PSTEP[127] = 0.1; PUNIT[127] = 6; PCUR[127] = 0;
+  PMIN[128] = 0; PMAX[128] = 1; PDEF[128] = 0; PSTEP[128] = 1; PUNIT[128] = 8; PCUR[128] = 0;
+  PMIN[129] = -24; PMAX[129] = 24; PDEF[129] = 0; PSTEP[129] = 1; PUNIT[129] = 4; PCUR[129] = 0;
+  PMIN[130] = -24; PMAX[130] = 12; PDEF[130] = 0; PSTEP[130] = 0.1; PUNIT[130] = 6; PCUR[130] = 0;
+  PMIN[131] = 0; PMAX[131] = 1; PDEF[131] = 0; PSTEP[131] = 1; PUNIT[131] = 8; PCUR[131] = 0;
+  PMIN[132] = -24; PMAX[132] = 24; PDEF[132] = 0; PSTEP[132] = 1; PUNIT[132] = 4; PCUR[132] = 0;
+  PMIN[133] = -24; PMAX[133] = 12; PDEF[133] = 0; PSTEP[133] = 0.1; PUNIT[133] = 6; PCUR[133] = 0;
+  PMIN[134] = 0; PMAX[134] = 1; PDEF[134] = 0; PSTEP[134] = 1; PUNIT[134] = 8; PCUR[134] = 0;
+  PMIN[135] = -24; PMAX[135] = 24; PDEF[135] = 0; PSTEP[135] = 1; PUNIT[135] = 4; PCUR[135] = 0;
+  PMIN[136] = -24; PMAX[136] = 12; PDEF[136] = 0; PSTEP[136] = 0.1; PUNIT[136] = 6; PCUR[136] = 0;
+  PMIN[137] = 0; PMAX[137] = 1; PDEF[137] = 0; PSTEP[137] = 1; PUNIT[137] = 8; PCUR[137] = 0;
+  PMIN[138] = -24; PMAX[138] = 24; PDEF[138] = 0; PSTEP[138] = 1; PUNIT[138] = 4; PCUR[138] = 0;
+  PMIN[139] = -24; PMAX[139] = 12; PDEF[139] = 0; PSTEP[139] = 0.1; PUNIT[139] = 6; PCUR[139] = 0;
+  PMIN[140] = 0; PMAX[140] = 1; PDEF[140] = 0; PSTEP[140] = 1; PUNIT[140] = 8; PCUR[140] = 0;
+  PMIN[141] = -24; PMAX[141] = 24; PDEF[141] = 0; PSTEP[141] = 1; PUNIT[141] = 4; PCUR[141] = 0;
+  PMIN[142] = -24; PMAX[142] = 12; PDEF[142] = 0; PSTEP[142] = 0.1; PUNIT[142] = 6; PCUR[142] = 0;
+  PMIN[143] = 0; PMAX[143] = 1; PDEF[143] = 0; PSTEP[143] = 1; PUNIT[143] = 8; PCUR[143] = 0;
+  PMIN[144] = -24; PMAX[144] = 24; PDEF[144] = 0; PSTEP[144] = 1; PUNIT[144] = 4; PCUR[144] = 0;
+  PMIN[145] = -24; PMAX[145] = 12; PDEF[145] = 0; PSTEP[145] = 0.1; PUNIT[145] = 6; PCUR[145] = 0;
+  PMIN[146] = 0; PMAX[146] = 1; PDEF[146] = 0; PSTEP[146] = 1; PUNIT[146] = 8; PCUR[146] = 0;
+  PMIN[147] = -24; PMAX[147] = 24; PDEF[147] = 0; PSTEP[147] = 1; PUNIT[147] = 4; PCUR[147] = 0;
+  PMIN[148] = -24; PMAX[148] = 12; PDEF[148] = 0; PSTEP[148] = 0.1; PUNIT[148] = 6; PCUR[148] = 0;
+  PMIN[149] = 0; PMAX[149] = 1; PDEF[149] = 0; PSTEP[149] = 1; PUNIT[149] = 8; PCUR[149] = 0;
+  PMIN[150] = -24; PMAX[150] = 24; PDEF[150] = 0; PSTEP[150] = 1; PUNIT[150] = 4; PCUR[150] = 0;
+  PMIN[151] = -24; PMAX[151] = 12; PDEF[151] = 0; PSTEP[151] = 0.1; PUNIT[151] = 6; PCUR[151] = 0;
+  PMIN[152] = 0; PMAX[152] = 1; PDEF[152] = 0; PSTEP[152] = 1; PUNIT[152] = 8; PCUR[152] = 0;
+  PMIN[153] = -24; PMAX[153] = 24; PDEF[153] = 0; PSTEP[153] = 1; PUNIT[153] = 4; PCUR[153] = 0;
+  PMIN[154] = -24; PMAX[154] = 12; PDEF[154] = 0; PSTEP[154] = 0.1; PUNIT[154] = 6; PCUR[154] = 0;
+  PMIN[155] = 0; PMAX[155] = 1; PDEF[155] = 0; PSTEP[155] = 1; PUNIT[155] = 8; PCUR[155] = 0;
+  PMIN[156] = -24; PMAX[156] = 24; PDEF[156] = 0; PSTEP[156] = 1; PUNIT[156] = 4; PCUR[156] = 0;
+  PMIN[157] = -24; PMAX[157] = 12; PDEF[157] = 0; PSTEP[157] = 0.1; PUNIT[157] = 6; PCUR[157] = 0;
+  PMIN[158] = 0; PMAX[158] = 1; PDEF[158] = 0; PSTEP[158] = 1; PUNIT[158] = 8; PCUR[158] = 0;
+);
+
+function load_defaults()
+(
+  sset(2, 0); sset(3, 0); sset(4, 0); sset(5, 0); sset(6, 100); sset(7, 0); sset(8, 0); sset(9, 0); sset(10, 100); sset(11, 10); sset(12, 0); sset(13, 0);
+  sset(14, 60); sset(15, 1); sset(16, 0); sset(17, 0); sset(18, 100); sset(19, 0); sset(20, 50); sset(21, 0); sset(22, 0); sset(23, 50); sset(24, 8); sset(25, 36);
+  sset(26, 0); sset(27, 0); sset(28, 0); sset(29, 16); sset(30, 0); sset(31, 2); sset(32, 40); sset(33, 0); sset(34, 600); sset(35, 100); sset(36, 40); sset(37, 50);
+  sset(38, 4); sset(39, 8000); sset(40, 0); sset(41, 0); sset(42, 0); sset(43, 0); sset(44, 400); sset(45, 0); sset(46, 300); sset(47, 0); sset(48, 0); sset(49, 0);
+  sset(50, 0); sset(51, 4); sset(52, 0); sset(53, 0); sset(54, 0); sset(55, 0); sset(56, 24); sset(57, 48000); sset(58, 0); sset(59, 100); sset(60, 0); sset(61, 0);
+  sset(62, 0); sset(63, 0); sset(64, 0); sset(65, 0); sset(66, 0); sset(67, 0); sset(68, 0); sset(69, 0); sset(70, 0); sset(71, 0); sset(72, 0); sset(73, 0);
+  sset(74, 0); sset(75, 0); sset(76, 0); sset(77, 0); sset(78, 0); sset(79, 0); sset(80, 0); sset(81, 0); sset(82, 0); sset(83, 0); sset(84, 0); sset(85, 0);
+  sset(86, 0); sset(87, 0); sset(88, 0); sset(89, 0); sset(90, 0); sset(91, 0); sset(92, 0); sset(93, 0); sset(94, 0); sset(95, 0); sset(96, 0); sset(97, 0);
+  sset(98, 0); sset(99, 0); sset(100, 0); sset(101, 0); sset(102, 0); sset(103, 0); sset(104, 0); sset(105, 0); sset(106, 0); sset(107, 0); sset(108, 0); sset(109, 0);
+  sset(110, 0); sset(111, 0); sset(112, 0); sset(113, 0); sset(114, 0); sset(115, 0); sset(116, 0); sset(117, 0); sset(118, 0); sset(119, 0); sset(120, 0); sset(121, 0);
+  sset(122, 0); sset(123, 0); sset(124, 0); sset(125, 0); sset(126, 0); sset(127, 0); sset(128, 0); sset(129, 0); sset(130, 0); sset(131, 0); sset(132, 0); sset(133, 0);
+  sset(134, 0); sset(135, 0); sset(136, 0); sset(137, 0); sset(138, 0); sset(139, 0); sset(140, 0); sset(141, 0); sset(142, 0); sset(143, 0); sset(144, 0); sset(145, 0);
+  sset(146, 0); sset(147, 0); sset(148, 0); sset(149, 0); sset(150, 0); sset(151, 0); sset(152, 0); sset(153, 0); sset(154, 0); sset(155, 0); sset(156, 0); sset(157, 0);
+  sset(158, 0);
+);
+
+function fig_beats(n) (
+  n == 1 ? 0.125 : n == 2 ? 0.166667 : n == 3 ? 0.25 : n == 4 ? 0.333333 : n == 5 ? 0.375 : n == 6 ? 0.5 :
+  n == 7 ? 0.666667 : n == 8 ? 0.75 : n == 9 ? 1 : n == 10 ? 1.333333 : n == 11 ? 1.5 : n == 12 ? 2 : n == 13 ? 3 :
+  n == 14 ? 4 : n == 15 ? 8 : 16;
+);
+function fig_name(n) (
+  n == 1 ? "1/32" : n == 2 ? "1/16 T" : n == 3 ? "1/16" : n == 4 ? "1/8 T" : n == 5 ? "1/16 ." : n == 6 ? "1/8" :
+  n == 7 ? "1/4 T" : n == 8 ? "1/8 ." : n == 9 ? "1/4" : n == 10 ? "1/2 T" : n == 11 ? "1/4 ." : n == 12 ? "1/2" :
+  n == 13 ? "1/2 ." : n == 14 ? "1 compas" : n == 15 ? "2 compases" : "4 compases";
+);
+// "A tempo": cuantos tiempos (negras) dura la region
+function sync_beats(n) ( n == 1 ? 1 : n == 2 ? 2 : n == 3 ? 4 : n == 4 ? 8 : n == 5 ? 16 : n == 6 ? 32 : 64; );
+function sync_name(n) ( n == 0 ? "Apagado" : n == 1 ? "1 tiempo" : n == 2 ? "2 tiempos" : n == 3 ? "1 compas" : n == 4 ? "2 compases" :
+  n == 5 ? "4 compases" : n == 6 ? "8 compases" : "16 compases"; );
+
+// ---------------------------------------------------------------- lectura del sample
+function bessel_i0(x) local(s, t, k)
+( s = 1; t = 1; k = 1; loop(40, t *= (x / (2 * k)) * (x / (2 * k)); s += t; k += 1; ); s; );
+function sinc_init() local(i, t, x, w, fc, beta, i0b)
+(
+  fc = 0.97; beta = 8; i0b = bessel_i0(beta); i = 0;
+  loop(2 * SKW * SKR + 4,
+    t = i / SKR - SKW;
+    x = $pi * fc * t;
+    w = abs(t) < SKW ? bessel_i0(beta * sqrt(1 - (t / SKW) * (t / SKW))) / i0b : 0;
+    SKT[i] = (abs(x) < 0.0000001 ? fc : fc * sin(x) / x) * w;
+    i += 1;
+  );
+);
+// muestra entera fuera de rango = 0
+function smp_at(i, c) ( (i >= 0 && i < SN) ? SMP[2 * i + c] : 0; );
+// Hermite de 4 puntos (exacta en posiciones enteras): deja el resultado en RL / RR
+function rd_herm(p) local(i, f, j, x0, x1, x2, x3, y0, y1, y2, y3)
+(
+  i = floor(p); f = p - i;
+  (i >= 1 && i + 2 < SN) ? (
+    j = SMP + 2 * i;
+    x0 = j[-2]; x1 = j[0]; x2 = j[2]; x3 = j[4];
+    y0 = j[-1]; y1 = j[1]; y2 = j[3]; y3 = j[5];
+  ) : (
+    x0 = smp_at(i - 1, 0); x1 = smp_at(i, 0); x2 = smp_at(i + 1, 0); x3 = smp_at(i + 2, 0);
+    y0 = smp_at(i - 1, 1); y1 = smp_at(i, 1); y2 = smp_at(i + 1, 1); y3 = smp_at(i + 2, 1);
+  );
+  f == 0 ? ( RL = x1; RR = y1; ) : (
+    RL = ((((0.5 * (x3 - x0) + 1.5 * (x1 - x2)) * f + (x0 - 2.5 * x1 + 2 * x2 - 0.5 * x3)) * f + 0.5 * (x2 - x0)) * f + x1);
+    RR = ((((0.5 * (y3 - y0) + 1.5 * (y1 - y2)) * f + (y0 - 2.5 * y1 + 2 * y2 - 0.5 * y3)) * f + 0.5 * (y2 - y0)) * f + y1);
+  );
+);
+// sinc con antialiasing: si la lectura avanza r > 1 muestras por salida, el corte baja a 0.97/r (hasta r = 4).
+// La tabla tiene 2048 fases por muestra: se lee la fase mas cercana (el indice avanza sumando, sin recalcular).
+function rd_sinc(p, r) local(s, i, f, n, j, x, dx, h, e, acl, acr)
+(
+  s = r > 1 ? 1 / min(r, 4) : 1;
+  i = floor(p); f = p - i;
+  n = ceil(SKW / s);
+  acl = acr = 0;
+  x = ((1 - n - f) * s + SKW) * SKR + 0.5; dx = s * SKR;
+  j = i + 1 - n;
+  (j >= 0 && i + n < SN) ? (
+    e = SMP + 2 * j;
+    s == 1 ? loop(2 * n, h = SKT[x]; acl += e[0] * h; acr += e[1] * h; e += 2; x += dx; )
+           : loop(2 * n, (x >= 0 && x < SKN) ? ( h = SKT[x]; acl += e[0] * h; acr += e[1] * h; ); e += 2; x += dx; );
+  ) : (
+    loop(2 * n, (j >= 0 && j < SN && x >= 0 && x < SKN) ? ( h = SKT[x]; acl += SMP[2 * j] * h; acr += SMP[2 * j + 1] * h; ); j += 1; x += dx; );
+  );
+  RL = acl * s; RR = acr * s;
+);
+function rd(p, r) ( QUAL ? rd_sinc(p, r) : rd_herm(p); );
+
+// ---------------------------------------------------------------- voces
+// vb[0] activa, 1 nota, 2 velocidad, 3 gate, 4 edad, 5 posicion u (o puntero de analisis al estirar), 6 sentido ping-pong,
+// 8 b0 / 9 b1 (region en frames del archivo), 10 reverso, 11 loop inicio u, 12 loop fin u, 13 loop (0/1/2),
+// 14 env amp, 15 etapa amp, 16 env 2, 17 etapa env 2, 18 sostenida por pedal, 19 chop (-1 clasico, -2 escucha),
+// 20 ganancia, 21 avance por muestra (o razon de tono al estirar), 22 glide desde (st), 23 glide hacia, 24 glide 0..1,
+// 25 glide por muestra, 26..33 filtro, 34 g, 35 dg, 36 g objetivo, 37 octavas por velocidad, 38 fundido de corte,
+// 39 largo de la region (u), 40 one-shot, 41 grano 0 pos, 42 grano 0 t, 43 grano 1 pos, 44 grano 1 t,
+// 45 tono actual (st), 46 corte actual, 47 crossfade (u), 48 fade in, 49 fade out, 50 grano (muestras), 51 posicion para dibujar,
+// 52 frames leidos (para el fade in), 53 avance del analisis al estirar
+// u = posicion dentro de la region, en el sentido de la lectura (con reverso, u = 0 es el final de la region)
+function vread(vb, u, r) local(ll)
+(
+  (vb[13] == 1 && u >= vb[12]) ? ( ll = vb[12] - vb[11]; u = vb[11] + (u - vb[11]) - ll * floor((u - vb[11]) / ll); );
+  (u < 0 || u >= vb[39]) ? ( RL = RR = 0; ) : rd(vb[10] ? vb[9] - 1 - u : vb[8] + u, r);
+);
+function mono_at(vb, u) local(ll, i)
+(
+  (vb[13] == 1 && u >= vb[12]) ? ( ll = vb[12] - vb[11]; u = vb[11] + (u - vb[11]) - ll * floor((u - vb[11]) / ll); );
+  (u < 0 || u >= vb[39]) ? 0 : ( i = floor(vb[10] ? vb[9] - 1 - u : vb[8] + u); SMP[2 * i] + SMP[2 * i + 1]; );
+);
+// WSOLA: busca cerca de a el inicio del grano nuevo que mejor continua al grano que esta sonando (posicion c).
+// La zona de busqueda se lee una vez a WSM (mono) y la correlacion (32 puntos) se hace desde ahi.
+function wsola(vb, a, c, p) local(d, j, s, s0, s1, nm, best, bs, xy, yy, y, score, e, k, m)
+(
+  d = max(1, floor(p * 4 + 0.5));
+  j = 0; e = 0; loop(32, WSX[j] = mono_at(vb, c + j * d); e += WSX[j] * WSX[j]; j += 1; );
+  best = a;
+  e > 0.00000001 ? (
+    s0 = max(0, floor(a - WS_T)); s1 = floor(a + WS_T);
+    nm = min(s1 - s0 + 31 * d + 3, 9000); s1 = min(s1, s0 + nm - 31 * d - 3);
+    k = 0; loop(nm, WSM[k] = mono_at(vb, s0 + k); k += 1; );
+    bs = -1000000000; s = s0;
+    while (s <= s1) (
+      m = WSM + (s - s0); xy = yy = 0; j = 0;
+      loop(32, y = m[j * d]; xy += WSX[j] * y; yy += y * y; j += 1; );
+      score = xy / sqrt(yy + 0.00000001) - abs(s - a) * 0.0000001;
+      score > bs ? ( bs = score; best = s; );
+      s += 3;
+    );
+    s = max(s0, best - 2); s1 = min(s1 + 2, best + 2);
+    while (s <= s1) (
+      m = WSM + (s - s0); xy = yy = 0; j = 0;
+      loop(32, y = m[j * d]; xy += WSX[j] * y; yy += y * y; j += 1; );
+      score = xy / sqrt(yy + 0.00000001) - abs(s - a) * 0.0000001;
+      score > bs ? ( bs = score; best = s; );
+      s += 1;
+    );
+  );
+  best;
+);
+
+function update_speed()
+(
+  SPEED = (SYNCN > 0 && R1 > R0 && SSR > 0) ? ((R1 - R0) / SSR) / (sync_beats(SYNCN) * 60 / max(tempo, 20)) : slider18 / 100;
+  last_tempo = tempo;
+);
+
+// trozos por transitorios: energia de la derivada por bloque (ODF, en dB); un golpe = subida de mas de umbral dB
+function refine_onset(h) local(i0, i1, i, e, k, mx, pv, x, d, best)
+(
+  i0 = max(0, (h - 2) * HOP); i1 = min(SN - 1, (h + 1) * HOP);
+  mx = 0; i = i0; pv = SMP[2 * i] + SMP[2 * i + 1];
+  // energia en ventanas de 16 muestras
+  while (i + 16 <= i1) (
+    e = 0; k = 0; loop(16, x = SMP[2 * (i + k)] + SMP[2 * (i + k) + 1]; d = x - pv; pv = x; e += d * d; k += 1; );
+    e > mx ? mx = e; i += 16;
+  );
+  best = h * HOP; i = i0; pv = SMP[2 * i] + SMP[2 * i + 1];
+  while (i + 16 <= i1) (
+    e = 0; k = 0; loop(16, x = SMP[2 * (i + k)] + SMP[2 * (i + k) + 1]; d = x - pv; pv = x; e += d * d; k += 1; );
+    e >= mx * 0.2 ? ( best = i; i = i1; ) : i += 16;
+  );
+  max(0, best - floor(SSR * 0.0005));
+);
+function detect_chops() local(k, p, h, h0, h1, mx, mxp, gate, thr, gapb, last, rise, rise2, gapf)
+(
+  NCH = 0;
+  (LOADED && R1 > R0 + 64) ? (
+    CHP[0] = R0; NCH = 1; gapf = floor(0.03 * SSR);
+    CDET == 1 ? (
+      k = 1; loop(NPARTS - 1, CHP[NCH] = floor(R0 + (R1 - R0) * k / NPARTS); NCH += 1; k += 1; );
+    ) : CDET == 2 ? (
+      k = 0;
+      loop(NMAN,
+        p = floor(MANP[k] * SN);
+        (p > CHP[NCH - 1] + 32 && p < R1 - 32 && NCH < MAXCH) ? ( CHP[NCH] = p; NCH += 1; );
+        k += 1;
+      );
+    ) : (
+      thr = 1.5 + (100 - SENS) * 0.12; gapb = ceil(0.06 * SSR / HOP);
+      h0 = max(6, ceil(R0 / HOP)); h1 = min(NODF - 1, floor(R1 / HOP));
+      mx = -300; h = h0; loop(max(0, h1 - h0), mx = max(mx, ODF[h]); h += 1; );
+      gate = mx - 30 - SENS * 0.3;
+      last = -1000; h = h0;
+      while (h < h1 && NCH < MAXCH) (
+        // subida contra el maximo de los ultimos 6 bloques (~16 ms): las colas de un golpe no cuentan como golpes nuevos
+        mxp = ODF[h - 1]; k = 2; loop(5, mxp = max(mxp, ODF[h - k]); k += 1; );
+        rise = ODF[h] - mxp; rise2 = ODF[h + 1] - max(mxp, ODF[h]);
+        (rise > thr && ODF[h] > gate && rise >= rise2 && h - last >= gapb) ? (
+          p = refine_onset(h);
+          (p > CHP[NCH - 1] + gapf && p < R1 - gapf) ? ( CHP[NCH] = p; NCH += 1; last = h; );
+        );
+        h += 1;
+      );
+      // si el primer golpe esta muy cerca del inicio, el primer chop empieza en el golpe (sin el silencio previo)
+      (NCH >= 2 && CHP[1] - R0 < 0.1 * SSR) ? ( k = 1; loop(NCH - 1, CHP[k - 1] = CHP[k]; k += 1; ); NCH -= 1; );
+    );
+    CHP[NCH] = R1;
+  );
+  slider162 = NCH;
+  CHVER += 1;
+);
+
+function update_params() local(i, sig)
+(
+  CHOPS = slider2; ONESHOT = slider3; STRETCH = slider4;
+  R0 = floor(clamp(slider5, 0, 100) / 100 * SN); R1 = floor(clamp(slider6, 0, 100) / 100 * SN);
+  R1 < R0 + 2 ? R1 = min(SN, R0 + 2);
+  REVG = slider7; LOOPM = slider8;
+  LPS = floor(slider9 / 100 * SN); LPE = floor(slider10 / 100 * SN);
+  XFS = slider11 / 1000 * SSR; FINF = slider12 / 1000 * SSR; FOUTF = slider13 / 1000 * SSR;
+  ROOT = slider14; KTRK = slider15; TONEG = slider16 + slider17 / 100;
+  SYNCN = slider19;
+  GRAINS = max(32, floor(slider20 / 1000 * srate));
+  WS_T = floor(min(0.012, slider20 / 1000 * 0.25) * SSR);
+  QUAL = slider21; CDET = slider22; SENS = slider23; NPARTS = slider24; CHB = slider25;
+  PLAYTHRU = slider26; CHOKE = slider27;
+  VMODE = slider28; NV = slider29; GLIDE = slider30; BEND_R = slider31; VIBC = slider32 / 100;
+  AE_INC = slider33 > 0 ? 1 / max(1, slider33 * srate / 1000) : 1;
+  AE_DC = exp(-4.605170186 / max(1, slider34 * srate / 1000));
+  AE_S = slider35 / 100; AE_RC = exp(-4.605170186 / max(1, slider36 * srate / 1000)); VVOL = slider37 / 100;
+  AE_FREE = AE_S < 0.0001;
+  FT = slider38; CUT = slider39; KRES = 1.41421356 * (1 - 0.985 * slider40 / 100);
+  DRV = 10 ^ (slider41 / 20); DRVC = 1 / sqrt(DRV); E2_CUT = slider42 / 100 * 8;
+  EE_INC = slider43 > 0 ? 1 / max(1, slider43 * srate / 1000) : 1;
+  EE_DC = exp(-4.605170186 / max(1, slider44 * srate / 1000));
+  EE_S = slider45 / 100; EE_RC = exp(-4.605170186 / max(1, slider46 * srate / 1000)); E2_TONO = slider47;
+  KT = slider48 / 100; VCUT = slider49 / 100;
+  LFS = slider50; LFD = slider53; LFA = slider54 / 100; LFRT = slider55;
+  LFRATE = slider52 > 0 ? max(tempo, 20) / 60 / fig_beats(slider52) : slider51;
+  BITS = slider56; LSR = slider57; LFI_SR = LSR < min(47999, srate * 0.999);
+  PANB = slider58 / 100; WIDTH = slider59 / 100; VOLG = 10 ^ (slider60 / 20);
+  NORMG = (slider61 && SPEAK > 0.000001) ? 1 / SPEAK : 1;
+  SRR = SSR > 0 ? SSR / srate : 1;
+  KILLN = max(8, floor(0.003 * srate));
+  i = 0; loop(MAXCH, CTN[i] = slider(CHOP0 + 3 * i); CGN[i] = 10 ^ (slider(CHOP0 + 3 * i + 1) / 20); CRV[i] = slider(CHOP0 + 3 * i + 2); i += 1; );
+  LVOL = LFD == 2 && LFA != 0; LPAN = LFD == 3 && LFA != 0;
+  update_speed();
+  sig = SN * 3 + R0 * 7 + R1 * 13 + CDET * 1000003 + SENS * 17 + NPARTS * 101 + MANVER * 7919;
+  sig != LAST_SIG ? ( LAST_SIG = sig; detect_chops(); );
+);
+
+// ---------------------------------------------------------------- carga del sample
+// raiz por YIN sobre un tramo del medio (sin transitorio)
+function detect_root() local(w, maxlag, minlag, s0, tau, j, d, x, sum, dn, best, found, a, b, c, den, f, en)
+(
+  DET_NOTE = -1;
+  w = floor(2048 * SSR / 48000); maxlag = floor(SSR / 40); minlag = max(2, floor(SSR / 2500));
+  s0 = max(floor(SSR * 0.05), floor(SN * 0.15));
+  s0 + w + maxlag + 2 > SN ? s0 = SN - w - maxlag - 2;
+  s0 >= 0 ? (
+    en = 0; j = 0; loop(w, x = SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]; en += x * x; j += 1; );
+    en > w * 0.00001 ? (
+      sum = 0; tau = 1; found = 0; best = 0;
+      while (tau <= maxlag && !found) (
+        d = 0; j = 0;
+        loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); d += x * x; j += 1; );
+        sum += d; dn = d * tau / max(sum, 0.0000000001);
+        (tau >= minlag && dn < 0.12) ? (
+          // baja hasta el minimo local
+          best = tau; WSX[200] = d;
+          tau += 1;
+          d = 0; j = 0;
+          loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); d += x * x; j += 1; );
+          while (d < WSX[200] && tau < maxlag) (
+            best = tau; WSX[200] = d; tau += 1;
+            d = 0; j = 0;
+            loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); d += x * x; j += 1; );
+          );
+          // parabola con los vecinos best-1, best, best+1
+          a = 0; j = 0; tau = best - 1;
+          loop(w, x = (SMP[2 * (s0 + j)] + SMP[2 * (s0 + j) + 1]) - (SMP[2 * (s0 + j + tau)] + SMP[2 * (s0 + j + tau) + 1]); a += x * x; j += 1; );
+          b = WSX[200]; c = d;
+          den = a - 2 * b + c;
+          f = best + (abs(den) > 0.0000000001 ? 0.5 * (a - c) / den : 0);
+          DET_NOTE = 69 + 12 * log(SSR / f / 440) / log(2);
+          found = 1;
+        ) : tau += 1;
+      );
+    );
+  );
+  slider163 = DET_NOTE < 0 ? -1 : floor(DET_NOTE * 100 + 0.5) / 100;
+);
+function after_load() local(i, m, x, h, e, pv, d, k)
+(
+  m = 0; i = 0; loop(SN * 2, x = abs(SMP[i]); x > m ? m = x; i += 1; );
+  SPEAK = m;
+  // resumen para dibujar
+  k = SN / PKN; h = 0;
+  loop(PKN,
+    i = floor(h * k); e = max(i + 1, floor((h + 1) * k)); e > SN ? e = SN;
+    d = max(1, floor((e - i) / 256)); m = 0; pv = 0;
+    while (i < e) ( x = SMP[2 * i]; x < pv ? pv = x; x > m ? m = x; x = SMP[2 * i + 1]; x < pv ? pv = x; x > m ? m = x; i += d; );
+    PKL[h] = pv; PKH[h] = m; h += 1;
+  );
+  // energia de la derivada por bloque
+  HOP = max(128, ceil(SN / MAXODF)); NODF = floor(SN / HOP); h = 0; pv = 0;
+  loop(NODF,
+    e = 0; i = h * HOP;
+    loop(HOP, x = SMP[2 * i] + SMP[2 * i + 1]; d = x - pv; pv = x; e += d * d; i += 1; );
+    ODF[h] = 10 * log10(e / HOP + 0.0000000001); h += 1;
+  );
+  ODF[NODF] = ODF[NODF + 1] = -100;
+  detect_root();
+  LOADED = SN > 1; LOADING = 0;
+  slider161 = SN;
+  VZ0 = 0; VZ1 = SN; WAVEVER += 1;
+  LAST_SIG = -1; update_params();
+);
+function all_kill_now() local(v) ( v = 0; loop(MAXV, (V0 + v * VS)[0] = 0; v += 1; ); NS = 0; MV = -1; );
+function load_handle(h) local(nc, sr, avail, fr, n, i, k, tf, ok)
+(
+  nc = 0; sr = 0; ok = 0;
+  file_riff(h, nc, sr);
+  (nc >= 1 && sr >= 1) ? (
+    avail = file_avail(h);
+    fr = min(floor(avail / nc), MAXF);
+    fr > 1 ? (
+      LOADING = 1; all_kill_now(); LOADED = 0;
+      tf = floor(TMPN / nc); k = 0;
+      while (k < fr) (
+        n = min(tf, fr - k);
+        file_mem(h, TMP, n * nc);
+        i = 0;
+        nc == 1 ? loop(n, SMP[2 * (k + i)] = SMP[2 * (k + i) + 1] = TMP[i]; i += 1; )
+                : loop(n, SMP[2 * (k + i)] = TMP[i * nc]; SMP[2 * (k + i) + 1] = TMP[i * nc + 1]; i += 1; );
+        k += n;
+      );
+      SN = fr; SNCH = nc; SSR = sr; SLONG = floor(avail / nc) > MAXF;
+      after_load(); ok = 1;
+    );
+  );
+  ok;
+);
+// nombre para mostrar: lo que va despues de la ultima "/" y sin la extension
+function set_name(src) local(i, n, c, sl, dot)
+(
+  n = strlen(src); sl = -1; dot = n; i = 0;
+  loop(n, c = str_getchar(src, i); c == '/' ? ( sl = i; dot = n; ); c == '.' ? dot = i; i += 1; );
+  strcpy_substr(#sname, src, sl + 1, dot - sl - 1);
+);
+function load_slider() local(h, ok)
+(
+  ok = 0;
+  h = file_open(slider1);
+  h >= 0 ? ( ok = load_handle(h); file_close(h); );
+  ok ? ( SRC_KIND = 1; strcpy_fromslider(#spath, slider1); set_name(#spath); MISSING = 0; );
+  LAST_SL = slider1;
+  ok;
+);
+function load_path(p) local(h, ok)
+(
+  ok = 0;
+  h = file_open(p);
+  h >= 0 ? ( ok = load_handle(h); file_close(h); );
+  ok ? ( SRC_KIND = 2; strcpy(#spath, p); set_name(#spath); MISSING = 0; );
+  ok;
+);
+
+// ---------------------------------------------------------------- notas
+function vctrl(vb) local(semi, r, oct, fc)
+(
+  vb[24] < 1 ? vb[24] = min(1, vb[24] + vb[25] * CR);
+  semi = vb[22] + (vb[23] - vb[22]) * vb[24];
+  vb[45] = semi;
+  semi += TONEG + G_PITCH + vb[16] * E2_TONO + (vb[19] >= 0 ? CTN[vb[19]] : 0);
+  r = 2 ^ (semi / 12);
+  STRETCH && vb[19] != -2 ? ( vb[21] = r * SRR; vb[53] = SPEED * SRR; ) : vb[21] = r * SRR * (vb[19] == -2 ? 1 : SPEED);
+  FT < 4 ? (
+    oct = vb[16] * E2_CUT + KT * (vb[1] - 60) / 12 + vb[37] + G_CUT;
+    fc = clamp(CUT * 2 ^ oct, 10, min(20000, srate * 0.48));
+    vb[46] = fc; vb[36] = tan($pi * fc / srate);
+  );
+  vb[51] = vb[10] ? vb[9] - 1 - vb[5] : vb[8] + vb[5];
+);
+function vkill(vb) ( (vb[0] && !vb[38]) ? vb[38] = KILLN; );
+function vrel(vb) ( vb[3] = 0; vb[18] = 0; vb[15] = 4; vb[17] = 4; );
+
+function start_voice(vb, n, vel, idx, from) local(rv, b0, b1, ul, lm, ls, le, t, i)
+(
+  rv = REVG;
+  idx >= 0 ? ( b0 = CHP[idx]; b1 = PLAYTHRU ? R1 : CHP[idx + 1]; rv = (rv + CRV[idx]) == 1; ) :
+  idx == -2 ? ( b0 = PREV_POS; b1 = SN; rv = 0; ) : ( b0 = R0; b1 = R1; );
+  ul = b1 - b0;
+  (LOADED && ul >= 2) ? (
+    vb[0] = 1; vb[1] = n; vb[2] = vel; vb[3] = 1; vb[4] = (AGE += 1); vb[5] = 0; vb[6] = 1;
+    vb[8] = b0; vb[9] = b1; vb[10] = rv; vb[39] = ul; vb[19] = idx;
+    vb[40] = idx != -2 && ONESHOT;
+    lm = (idx == -1 && !ONESHOT) ? LOOPM : 0;
+    lm ? ( ls = clamp(LPS, b0, b1); le = clamp(LPE, b0, b1); le - ls < 16 ? lm = 0; );
+    lm ? ( rv ? ( vb[11] = b1 - le; vb[12] = b1 - ls; ) : ( vb[11] = ls - b0; vb[12] = le - b0; ); );
+    (STRETCH && lm == 2) ? lm = 1;
+    vb[13] = lm;
+    vb[47] = lm == 1 ? max(0, min(XFS, min(vb[11], (vb[12] - vb[11]) * 0.5))) : 0;
+    vb[48] = idx == -2 ? 0 : FINF; vb[49] = idx == -2 ? 0 : FOUTF; vb[52] = 0;
+    t = idx == -1 ? (n - ROOT) * KTRK : 0;
+    vb[23] = t;
+    vb[22] = idx == -1 ? (from - ROOT) * KTRK : t;
+    vb[24] = (GLIDE > 0 && vb[22] != t) ? 0 : 1;
+    vb[25] = GLIDE > 0 ? 1 / (GLIDE * srate / 1000) : 1;
+    vb[14] = 0; vb[15] = 1; vb[16] = 0; vb[17] = 1; vb[18] = 0; vb[38] = 0;
+    i = 0; loop(8, vb[26 + i] = 0; i += 1; );
+    vb[20] = (vel / 127) ^ (2 * VVOL) * (idx >= 0 ? CGN[idx] : 1);
+    vb[37] = VCUT * 4 * (vel / 127 - 1);
+    vb[50] = GRAINS; vb[41] = 0; vb[42] = floor(GRAINS / 2); vb[43] = 0; vb[44] = 0;
+    vctrl(vb); vb[34] = vb[36]; vb[35] = 0;
+    LASTV = vb; idx != -2 ? LASTN = n;
+  ) : ( vb[0] = 0; );
+);
+
+function alloc_voice() local(v, vb, best, live, ba)
+(
+  live = 0; v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && !vb[38]) ? live += 1; v += 1; );
+  live >= NV ? (
+    // robo: la mas vieja ya soltada; si no hay, la mas vieja (se apaga en 3 ms)
+    best = -1; ba = 1000000000000000;
+    v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && !vb[38] && !vb[3] && vb[4] < ba) ? ( ba = vb[4]; best = vb; ); v += 1; );
+    best < 0 ? ( ba = 1000000000000000; v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && !vb[38] && vb[4] < ba) ? ( ba = vb[4]; best = vb; ); v += 1; ); );
+    best >= 0 ? vkill(best);
+  );
+  best = -1; v = 0; loop(MAXV, vb = V0 + v * VS; (!vb[0] && best < 0) ? best = vb; v += 1; );
+  best < 0 ? (
+    ba = 1000000000000000; v = 0; loop(MAXV, vb = V0 + v * VS; vb[4] < ba ? ( ba = vb[4]; best = vb; ); v += 1; );
+  );
+  best;
+);
+function kill_note(n) local(v, vb) ( v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && vb[1] == n && vb[19] != -2) ? vkill(vb); v += 1; ); );
+function kill_chops() local(v, vb) ( v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && vb[19] >= 0) ? vkill(vb); v += 1; ); );
+
+function stk_remove(n) local(i, j)
+(
+  i = 0; j = 0;
+  loop(NS, STK[i] != n ? ( STK[j] = STK[i]; STV[j] = STV[i]; j += 1; ); i += 1; );
+  NS = j;
+);
+function mv_live() ( MV >= 0 && MV[0] && !MV[38] && MV[19] == -1; );
+function mono_on(n, vel) local(vb, leg, from)
+(
+  stk_remove(n);
+  leg = VMODE == 2 && mv_live() && MV[3] && NS > 0;
+  STK[NS] = n; STV[NS] = vel; NS < 60 ? NS += 1;
+  leg ? (
+    MV[22] = MV[22] + (MV[23] - MV[22]) * MV[24]; MV[23] = (n - ROOT) * KTRK;
+    MV[24] = GLIDE > 0 ? 0 : 1; MV[1] = n; LASTN = n;
+  ) : (
+    from = (GLIDE > 0 && LASTN >= 0 && VMODE == 1) ? LASTN : n;
+    mv_live() ? vkill(MV);
+    vb = alloc_voice(); start_voice(vb, n, vel, -1, from); MV = vb[0] ? vb : -1;
+  );
+);
+function mono_off(n) local(vb, top, nn)
+(
+  top = NS > 0 ? STK[NS - 1] : -1;
+  stk_remove(n);
+  (n == top && mv_live() && MV[3]) ? (
+    NS > 0 ? (
+      nn = STK[NS - 1];
+      VMODE == 2 ? (
+        MV[22] = MV[22] + (MV[23] - MV[22]) * MV[24]; MV[23] = (nn - ROOT) * KTRK; MV[24] = GLIDE > 0 ? 0 : 1; MV[1] = nn; LASTN = nn;
+      ) : (
+        vkill(MV); vb = alloc_voice(); start_voice(vb, nn, STV[NS - 1], -1, n); MV = vb[0] ? vb : -1;
+      );
+    ) : ( !MV[40] ? ( PEDAL ? MV[18] = 1 : vrel(MV); ); );
+  );
+);
+
+function note_on(n, vel) local(vb, idx, from)
+(
+  HELD[n] = 1;
+  LFRT ? ( lph = 0; lsh = rand(2) - 1; );
+  LOADED ? (
+    CHOPS ? (
+      idx = n - CHB;
+      (idx >= 0 && idx < NCH) ? (
+        CHOKE ? kill_chops() : kill_note(n);
+        vb = alloc_voice(); start_voice(vb, n, vel, idx, n);
+      );
+    ) : VMODE ? mono_on(n, vel) : (
+      kill_note(n);
+      from = (GLIDE > 0 && LASTN >= 0) ? LASTN : n;
+      vb = alloc_voice(); start_voice(vb, n, vel, -1, from);
+    );
+  );
+);
+function note_off(n) local(v, vb)
+(
+  HELD[n] = 0;
+  (!CHOPS && VMODE) ? mono_off(n) : (
+    v = 0;
+    loop(MAXV, vb = V0 + v * VS;
+      (vb[0] && vb[3] && !vb[18] && vb[1] == n && !vb[40] && vb[19] != -2) ? ( PEDAL ? vb[18] = 1 : vrel(vb); );
+      v += 1; );
+  );
+);
+function all_release() local(v, vb)
+( v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && vb[3]) ? vrel(vb); v += 1; ); NS = 0; PEDAL = 0; v = 0; loop(128, HELD[v] = 0; v += 1; ); );
+function all_kill() local(v)
+( v = 0; loop(MAXV, vkill(V0 + v * VS); v += 1; ); NS = 0; PEDAL = 0; v = 0; loop(128, HELD[v] = 0; v += 1; ); );
+function pedal_up() local(v, vb) ( v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && vb[18]) ? vrel(vb); v += 1; ); );
+function preview_on(pos) local(vb) ( PREV_POS = floor(clamp(pos, 0, SN - 2)); vb = alloc_voice(); start_voice(vb, ROOT, 127, -2, ROOT); );
+function preview_off() local(v, vb) ( v = 0; loop(MAXV, vb = V0 + v * VS; (vb[0] && vb[19] == -2) ? vrel(vb); v += 1; ); );
+
+function midi_ev(m1, m2, m3) local(s, b)
+(
+  s = m1 & 0xF0;
+  (s == 0x90 && m3 > 0) ? note_on(m2, m3) :
+  (s == 0x80 || s == 0x90) ? note_off(m2) :
+  s == 0xB0 ? (
+    m2 == 1 ? MW = m3 / 127 :
+    m2 == 64 ? ( PEDAL = m3 >= 64; !PEDAL ? pedal_up(); ) :
+    m2 == 123 ? all_release() :
+    m2 == 120 ? all_kill();
+  ) :
+  s == 0xE0 ? ( b = m3 * 128 + m2 - 8192; BEND = b / (b > 0 ? 8191 : 8192); );
+);
+
+function lfo_val(s, ph, sh) local(t2)
+(
+  s == 0 ? sin(6.283185307179586 * ph) :
+  s == 1 ? ( t2 = ph + 0.25; t2 >= 1 ? t2 -= 1; 1 - 4 * abs(t2 - 0.5); ) :
+  s == 2 ? 2 * ph - 1 :
+  s == 3 ? ( ph < 0.5 ? 1 : -1 ) : sh;
+);
+function ctrl_all() local(v, vb, lv)
+(
+  lph += LFRATE * CR / srate; lph >= 1 ? ( lph -= floor(lph); lsh = rand(2) - 1; );
+  vph += 5.5 * CR / srate; vph >= 1 ? vph -= 1;
+  lv = lfo_val(LFS, lph, lsh);
+  G_PITCH = BEND * BEND_R + MW * VIBC * sin(2 * $pi * vph) + (LFD == 0 ? lv * LFA * 12 : 0);
+  G_CUT = LFD == 1 ? lv * LFA * 4 : 0;
+  G_VOL = LFD == 2 ? 1 - abs(LFA) * (1 - lv * sign(LFA)) * 0.5 : 1;
+  G_PAN = LFD == 3 ? lv * LFA : 0;
+  v = 0;
+  loop(MAXV, vb = V0 + v * VS; vb[0] ? ( vctrl(vb); vb[35] = (vb[36] - vb[34]) / CR; ); v += 1; );
+);
+
+// una muestra de una voz: suma en OUTL / OUTR
+function vtick(vb) local(l, st, e2, u, inc, sl, sr, x, w0, w1, g, gl, k, a1, a2, a3, b1, b2, b3, s, v1, v2, v3, yl, yr, amp, fin, fout, done)
+(
+  done = 0;
+  l = vb[14]; st = vb[15];
+  st == 1 ? ( l += AE_INC; l >= 1 ? ( l = 1; st = 2; ); ) :
+  st == 2 ? ( l = AE_S + (l - AE_S) * AE_DC; abs(l - AE_S) < 0.00001 ? ( l = AE_S; st = 3; ); ) :
+  st == 4 ? ( l *= AE_RC; );
+  (st >= 2 && (st == 4 || AE_FREE) && l < 0.0001) ? done = 1;
+  vb[14] = l; vb[15] = st;
+  e2 = vb[16]; st = vb[17];
+  st == 1 ? ( e2 += EE_INC; e2 >= 1 ? ( e2 = 1; st = 2; ); ) :
+  st == 2 ? ( e2 = EE_S + (e2 - EE_S) * EE_DC; abs(e2 - EE_S) < 0.00001 ? ( e2 = EE_S; st = 3; ); ) :
+  st == 4 ? ( e2 *= EE_RC; );
+  vb[16] = e2; vb[17] = st;
+
+  u = vb[5]; inc = vb[21];
+  (STRETCH && vb[19] != -2) ? (
+    // estirar: dos granos Hann al 50 %, cada uno lee a la razon de tono; el puntero de analisis avanza a la velocidad
+    gl = vb[50];
+    w0 = sin($pi * vb[42] / gl); w0 *= w0; w1 = sin($pi * vb[44] / gl); w1 *= w1;
+    vread(vb, vb[41], inc); sl = RL * w0; sr = RR * w0;
+    vread(vb, vb[43], inc); sl += RL * w1; sr += RR * w1;
+    vb[41] += inc; vb[43] += inc;
+    (vb[42] += 1) >= gl ? ( vb[42] -= gl; vb[41] = wsola(vb, u, vb[43], inc); );
+    (vb[44] += 1) >= gl ? ( vb[44] -= gl; vb[43] = wsola(vb, u, vb[41], inc); );
+    x = u;
+    u += vb[53];
+    vb[13] ? ( u >= vb[12] ? u -= vb[12] - vb[11]; ) : ( u >= vb[39] + gl * inc ? done = 1; );
+    vb[52] += vb[53];
+  ) : (
+    x = u;
+    (vb[13] == 1 && vb[47] > 0 && u >= vb[12] - vb[47]) ? (
+      vread(vb, u, inc); sl = RL; sr = RR;
+      vread(vb, u - (vb[12] - vb[11]), inc);
+      w1 = (u - (vb[12] - vb[47])) / vb[47]; w0 = 1 - w1;      // lineal: no sube el nivel si los dos lados se parecen
+      sl = sl * w0 + RL * w1; sr = sr * w0 + RR * w1;
+    ) : ( vread(vb, u, inc); sl = RL; sr = RR; );
+    vb[13] == 2 ? (
+      u += inc * vb[6];
+      (vb[6] > 0 && u >= vb[12]) ? ( u = 2 * vb[12] - u; vb[6] = -1; ) :
+      (vb[6] < 0 && u < vb[11]) ? ( u = 2 * vb[11] - u; vb[6] = 1; );
+    ) : (
+      u += inc;
+      vb[13] == 1 ? ( u >= vb[12] ? u -= vb[12] - vb[11]; ) : ( u >= vb[39] ? done = 1; );
+    );
+    vb[52] += inc;
+  );
+  vb[5] = u;
+
+  // fades (en frames del archivo): fade in por lo leido, fade out antes del final (sin loop)
+  fin = vb[48] > 0 && vb[52] < vb[48] ? vb[52] / vb[48] : 1;
+  fout = (vb[49] > 0 && !vb[13] && vb[39] - x < vb[49]) ? max(0, (vb[39] - x) / vb[49]) : 1;
+
+  DRV > 1.001 ? ( sl = sat(sl * DRV) * DRVC; sr = sat(sr * DRV) * DRVC; );
+  FT < 4 ? (
+    g = vb[34] + vb[35]; vb[34] = g;
+    k = KRES; a1 = 1 / (1 + g * (g + k)); a2 = g * a1; a3 = g * a2;
+    FT == 0 ? ( b1 = 1 / (1 + g * (g + 1.41421356)); b2 = g * b1; b3 = g * b2; );
+    s = vb + 26;
+    x = sl;
+    FT == 0 ? ( v3 = x - s[1]; v1 = b1 * s[0] + b2 * v3; v2 = s[1] + b2 * s[0] + b3 * v3; s[0] = 2 * v1 - s[0]; s[1] = 2 * v2 - s[1]; x = v2; );
+    v3 = x - s[3]; v1 = a1 * s[2] + a2 * v3; v2 = s[3] + a2 * s[2] + a3 * v3; s[2] = 2 * v1 - s[2]; s[3] = 2 * v2 - s[3];
+    yl = FT <= 1 ? v2 : FT == 2 ? v1 * k : x - k * v1 - v2;
+    x = sr;
+    FT == 0 ? ( v3 = x - s[5]; v1 = b1 * s[4] + b2 * v3; v2 = s[5] + b2 * s[4] + b3 * v3; s[4] = 2 * v1 - s[4]; s[5] = 2 * v2 - s[5]; x = v2; );
+    v3 = x - s[7]; v1 = a1 * s[6] + a2 * v3; v2 = s[7] + a2 * s[6] + a3 * v3; s[6] = 2 * v1 - s[6]; s[7] = 2 * v2 - s[7];
+    yr = FT <= 1 ? v2 : FT == 2 ? v1 * k : x - k * v1 - v2;
+  ) : ( yl = sl; yr = sr; );
+
+  amp = l * vb[20] * fin * fout;
+  vb[38] > 0 ? ( amp *= vb[38] / KILLN; (vb[38] -= 1) <= 0 ? done = 1; );
+  OUTL += yl * amp; OUTR += yr * amp;
+  done ? ( vb[0] = 0; vb == MV ? MV = -1; );
+);
+
+// ---------------------------------------------------------------- presets
+function preset_name(n)
+(
+  n == 1 ? "Clasico - Instrumento" :
+  n == 2 ? "Clasico - 808 con glide" :
+  n == 3 ? "Clasico - Pad (loop ping-pong)" :
+  n == 4 ? "Clasico - Textura estirada" :
+  n == 5 ? "One-shot - Bateria" :
+  n == 6 ? "One-shot - Cromatico" :
+  n == 7 ? "Chops - Transitorios (MPC)" :
+  n == 8 ? "Chops - 16 partes iguales" :
+  n == 9 ? "Chops - Vocal (mantener)" :
+  n == 10 ? "Chops - A tempo (estirar)" :
+  n == 11 ? "Loop - A tempo (estirar)" :
+  n == 12 ? "Loop - Vinilo a tempo" :
+  n == 13 ? "Lo-fi - SP 12 bits" :
+  n == 14 ? "Lo-fi - Cassette" :
+  n == 15 ? "Reverso - Swell" :
+  n == 16 ? "Por defecto" : "";
+);
+function load_preset(n) local(emb)
+(
+  emb = slider62;
+  load_defaults();
+  sset(62, emb);
+  n == 1 ? ( sset(36, 300); ) :
+  n == 2 ? ( sset(28, 2); sset(30, 70); sset(36, 120); sset(37, 30); ) :
+  n == 3 ? ( sset(8, 2); sset(9, 30); sset(10, 70); sset(33, 600); sset(36, 1500); sset(38, 0); sset(39, 3500); sset(59, 140); ) :
+  n == 4 ? ( sset(4, 1); sset(18, 25); sset(20, 120); sset(8, 1); sset(9, 20); sset(10, 80); sset(33, 800); sset(36, 2000); sset(59, 150); ) :
+  n == 5 ? ( sset(3, 1); sset(15, 0); sset(36, 30); ) :
+  n == 6 ? ( sset(3, 1); sset(36, 30); ) :
+  n == 7 ? ( sset(2, 1); sset(3, 1); sset(22, 0); sset(27, 1); sset(12, 1); sset(13, 5); ) :
+  n == 8 ? ( sset(2, 1); sset(3, 1); sset(22, 1); sset(24, 16); sset(27, 1); sset(12, 1); sset(13, 5); ) :
+  n == 9 ? ( sset(2, 1); sset(22, 0); sset(33, 5); sset(36, 120); sset(13, 5); ) :
+  n == 10 ? ( sset(2, 1); sset(3, 1); sset(4, 1); sset(19, 5); sset(22, 1); sset(24, 16); sset(27, 1); sset(13, 5); ) :
+  n == 11 ? ( sset(4, 1); sset(19, 5); sset(8, 1); sset(15, 0); sset(36, 20); ) :
+  n == 12 ? ( sset(19, 5); sset(8, 1); sset(15, 0); sset(36, 20); ) :
+  n == 13 ? ( sset(56, 12); sset(57, 26040); sset(38, 1); sset(39, 11000); sset(41, 4); sset(60, -1.5); ) :
+  n == 14 ? ( sset(56, 14); sset(57, 32000); sset(50, 0); sset(51, 0.6); sset(53, 0); sset(54, 1.5); sset(38, 1); sset(39, 7000); sset(41, 3); sset(60, -1); ) :
+  n == 15 ? ( sset(7, 1); sset(12, 200); sset(33, 300); sset(36, 400); );
+  CUR_PRESET = n; upd = 1;
+);
+
+sinc_init();
+ptable_init();
+SN = 0; LOADED = 0; LAST_SL = -1; MV = -1; LASTN = -1; LASTV = V0; SEL = 0; KBO = 36; CUR_PRESET = 0;
+update_params();
+
+@slider
+slider159 > 0 ? ( a_pn = floor(slider159 + 0.5); slider159 = 0; slider_automate(slider159); load_preset(a_pn); );
+slider1 != LAST_SL ? ( load_slider() ? MISSING = 0; );
+update_params();
+VMODE != last_vmode || CHOPS != last_chops ? ( all_release(); last_vmode = VMODE; last_chops = CHOPS; MV = -1; );
+
+@serialize
+a_wr = file_avail(0) < 0;
+a_wr ? (
+  a_ver = 1; file_var(0, a_ver); file_var(0, SRC_KIND); file_var(0, LAST_SL); file_string(0, #spath);
+  file_var(0, NMAN); a_i = 0; loop(NMAN, file_var(0, MANP[a_i]); a_i += 1; );
+  a_emb = slider62 && LOADED && SN <= EMBMAX; file_var(0, a_emb);
+  a_emb ? ( file_var(0, SN); file_var(0, SNCH); file_var(0, SSR); file_mem(0, SMP, SN * 2); );
+) : (
+  a_ver = 0; file_var(0, a_ver);
+  a_ver >= 1 ? (
+    file_var(0, a_kind); file_var(0, a_sl); file_string(0, #a_path);
+    file_var(0, NMAN); NMAN = clamp(NMAN, 0, MAXCH); a_i = 0; loop(NMAN, file_var(0, MANP[a_i]); a_i += 1; ); MANVER += 1;
+    a_ok = 1;
+    a_kind == 2 ? ( a_ok = load_path(#a_path); !a_ok ? ( all_kill_now(); LOADED = 0; SN = 0; slider161 = 0; MISSING = 1; SRC_KIND = 2;
+      strcpy(#spath, #a_path); set_name(#spath); LAST_SIG = -1; update_params(); ); );
+    a_emb = 0; file_var(0, a_emb);
+    a_emb ? (
+      a_n = 0; file_var(0, a_n); file_var(0, a_ch); file_var(0, a_sr);
+      (a_n > 1 && a_n <= MAXF) ? (
+        LOADING = 1; all_kill_now();
+        file_mem(0, SMP, a_n * 2); SN = a_n; SNCH = a_ch; SSR = a_sr;
+        after_load(); MISSING = 0; a_kind == 2 ? SRC_KIND = 2;
+      );
+    );
+    LAST_SL = slider1;
+  );
+);
+
+@block
+upd ? ( upd = 0; update_params(); );
+tempo != last_tempo ? ( update_speed(); slider52 > 0 ? LFRATE = max(tempo, 20) / 60 / fig_beats(slider52); );
+(play_state & 1) && slider52 > 0 && !LFRT ? ( a_bb = fig_beats(slider52); lph = beat_position / a_bb - floor(beat_position / a_bb); );
+qn = 0; qi = 0; scnt = 0;
+// eventos de la interfaz (teclado en pantalla, pads, escucha desde la forma de onda)
+while (kqr != kqw) (
+  a_t = KQT[kqr];
+  a_t == 2 ? preview_on(KQP[kqr]) : a_t == 3 ? preview_off() : (
+    Q[qn * 4] = 0; Q[qn * 4 + 1] = KQV[kqr] > 0 ? 0x90 : 0x80; Q[qn * 4 + 2] = KQN[kqr]; Q[qn * 4 + 3] = KQV[kqr]; qn += 1;
+  );
+  kqr = (kqr + 1) % 64;
+);
+while (midirecv(a_ofs, a_m1, a_m2, a_m3)) (
+  qn < QMAX ? ( Q[qn * 4] = a_ofs; Q[qn * 4 + 1] = a_m1; Q[qn * 4 + 2] = a_m2; Q[qn * 4 + 3] = a_m3; qn += 1; );
+);
+a_n = 0; a_v = 0; a_i = 0; loop(MAXCH, CHPLAY[a_i] = 0; a_i += 1; );
+loop(MAXV, a_vb = V0 + a_v * VS; a_vb[0] ? ( a_n += 1; a_vb[19] >= 0 ? CHPLAY[a_vb[19]] = 1; ); a_v += 1; );
+slider160 = a_n;
+
+@sample
+while (qi < qn && Q[qi * 4] <= scnt) ( midi_ev(Q[qi * 4 + 1], Q[qi * 4 + 2], Q[qi * 4 + 3]); qi += 1; );
+scnt += 1;
+(crc -= 1) <= 0 ? ( crc = CR; ctrl_all(); );
+
+OUTL = OUTR = 0;
+!LOADING ? ( a_v = 0; loop(MAXV, a_vb = V0 + a_v * VS; a_vb[0] ? vtick(a_vb); a_v += 1; ); );
+a_l = OUTL * NORMG; a_r = OUTR * NORMG;
+LVOL ? ( a_l *= G_VOL; a_r *= G_VOL; );
+WIDTH != 1 ? ( a_mid = (a_l + a_r) * 0.5; a_sd = (a_l - a_r) * 0.5 * WIDTH; a_l = a_mid + a_sd; a_r = a_mid - a_sd; );
+a_p = clamp(PANB + G_PAN, -1, 1);
+a_p != 0 ? ( a_l *= min(1, 1 - a_p); a_r *= min(1, 1 + a_p); );
+// lo-fi: baja la frecuencia de muestreo (retencion) y los bits
+LFI_SR ? ( lfph += LSR / srate; lfph >= 1 ? ( lfph -= 1; lfh_l = a_l; lfh_r = a_r; ); a_l = lfh_l; a_r = lfh_r; );
+BITS < 24 ? ( a_qq = 2 ^ (BITS - 1); a_l = floor(a_l * a_qq + 0.5) / a_qq; a_r = floor(a_r * a_qq + 0.5) / a_qq; );
+spl0 = a_l * VOLG; spl1 = a_r * VOLG;
+abs(spl0) > m_l ? m_l = abs(spl0); abs(spl1) > m_r ? m_r = abs(spl1);
+
+@gfx 1100 800
+// ======================================================================= interfaz
+SC = gfx_ext_retina > 1 ? gfx_ext_retina : 1;
+WW = gfx_w; WH = gfx_h;
+
+function fnt(i) (
+  i == 1 ? gfx_setfont(1, "Helvetica Neue", 13 * SC) :
+  i == 2 ? gfx_setfont(2, "Helvetica Neue", 11 * SC) :
+  i == 3 ? gfx_setfont(3, "Helvetica Neue", 17 * SC, 'b') :
+  i == 4 ? gfx_setfont(4, "Helvetica Neue", 10 * SC, 'b') :
+  i == 6 ? gfx_setfont(6, "Helvetica Neue", 15 * SC, 'b') :
+  i == 7 ? gfx_setfont(7, "Helvetica Neue", 10 * SC) :
+  i == 8 ? gfx_setfont(8, "Helvetica Neue", 18 * SC) :
+           gfx_setfont(5, "Helvetica Neue", 12 * SC, 'b');
+);
+function setcol(c) (
+  c == 0 ? ( KR = 0.42; KG = 0.78; KB = 1.00; ) : c == 1 ? ( KR = 0.45; KG = 0.90; KB = 0.95; ) :
+  c == 2 ? ( KR = 0.50; KG = 0.92; KB = 0.70; ) : c == 3 ? ( KR = 1.00; KG = 0.70; KB = 0.36; ) :
+  c == 4 ? ( KR = 0.55; KG = 0.90; KB = 0.50; ) : c == 5 ? ( KR = 0.93; KG = 0.86; KB = 0.40; ) :
+  c == 6 ? ( KR = 0.78; KG = 0.60; KB = 1.00; ) : c == 7 ? ( KR = 1.00; KG = 0.55; KB = 0.78; ) :
+  c == 8 ? ( KR = 0.95; KG = 0.45; KB = 0.60; ) : c == 9 ? ( KR = 0.97; KG = 0.50; KB = 0.42; ) :
+           ( KR = 0.80; KG = 0.82; KB = 0.88; );
+);
+function acc(a) ( gfx_set(KR, KG, KB, a); );
+function hit_add(x, y, w, h, id) local(p)
+( hit_n < 200 ? ( p = hitmem + hit_n * 5; p[0] = x; p[1] = y; p[2] = w; p[3] = h; p[4] = id; hit_n += 1; ); );
+function hit_find(mx, my) local(i, p, r)
+(
+  r = 0; i = hit_n - 1;
+  while (i >= 0 && r == 0) (
+    p = hitmem + i * 5;
+    (mx >= p[0] && mx < p[0] + p[2] && my >= p[1] && my < p[1] + p[3]) ? r = p[4];
+    i -= 1;
+  );
+  r;
+);
+function frect(x, y, w, h, r) (
+  r = min(r, min(w, h) * 0.5);
+  gfx_rect(x + r, y, w - 2 * r, h, 1);
+  gfx_rect(x, y + r, r, h - 2 * r, 1);
+  gfx_rect(x + w - r, y + r, r, h - 2 * r, 1);
+  gfx_circle(x + r, y + r, r, 1, 1); gfx_circle(x + w - r - 1, y + r, r, 1, 1);
+  gfx_circle(x + r, y + h - r - 1, r, 1, 1); gfx_circle(x + w - r - 1, y + h - r - 1, r, 1, 1);
+);
+function text_c(str, x, y, w, h) ( gfx_x = x; gfx_y = y; gfx_drawstr(str, 1 | 4, x + w, y + h); );
+function text_l(str, x, y, h) ( gfx_x = x; gfx_y = y; gfx_drawstr(str, 4, x + 2000, y + h); );
+function text_r(str, x, y, w, h) ( gfx_x = x; gfx_y = y; gfx_drawstr(str, 2 | 4, x + w, y + h); );
+function fmt_f(d, f) ( f < 1000 ? sprintf(d, "%d Hz", floor(f + 0.5)) : sprintf(d, f < 10000 ? "%.2f kHz" : "%.1f kHz", f / 1000); );
+function fmt_ms(d, t) ( t < 10 ? sprintf(d, "%.1f ms", t) : t < 1000 ? sprintf(d, "%d ms", floor(t + 0.5)) : sprintf(d, "%.2f s", t / 1000); );
+function note_str(d, n) local(k)
+(
+  k = n % 12;
+  strcpy(d, k == 0 ? "C" : k == 1 ? "C#" : k == 2 ? "D" : k == 3 ? "D#" : k == 4 ? "E" : k == 5 ? "F" : k == 6 ? "F#" :
+            k == 7 ? "G" : k == 8 ? "G#" : k == 9 ? "A" : k == 10 ? "A#" : "B");
+  sprintf(#_o, "%d", floor(n / 12) - 1); strcat(d, #_o);
+);
+function button(id, x, y, w, h, str, on)
+(
+  hov = hover_id == id;
+  on ? acc(1) : gfx_set(hov ? 0.24 : 0.17, hov ? 0.26 : 0.19, hov ? 0.31 : 0.24, 1);
+  frect(x, y, w, h, 4 * SC);
+  on ? gfx_set(0.07, 0.08, 0.10, 1) : gfx_set(0.86, 0.88, 0.92, 1);
+  fnt(h < 20 * SC ? 7 : 1); text_c(str, x, y, w, h);
+  hit_add(x, y, w, h, id);
+);
+function dropdown(id, x, y, w, h, label, str)
+(
+  hov = hover_id == id;
+  gfx_set(hov ? 0.24 : 0.17, hov ? 0.26 : 0.19, hov ? 0.31 : 0.24, 1);
+  frect(x, y, w, h, 5 * SC);
+  fnt(h < 20 * SC ? 7 : 2); gfx_set(0.55, 0.58, 0.65, 1);
+  text_l(label, x + 8 * SC, y, h);
+  strlen(label) ? gfx_measurestr(label, _tw, _th) : _tw = -4 * SC;
+  fnt(h < 20 * SC ? 7 : 1); gfx_set(0.90, 0.92, 0.96, 1);
+  text_l(str, x + 12 * SC + _tw, y, h);
+  gfx_set(0.55, 0.58, 0.65, 1);
+  _cx = x + w - 10 * SC; _cy = y + h * 0.5;
+  gfx_triangle(_cx - 3 * SC, _cy - 2 * SC, _cx + 3 * SC, _cy - 2 * SC, _cx, _cy + 2 * SC);
+  hov ? ( dd_x = x; dd_y = y + h + 2 * SC; );    // el menu se abre debajo del control
+  hit_add(x, y, w, h, id);
+);
+function knob(id, cx, cy, r, label, str, n, bip, enabled) local(a0, a1, av, i, rad)
+(
+  a0 = -0.75 * $pi; a1 = 0.75 * $pi; av = a0 + (a1 - a0) * clamp(n, 0, 1);
+  fnt(7); gfx_set(0.62, 0.65, 0.72, enabled ? 1 : 0.4);
+  text_c(label, cx - 30 * SC, cy - r - 15 * SC, 60 * SC, 13 * SC);
+  gfx_set(0.13, 0.14, 0.18, 1); gfx_circle(cx, cy, r, 1, 1);
+  gfx_set(0.26, 0.28, 0.34, 1);
+  i = 0; loop(3 * SC, gfx_arc(cx, cy, r - 2 * SC - i, a0, a1, 1); i += 1; );
+  acc(enabled ? 1 : 0.35);
+  i = 0; loop(3 * SC, rad = r - 2 * SC - i;
+    bip ? ( av < 0 ? gfx_arc(cx, cy, rad, av, 0, 1) : gfx_arc(cx, cy, rad, 0, av, 1); )
+        : gfx_arc(cx, cy, rad, a0, av, 1);
+    i += 1; );
+  gfx_set(0.92, 0.93, 0.96, enabled ? 1 : 0.4);
+  gfx_line(cx + sin(av) * r * 0.25, cy - cos(av) * r * 0.25, cx + sin(av) * (r - 5 * SC), cy - cos(av) * (r - 5 * SC), 1);
+  hover_id == id ? ( gfx_set(1, 1, 1, 0.12); gfx_circle(cx, cy, r + 2 * SC, 0, 1); );
+  fnt(2); gfx_set(0.92, 0.93, 0.96, enabled ? 1 : 0.45);
+  text_c(str, cx - 30 * SC, cy + r + 2 * SC, 60 * SC, 14 * SC);
+  hit_add(cx - r - 6 * SC, cy - r - 14 * SC, 2 * r + 12 * SC, 2 * r + 30 * SC, id);
+);
+
+// ---------------------------------------------------------- perillas: id = numero de slider
+// la velocidad del LFO a tempo recorre las figuras (slider 52)
+function ksl(id) ( (id == 51 && slider52) ? 52 : id; );
+function ctl_get(id) local(s, v, a, b)
+(
+  s = ksl(id); v = slider(s); a = PMIN[s]; b = PMAX[s];
+  s == 52 ? (v - 1) / 15 :
+  PCUR[s] == 1 ? nlog(v, a, b) : PCUR[s] == 2 ? sqrt((v - a) / (b - a)) : PCUR[s] == 3 ? ((v - a) / (b - a)) ^ (1 / 3) : (v - a) / (b - a);
+);
+function ctl_setv(s, v)
+(
+  v = clamp(floor(v / PSTEP[s] + 0.5) * PSTEP[s], PMIN[s], PMAX[s]);
+  sset(s, v); upd = 1;
+);
+function ctl_set(id, n) local(s, a, b)
+(
+  n = clamp(n, 0, 1); s = ksl(id); a = PMIN[s]; b = PMAX[s];
+  s == 52 ? ( sset(s, 1 + floor(n * 15 + 0.5)); upd = 1; ) :
+  ctl_setv(s, PCUR[s] == 1 ? dlog(n, a, b) : PCUR[s] == 2 ? a + (b - a) * n * n : PCUR[s] == 3 ? a + (b - a) * n * n * n : a + (b - a) * n);
+);
+function ctl_default(id) local(s) ( s = ksl(id); s == 52 ? sset(s, 9) : ctl_setv(s, PDEF[s]); upd = 1; );
+
+function val_str(s) local(v, u)
+(
+  v = slider(s); u = PUNIT[s];
+  s == 29 ? sprintf(#v, "%d voces", v) :
+  s == 30 ? ( v < 0.5 ? strcpy(#v, "Apagado") : fmt_ms(#v, v); ) :
+  s == 31 ? sprintf(#v, "+/- %d st", v) :
+  s == 18 && SYNCN > 0 ? sprintf(#v, "%.1f %%", SPEED * 100) :
+  (s == 51 && slider52) ? strcpy(#v, fig_name(slider52)) :
+  s == 56 ? ( v >= 24 ? strcpy(#v, "Apagado") : sprintf(#v, "%d bits", v); ) :
+  s == 57 ? ( LFI_SR ? fmt_f(#v, v) : strcpy(#v, "Apagado"); ) :
+  s == 11 && v < 0.05 ? strcpy(#v, "Apagado") :
+  (s == 12 || s == 13) && v < 0.05 ? strcpy(#v, "0 ms") :
+  u == 9 ? note_str(#v, v) :
+  u == 1 ? ( PMIN[s] < 0 ? ( abs(v) < 0.05 ? strcpy(#v, "0 %") : sprintf(#v, "%+.0f %%", v); ) : sprintf(#v, PSTEP[s] < 0.01 ? "%.1f %%" : "%.0f %%", v); ) :
+  u == 2 ? ( s == 39 ? fmt_f(#v, v) : sprintf(#v, v < 10 ? "%.2f Hz" : "%.1f Hz", v); ) :
+  u == 3 ? fmt_ms(#v, v) :
+  u == 4 ? ( abs(v) < 0.05 ? strcpy(#v, "0 st") : sprintf(#v, PSTEP[s] < 1 ? "%+.1f st" : "%+d st", v); ) :
+  u == 5 ? ( abs(v) < 0.05 ? strcpy(#v, "0 c") : sprintf(#v, "%+.0f c", v); ) :
+  u == 6 ? ( abs(v) < 0.05 ? strcpy(#v, "0.0 dB") : sprintf(#v, "%+.1f dB", v); ) :
+  u == 7 ? sprintf(#v, "%.1f s", v) :
+  sprintf(#v, "%d", v);
+  #v;
+);
+function pknob(s, cx, cy, r, label, enabled) ( knob(s, cx, cy, r, label, val_str(s), ctl_get(s), PMIN[ksl(s)] < 0, enabled); );
+
+function ft_name(t) ( t == 0 ? "LP 24" : t == 1 ? "LP 12" : t == 2 ? "BP" : t == 3 ? "HP 12" : "Off"; );
+function vmode_name(m) ( m == 0 ? "Poly" : m == 1 ? "Mono" : "Legato"; );
+function dest_name(d) ( d == 0 ? "Tono" : d == 1 ? "Corte" : d == 2 ? "Volumen" : "Paneo"; );
+function lfo_name(w) ( w == 0 ? "Sen" : w == 1 ? "Tri" : w == 2 ? "Sie" : w == 3 ? "Cua" : "Ale"; );
+
+// ---------------------------------------------------------- ayudas
+function hint_for(id)
+(
+  id == 5 ? strcpy(#hint, "Inicio: desde donde suena el sample. Tambien se arrastra la bandera S en la forma de onda.") :
+  id == 6 ? strcpy(#hint, "Fin: hasta donde suena. Tambien se arrastra la bandera E en la forma de onda.") :
+  id == 9 || id == 10 ? strcpy(#hint, "Puntos del loop (banderas L abajo de la forma de onda). Solo en Clasico con Disparo = Mantener.") :
+  id == 11 ? strcpy(#hint, "Crossfade del loop: funde el final con lo que hay antes del inicio para que el salto no haga clic.") :
+  id == 12 ? strcpy(#hint, "Fade in: sube el volumen al empezar cada nota o chop (quita el clic de un corte a mitad de onda).") :
+  id == 13 ? strcpy(#hint, "Fade out: baja el volumen antes del final de la region o del chop.") :
+  id == 14 ? strcpy(#hint, "Nota raiz: la nota en la que el sample suena tal cual. Usa Afinar para ponerla sola.") :
+  id == 16 ? strcpy(#hint, "Tono en semitonos (todo el sample o todos los chops).") :
+  id == 17 ? strcpy(#hint, "Fino en cents. Afinar lo ajusta para que el sample quede en 440 Hz.") :
+  id == 18 ? strcpy(#hint, "Velocidad de reproduccion. En Remuestreo cambia tono y tiempo (vinilo); en Estirar solo el tiempo.") :
+  id == 20 ? strcpy(#hint, "Grano del estirado: corto (20-40 ms) para ritmos y voces, largo (80-200 ms) para pads y texturas.") :
+  id == 23 ? strcpy(#hint, "Sensibilidad de los transitorios: mas alta = corta en golpes mas suaves.") :
+  id == 24 ? strcpy(#hint, "Partes iguales: en cuantos trozos se divide la region.") :
+  id == 25 ? strcpy(#hint, "Nota del primer chop; los siguientes van en las teclas de arriba (36 = C2, los pads de una MPC).") :
+  id == CHOP0 + 3 * SEL ? strcpy(#hint, "Tono del chop seleccionado (semitonos).") :
+  id == CHOP0 + 3 * SEL + 1 ? strcpy(#hint, "Ganancia del chop seleccionado.") :
+  id == 29 ? strcpy(#hint, "Voces: cuantas notas pueden sonar a la vez. Si tocas mas, se apaga la mas vieja en 3 ms.") :
+  id == 30 ? strcpy(#hint, "Glide: la nota se desliza desde la anterior. En Legato solo si las notas se pisan (808 con slides).") :
+  id == 31 ? strcpy(#hint, "Pitch bend: cuantos semitonos mueve la rueda de tono.") :
+  id == 32 ? strcpy(#hint, "Vibrato de la rueda de modulacion (CC1), en cents.") :
+  id == 33 ? strcpy(#hint, "Ataque: 0 = el sample entra tal cual. Largo = entra suave.") :
+  id == 34 ? strcpy(#hint, "Decaimiento: cuanto tarda en bajar al sostenido.") :
+  id == 35 ? strcpy(#hint, "Sostenido: nivel mientras mantienes la tecla. 0 % = se apaga solo despues del decaimiento.") :
+  id == 36 ? strcpy(#hint, "Relajacion: cuanto sigue sonando al soltar la tecla (en Disparo Mantener).") :
+  id == 37 ? strcpy(#hint, "Velocidad a volumen: cuanto cambia el volumen con la fuerza del golpe.") :
+  id == 39 ? strcpy(#hint, "Corte del filtro.") :
+  id == 40 ? strcpy(#hint, "Resonancia: realza el corte.") :
+  id == 41 ? strcpy(#hint, "Drive: satura antes del filtro (tambien con el filtro en Off).") :
+  id == 42 ? strcpy(#hint, "Env 2 a corte: la envolvente 2 abre o cierra el filtro.") :
+  id >= 43 && id <= 46 ? strcpy(#hint, "Envolvente 2 (filtro y tono): ataque, decaimiento, sostenido, relajacion.") :
+  id == 47 ? strcpy(#hint, "Env 2 a tono: la nota empieza mas aguda o grave y vuelve (golpe del 808).") :
+  id == 48 ? strcpy(#hint, "Seguimiento de teclado: las notas agudas abren el filtro.") :
+  id == 49 ? strcpy(#hint, "Velocidad a corte: tocar suave oscurece el sonido.") :
+  id == 51 ? strcpy(#hint, "Velocidad del LFO (Hz), o la figura si esta A tempo.") :
+  id == 54 ? strcpy(#hint, "Cantidad del LFO (100 % en Tono = +/- 12 st; en Corte = +/- 4 octavas).") :
+  id == 56 ? strcpy(#hint, "Bits: menos bits = mas ruido y aspereza (12 = SP-1200 / MPC60).") :
+  id == 57 ? strcpy(#hint, "Muestreo: baja la frecuencia de muestreo (26 kHz = SP-1200). Agrega espejos agudos metalicos.") :
+  id == 58 ? strcpy(#hint, "Paneo (balance) de la salida.") :
+  id == 59 ? strcpy(#hint, "Ancho estereo: 0 % = mono, 100 % = como el sample, 200 % = mas abierto.") :
+  id == 60 ? strcpy(#hint, "Volumen de salida.") :
+  id == 300 ? strcpy(#hint, "Presets: instrumento, 808, pads, one-shots, chops (MPC), loops a tempo, lo-fi. No cambian el sample.") :
+  id == 301 ? strcpy(#hint, "Voces: Poly, Mono (glide siempre) o Legato (glide si las notas se pisan, sin reatacar).") :
+  id == 700 ? strcpy(#hint, CHOPS ? "Clic = escuchar el chop. Doble clic = agregar corte (pasa a A mano). Clic derecho en un corte = quitarlo. Rueda = zoom." :
+                                     "Mantener clic = escuchar desde ahi. Arrastra S / E (inicio y fin) y L (loop). Rueda = zoom, shift + rueda = mover.") :
+  id == 705 ? strcpy(#hint, "Vista completa: clic o arrastrar para mover el zoom. Doble clic = ver todo.") :
+  id >= 701 && id <= 704 ? strcpy(#hint, "Arrastra para mover el punto (shift = fino). Doble clic = volver al valor por defecto.") :
+  id >= 1000 && id < 1100 ? strcpy(#hint, "Corte: arrastra para moverlo (pasa a A mano). Clic derecho = quitarlo.") :
+  id >= 800 && id < 832 ? strcpy(#hint, "Pad: clic = escuchar y seleccionar el chop (sus ajustes van a la derecha).") :
+  id == 840 ? strcpy(#hint, "Cambia entre los pads 1-16 y 17-32.") :
+  id == 852 ? strcpy(#hint, "El sample se elige en el selector Sample de arriba (REAPER/Data/Nube Sampler) o arrastrando un archivo a la ventana.") :
+  id == 853 ? strcpy(#hint, "Reverso: todo el sample suena al reves.") :
+  id == 854 ? strcpy(#hint, "Normalizar: sube el sample para que su pico llegue a 0 dB.") :
+  id == 855 ? strcpy(#hint, "Afinar: pone la nota raiz y el fino segun la nota detectada, para que el sample quede afinado.") :
+  id == 857 ? strcpy(#hint, "Sigue teclado: cada tecla cambia el tono. Tono fijo: todas las teclas suenan igual (loops, baterias).") :
+  id == 856 ? strcpy(#hint, "Guardar el audio dentro del proyecto (hasta ~40 s): el proyecto suena aunque muevas o borres el archivo.") :
+  id == 860 || id == 861 ? strcpy(#hint, "Clasico: el sample entero en el teclado. Chops: cada trozo en una tecla (como una MPC).") :
+  id == 862 || id == 863 ? strcpy(#hint, "Mantener: suena mientras tienes la tecla. One-shot: suena hasta el final aunque sueltes (baterias).") :
+  id == 864 || id == 865 ? strcpy(#hint, "Remuestreo: tono y tiempo juntos (vinilo). Estirar: tono y tiempo independientes (loops a tempo).") :
+  id >= 870 && id <= 872 ? strcpy(#hint, "Loop: Apagado, Adelante (con crossfade) o Ping-pong (ida y vuelta).") :
+  id == 873 || id == 874 ? strcpy(#hint, "Calidad: Normal (Hermite, liviana) o Alta (sinc con anti-aliasing al subir el tono).") :
+  id == 875 ? strcpy(#hint, "A tempo: la region dura lo que elijas al BPM del proyecto. Con Estirar no cambia el tono.") :
+  id >= 880 && id <= 882 ? strcpy(#hint, "Como se corta: por Transitorios (golpes), en Partes iguales, o A mano (doble clic en la onda).") :
+  id == 883 ? strcpy(#hint, "Cada chop suena hasta su final, o sigue hasta el final del sample.") :
+  id == 884 ? strcpy(#hint, "Choke: un chop corta al anterior (como los grupos de corte de una MPC).") :
+  id == 885 ? strcpy(#hint, "Reverso del chop seleccionado.") :
+  (id >= 230 && id <= 234) ? strcpy(#hint, "Tipo de filtro: LP 24, LP 12, BP, HP 12 u Off.") :
+  (id >= 240 && id <= 244) ? strcpy(#hint, "Forma del LFO: Seno, Triangulo, Sierra, Cuadrada o Aleatorio.") :
+  id == 260 ? strcpy(#hint, "Destino del LFO: Tono (vibrato), Corte (wah), Volumen (tremolo) o Paneo.") :
+  id == 262 ? strcpy(#hint, "A tempo: el LFO sigue el BPM y se alinea con la cancion.") :
+  id == 264 ? strcpy(#hint, "Nota: el LFO empieza de cero con cada nota.") :
+  id == 403 ? strcpy(#hint, "Medidor de salida. Clic = reiniciar el maximo.") :
+  (id == 600 || id == 601) ? strcpy(#hint, "Cambia la octava del teclado en pantalla.") :
+  id >= 500 && id < 600 ? strcpy(#hint, "Teclado: clic para tocar (mas abajo en la tecla = mas fuerte). En Chops las teclas de color tienen chop.") :
+  strcpy(#hint, "Nube Sampler: elige un sample (selector Sample de arriba, o arrastralo a la ventana), un preset, y toca. Pasa el mouse sobre algo para ver que hace.");
+);
+
+// ---------------------------------------------------------- sample
+// La interfaz no puede cambiar el slider de archivo (REAPER no lo acepta desde @gfx): la biblioteca se elige con el
+// selector "Sample" de REAPER (arriba) o arrastrando un archivo. Este menu lo explica.
+function menu_sample() local(r)
+(
+  #m = "#ELEGIR SAMPLE||#Biblioteca: el selector Sample, arriba de esta ventana|#(carpeta REAPER/Data/Nube Sampler, con subcarpetas)||#O arrastra un archivo de audio a la ventana|#(wav, aif, flac, mp3, ogg)";
+  LOADED ? ( strcat(#m, "||#Cargado: "); strcat(#m, #spath); );
+  gfx_x = dd_x; gfx_y = dd_y;
+  gfx_showmenu(#m);
+);
+function menu_presets() local(r, i)
+(
+  #m = "#PRESETS (no cambian el sample)|>Clasico";
+  i = 1; loop(4, strcat(#m, i == 4 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>One-shot"); loop(2, strcat(#m, i == 6 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Chops"); loop(4, strcat(#m, i == 10 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Loops"); loop(2, strcat(#m, i == 12 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Lo-fi y FX"); loop(3, strcat(#m, i == 15 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|"); strcat(#m, preset_name(16));
+  gfx_x = dd_x; gfx_y = dd_y;
+  r = gfx_showmenu(#m);
+  r >= 2 ? ( load_preset(r - 1); update_params(); );
+);
+function menu_list(kind, n, cur) local(r, i)
+(
+  #m = ""; i = 0;
+  loop(n, i ? strcat(#m, "|"); i == cur ? strcat(#m, "!");
+    strcat(#m, kind == 1 ? vmode_name(i) : kind == 2 ? dest_name(i) : sync_name(i)); i += 1; );
+  gfx_x = dd_x; gfx_y = dd_y;
+  gfx_showmenu(#m);
+);
+
+// eventos para @block
+function kq(t, n, v, p) ( KQT[kqw] = t; KQN[kqw] = n; KQV[kqw] = v; KQP[kqw] = p; kqw = (kqw + 1) % 64; );
+function is_black(n) local(k) ( k = n % 12; k == 1 || k == 3 || k == 6 || k == 8 || k == 10; );
+
+// cortes a mano: la lista MANP guarda fracciones del sample, ordenadas
+function man_from_current() local(k)
+( NMAN = 0; k = 1; loop(NCH - 1, MANP[NMAN] = CHP[k] / SN; NMAN += 1; k += 1; ); sset(22, 2); MANVER += 1; );
+function man_sort() local(i, j, t)
+( i = 1; loop(NMAN - 1, j = i; while (j > 0 && MANP[j - 1] > MANP[j]) ( t = MANP[j]; MANP[j] = MANP[j - 1]; MANP[j - 1] = t; j -= 1; ); i += 1; ); );
+function man_add(f) ( NMAN < MAXCH - 1 ? ( MANP[NMAN] = f; NMAN += 1; man_sort(); MANVER += 1; update_params(); ); );
+function man_del(k) local(i) ( (k >= 0 && k < NMAN) ? ( i = k; loop(NMAN - k - 1, MANP[i] = MANP[i + 1]; i += 1; ); NMAN -= 1; MANVER += 1; update_params(); ); );
+// indice en MANP del corte que esta en CHP[k]
+function man_index(k) local(i, r) ( r = -1; i = 0; loop(NMAN, abs(floor(MANP[i] * SN) - CHP[k]) < 2 ? r = i; i += 1; ); r; );
+
+// ======================================================================= layout
+TOPH = 44 * SC; FOOTH = 26 * SC; KBH = 54 * SC; RH = 100 * SC; GAP = 6 * SC; KS = 44 * SC; KRAD = 14 * SC;
+kby = WH - FOOTH - 8 * SC - KBH;
+r4y = kby - 8 * SC - RH; r3y = r4y - GAP - RH; r2y = r3y - GAP - RH; r1y = r2y - GAP - RH;
+sby = TOPH + 8 * SC; SBH = 26 * SC;
+WFY = sby + SBH + 6 * SC; WFH = r1y - 8 * SC - WFY; WFH < 90 * SC ? WFH = 90 * SC;
+OVH = 14 * SC; MTW = 30 * SC;
+WFX = 14 * SC; WFW = WW - 28 * SC - MTW - GAP; WFVH = WFH - OVH - 4 * SC;     // forma de onda (sin la tira de vista completa)
+mtx = WFX + WFW + GAP;
+
+// conversiones de la forma de onda
+VZ1 <= VZ0 ? ( VZ0 = 0; VZ1 = max(SN, 1); );
+function f2x(f) ( WFX + (f - VZ0) / (VZ1 - VZ0) * WFW; );
+function x2f(x) ( VZ0 + (x - WFX) / WFW * (VZ1 - VZ0); );
+function zoom_at(f, k) local(a, b)
+(
+  a = f - (f - VZ0) * k; b = f + (VZ1 - f) * k;
+  b - a < 64 ? ( a = f - 32; b = f + 32; );
+  a < 0 ? ( b -= a; a = 0; ); b > SN ? ( a -= b - SN; b = SN; ); a < 0 ? a = 0;
+  VZ0 = a; VZ1 = b;
+);
+function flag(id, f, str, up, c_r, cg, cb) local(x)
+(
+  x = f2x(f);
+  (x >= WFX - 1 && x <= WFX + WFW + 1) ? (
+    gfx_set(c_r, cg, cb, hover_id == id ? 1 : 0.8); gfx_line(x, WFY, x, WFY + WFVH);
+    up ? gfx_rect(x - (id == 702 ? 14 * SC : 0), WFY, 14 * SC, 12 * SC, 1) : gfx_rect(x - (id == 704 ? 14 * SC : 0), WFY + WFVH - 12 * SC, 14 * SC, 12 * SC, 1);
+    gfx_set(0.07, 0.08, 0.1, 1); fnt(4);
+    text_c(str, x - (id == 702 || id == 704 ? 14 * SC : 0), up ? WFY : WFY + WFVH - 12 * SC, 14 * SC, 12 * SC);
+    hit_add(x - (id == 702 || id == 704 ? 16 : 2) * SC, up ? WFY : WFY + WFVH - 14 * SC, 18 * SC, 14 * SC, id);
+    hit_add(x - 3 * SC, WFY, 6 * SC, WFVH, id);
+  );
+);
+function pan_view(d) local(w) ( w = VZ1 - VZ0; VZ0 = clamp(VZ0 + d, 0, max(0, SN - w)); VZ1 = VZ0 + w; );
+
+// ======================================================================= arrastrar y soltar
+gfx_getdropfile(0, #_drop) ? (
+  load_path(#_drop) ? ( CUR_MSG = 0; ) : ( CUR_MSG = 1; msg_t = time_precise(); );
+  gfx_getdropfile(-1);
+);
+
+// ======================================================================= mouse
+mx = mouse_x; my = mouse_y;
+lb = mouse_cap & 1; rb = mouse_cap & 2; shift = mouse_cap & 8; alt = mouse_cap & 16;
+hover_id = drag ? drag_id : hit_find(mx, my);
+
+rb && !last_rb ? (
+  hover_id >= 1000 && hover_id < 1100 ? (
+    _k = hover_id - 1000; CDET != 2 ? man_from_current(); man_del(man_index(_k));
+  );
+);
+lb && !last_lb ? (
+  _now = time_precise();
+  dbl = _now - last_t < 0.35 && abs(mx - last_x) < 6 * SC && abs(my - last_y) < 6 * SC;
+  last_t = dbl ? 0 : _now; last_x = mx; last_y = my;
+  (hover_id >= 2 && hover_id <= NPARAMS) ? (
+    dbl ? ctl_default(hover_id) : ( drag = 1; drag_id = hover_id; drag_my = my; drag_n = ctl_get(hover_id); );
+  ) :
+  hover_id == 700 && LOADED ? (
+    _f = clamp(x2f(mx), 0, SN - 1);
+    dbl ? ( CHOPS ? ( CDET != 2 ? man_from_current(); man_add(_f / SN); ) : ( VZ0 = 0; VZ1 = SN; ); ) :
+    CHOPS ? (
+      _k = 0; loop(NCH, (_f >= CHP[_k] && _f < CHP[_k + 1]) ? SEL = _k; _k += 1; );
+      (_f >= CHP[0] && _f < CHP[NCH]) ? ( pad_note = CHB + SEL; kq(1, pad_note, 110, 0); drag = 1; drag_id = 800; );
+    ) : ( kq(2, 0, 0, _f); drag = 1; drag_id = 799; );
+  ) :
+  (hover_id >= 701 && hover_id <= 704) ? (
+    dbl ? ( sset(hover_id == 701 ? 5 : hover_id == 702 ? 6 : hover_id == 703 ? 9 : 10, hover_id == 701 || hover_id == 703 ? 0 : 100); update_params(); )
+        : ( drag = 1; drag_id = hover_id; );
+  ) :
+  (hover_id >= 1000 && hover_id < 1100) ? (
+    alt ? ( _k = hover_id - 1000; CDET != 2 ? man_from_current(); man_del(man_index(_k)); ) : (
+      _k = hover_id - 1000; CDET != 2 ? ( man_from_current(); update_params(); );
+      drag = 1; drag_id = 1000; drag_man = man_index(_k);
+    );
+  ) :
+  hover_id == 705 ? ( dbl ? ( VZ0 = 0; VZ1 = SN; ) : ( drag = 1; drag_id = 705; ); ) :
+  (hover_id >= 800 && hover_id < 832) ? (
+    SEL = hover_id - 800;
+    SEL < NCH ? ( pad_note = CHB + SEL; kq(1, pad_note, 110, 0); drag = 1; drag_id = 800; );
+  ) :
+  hover_id == 840 ? PADPAGE = !PADPAGE :
+  hover_id == 852 ? menu_sample() :
+  hover_id == 853 ? ( sset(7, !slider7); update_params(); ) :
+  hover_id == 854 ? ( sset(61, !slider61); update_params(); ) :
+  hover_id == 855 ? ( DET_NOTE >= 0 ? ( sset(14, clamp(floor(DET_NOTE + 0.5), 0, 127)); sset(17, clamp(-(DET_NOTE - floor(DET_NOTE + 0.5)) * 100, -100, 100)); update_params(); ); ) :
+  hover_id == 856 ? ( sset(62, !slider62); update_params(); ) :
+  hover_id == 857 ? ( sset(15, !slider15); update_params(); ) :
+  (hover_id >= 860 && hover_id <= 865) ? (
+    _s = hover_id <= 861 ? 2 : hover_id <= 863 ? 3 : 4;
+    sset(_s, (hover_id - 860) % 2); update_params();
+  ) :
+  (hover_id >= 870 && hover_id <= 872) ? ( sset(8, hover_id - 870); update_params(); ) :
+  (hover_id >= 873 && hover_id <= 874) ? ( sset(21, hover_id - 873); update_params(); ) :
+  hover_id == 875 ? ( _r = menu_list(3, 8, slider19); _r > 0 ? ( sset(19, _r - 1); update_params(); ); ) :
+  (hover_id >= 880 && hover_id <= 882) ? ( sset(22, hover_id - 880); update_params(); ) :
+  hover_id == 883 ? ( sset(26, !slider26); update_params(); ) :
+  hover_id == 884 ? ( sset(27, !slider27); update_params(); ) :
+  hover_id == 885 ? ( _s = CHOP0 + 3 * SEL + 2; sset(_s, !slider(_s)); update_params(); ) :
+  (hover_id >= 230 && hover_id <= 234) ? ( sset(38, hover_id - 230); update_params(); ) :
+  (hover_id >= 240 && hover_id <= 244) ? ( sset(50, hover_id - 240); update_params(); ) :
+  hover_id == 260 ? ( _r = menu_list(2, 4, slider53); _r > 0 ? ( sset(53, _r - 1); update_params(); ); ) :
+  hover_id == 262 ? ( sset(52, slider52 ? 0 : 9); update_params(); ) :
+  hover_id == 264 ? ( sset(55, !slider55); update_params(); ) :
+  hover_id == 300 ? menu_presets() :
+  hover_id == 301 ? ( _r = menu_list(1, 3, slider28); _r > 0 ? ( sset(28, _r - 1); update_params(); ); ) :
+  hover_id == 403 ? ( pk_l = pk_r = 0; ) :
+  hover_id == 600 ? KBO = max(0, KBO - 12) :
+  hover_id == 601 ? KBO = min(96, KBO + 12) :
+  (hover_id >= 500 && hover_id < 600) ? (
+    drag = 1; drag_id = 500; kb_note = hover_id - 500 + KBO; kq(1, kb_note, kb_vel, 0); kb_on = 1;
+  );
+);
+lb && drag ? (
+  _k = shift ? 0.1 : 1;
+  (drag_id >= 2 && drag_id <= NPARAMS) ? ctl_set(drag_id, drag_n + (drag_my - my) / (200 * SC) * _k) :
+  (drag_id >= 701 && drag_id <= 704) ? (
+    _p = clamp(x2f(mx) / max(SN, 1) * 100, 0, 100);
+    sset(drag_id == 701 ? 5 : drag_id == 702 ? 6 : drag_id == 703 ? 9 : 10, floor(_p * 1000 + 0.5) / 1000); update_params();
+  ) :
+  drag_id == 1000 && drag_man >= 0 ? (
+    MANP[drag_man] = clamp(x2f(mx) / SN, 0, 1); man_sort(); drag_man = -1;
+    _i = 0; loop(NMAN, abs(MANP[_i] - clamp(x2f(mx) / SN, 0, 1)) < 0.0000001 ? drag_man = _i; _i += 1; );
+    MANVER += 1; update_params();
+  ) :
+  drag_id == 705 ? ( _w = VZ1 - VZ0; VZ0 = clamp((mx - WFX) / WFW * SN - _w * 0.5, 0, max(0, SN - _w)); VZ1 = VZ0 + _w; ) :
+  drag_id == 500 ? (
+    _h = hit_find(mx, my);
+    (_h >= 500 && _h < 600 && _h - 500 + KBO != kb_note) ? ( kq(1, kb_note, 0, 0); kb_note = _h - 500 + KBO; kq(1, kb_note, kb_vel, 0); );
+  );
+);
+(!lb && drag) ? (
+  drag_id == 500 && kb_on ? ( kq(1, kb_note, 0, 0); kb_on = 0; );
+  drag_id == 800 ? kq(1, pad_note, 0, 0);
+  drag_id == 799 ? kq(3, 0, 0, 0);
+  drag = 0;
+);
+mouse_wheel != 0 ? (
+  _w = mouse_wheel / 120;
+  (hover_id >= 2 && hover_id <= NPARAMS) ? (
+    _s = ksl(hover_id);
+    (PSTEP[_s] >= 1 && (PMAX[_s] - PMIN[_s]) <= 48) ? ( ctl_setv(_s, slider(_s) + sign(_w) * PSTEP[_s]); ) :
+    ctl_set(hover_id, ctl_get(hover_id) + _w * (shift ? 0.002 : 0.012));
+    update_params();
+  ) :
+  (hover_id == 700 || (hover_id >= 701 && hover_id <= 705) || hover_id >= 1000) && LOADED ? (
+    shift ? pan_view(-_w * (VZ1 - VZ0) * 0.1) : zoom_at(clamp(x2f(mx), 0, SN), _w > 0 ? 0.8 ^ _w : 1.25 ^ (-_w));
+  );
+  mouse_wheel = 0;
+);
+mouse_hwheel != 0 ? ( LOADED ? pan_view(mouse_hwheel / 120 * (VZ1 - VZ0) * 0.1); mouse_hwheel = 0; );
+last_lb = lb; last_rb = rb;
+upd ? ( upd = 0; update_params(); );
+
+// ======================================================================= dibujo
+hit_n = 0;
+gfx_set(0.075, 0.082, 0.105, 1); gfx_rect(0, 0, WW, WH, 1);
+
+// ---- barra superior
+gfx_set(0.10, 0.11, 0.14, 1); gfx_rect(0, 0, WW, TOPH, 1);
+fnt(3); gfx_set(0.62, 0.80, 1.0, 1); text_l("NUBE", 14 * SC, 0, TOPH);
+gfx_measurestr("NUBE ", _tw, _th);
+gfx_set(0.93, 0.94, 0.97, 1); text_l("SAMPLER", 14 * SC + _tw, 0, TOPH);
+_x = 160 * SC; _y = 9 * SC; _h = 26 * SC;
+CUR_PRESET > 0 ? strcpy(#s, preset_name(CUR_PRESET)) : strcpy(#s, "Presets");
+dropdown(300, _x, _y, 220 * SC, _h, "", #s); _x += 232 * SC;
+setcol(0);
+button(860, _x, _y, 64 * SC, _h, "Clasico", !CHOPS); button(861, _x + 66 * SC, _y, 64 * SC, _h, "Chops", CHOPS); _x += 142 * SC;
+setcol(7);
+button(862, _x, _y, 72 * SC, _h, "Mantener", !ONESHOT); button(863, _x + 74 * SC, _y, 72 * SC, _h, "One-shot", ONESHOT); _x += 158 * SC;
+setcol(2);
+button(864, _x, _y, 86 * SC, _h, "Remuestreo", !STRETCH); button(865, _x + 88 * SC, _y, 70 * SC, _h, "Estirar", STRETCH); _x += 170 * SC;
+_a = 0; _i = 0; loop(MAXV, (V0 + _i * VS)[0] ? _a += 1; _i += 1; );
+fnt(2); gfx_set(0.55, 0.58, 0.65, 1);
+sprintf(#s, "%d / %d voces", _a, (!CHOPS && VMODE) ? 1 : NV); text_r(#s, WW - 200 * SC, _y, 90 * SC, _h);
+LASTN >= 0 ? ( note_str(#n, LASTN); fnt(6); gfx_set(0.62, 0.80, 1.0, 1); text_r(#n, WW - 104 * SC, _y, 90 * SC, _h); );
+
+// ---- barra del sample
+setcol(0);
+LOADED || MISSING ? strcpy(#s, #sname) : strcpy(#s, "Elegir sample...");
+dropdown(852, 14 * SC, sby, 356 * SC, SBH, "Sample", #s);
+fnt(2); gfx_set(0.62, 0.65, 0.72, 1);
+MISSING ? ( gfx_set(1, 0.45, 0.4, 1); sprintf(#s, "No se encontro el archivo: %s", #spath); ) :
+CUR_MSG == 1 && time_precise() - msg_t < 4 ? ( gfx_set(1, 0.45, 0.4, 1); strcpy(#s, "Ese archivo no se pudo leer como audio."); ) :
+LOADED ? (
+  sprintf(#s, "%.1f kHz  ·  %s  ·  %.2f s", SSR / 1000, SNCH == 1 ? "mono" : SNCH == 2 ? "estereo" : "multicanal (usa 1-2)", SN / SSR);
+  DET_NOTE >= 0 ? ( note_str(#n, floor(DET_NOTE + 0.5)); sprintf(#t, "  ·  nota %s %+d c", #n, floor((DET_NOTE - floor(DET_NOTE + 0.5)) * 100 + 0.5)); strcat(#s, #t); )
+                : strcat(#s, "  ·  sin nota clara");
+  SLONG ? strcat(#s, "  ·  RECORTADO (muy largo)");
+) : strcpy(#s, "Arrastra un archivo de audio a la ventana o elige uno en el selector Sample de arriba");
+text_l(#s, 380 * SC, sby, SBH);
+_x = WW - 14 * SC - 4 * 96 * SC;
+setcol(8); button(853, _x, sby, 92 * SC, SBH, "Reverso", slider7); _x += 96 * SC;
+setcol(2); button(854, _x, sby, 92 * SC, SBH, "Normalizar", slider61); _x += 96 * SC;
+setcol(5); button(855, _x, sby, 92 * SC, SBH, "Afinar", 0); _x += 96 * SC;
+setcol(6); button(856, _x, sby, 92 * SC, SBH, SN > EMBMAX && slider62 ? "Muy largo" : "En proyecto", slider62);
+
+// ---- forma de onda
+gfx_set(0.095, 0.105, 0.135, 1); gfx_rect(WFX, WFY, WFW, WFH, 1);
+hit_add(WFX, WFY, WFW, WFVH, 700);
+_cy = WFY + WFVH * 0.5 + 6 * SC; _amp = (WFVH - 26 * SC) * 0.5;
+LOADED ? (
+  _span = VZ1 - VZ0; _fpx = _span / WFW; _bin = SN / PKN;
+  // regiones de los chops (alternadas) y seleccion
+  CHOPS ? (
+    _k = 0;
+    loop(NCH,
+      _x0 = max(WFX, f2x(CHP[_k])); _x1 = min(WFX + WFW, f2x(CHP[_k + 1]));
+      _x1 > _x0 ? (
+        _k == SEL ? gfx_set(0.42, 0.78, 1.0, 0.16) : gfx_set(1, 1, 1, _k % 2 ? 0.035 : 0.0);
+        gfx_rect(_x0, WFY, _x1 - _x0, WFVH, 1);
+        CHPLAY[_k] ? ( gfx_set(1, 0.85, 0.4, 0.14); gfx_rect(_x0, WFY, _x1 - _x0, WFVH, 1); );
+      );
+      _k += 1;
+    );
+  );
+  // la onda
+  _i = 0;
+  loop(WFW,
+    _fa = VZ0 + _i * _fpx; _fb = _fa + _fpx;
+    _fpx >= _bin ? (
+      _b0 = floor(_fa / _bin); _b1 = max(_b0 + 1, floor(_fb / _bin)); _mn = 0; _mxv = 0;
+      _j = _b0; loop(min(_b1 - _b0, 64), _j < PKN ? ( _mn = min(_mn, PKL[_j]); _mxv = max(_mxv, PKH[_j]); ); _j += 1; );
+    ) : _fpx >= 1 ? (
+      _j = floor(_fa); _st = max(1, floor(_fpx / 32)); _mn = 0; _mxv = 0;
+      while (_j < _fb && _j < SN) ( _v = SMP[2 * _j]; _mn = min(_mn, _v); _mxv = max(_mxv, _v); _v = SMP[2 * _j + 1]; _mn = min(_mn, _v); _mxv = max(_mxv, _v); _j += _st; );
+    ) : (
+      _j = floor(_fa); _fr = _fa - _j; _v = (smp_at(_j, 0) * (1 - _fr) + smp_at(_j + 1, 0) * _fr + smp_at(_j, 1) * (1 - _fr) + smp_at(_j + 1, 1) * _fr) * 0.5;
+      _mn = _mxv = _v;
+      _i > 0 ? ( _mn = min(_mn, _pv); _mxv = max(_mxv, _pv); );
+      _pv = _v;
+    );
+    _xx = WFX + _i;
+    _in = _fa >= R0 && _fa < R1;
+    _in ? gfx_set(0.42, 0.78, 1.0, 0.95) : gfx_set(0.42, 0.50, 0.62, 0.55);
+    gfx_line(_xx, _cy - _mxv * _amp, _xx, _cy - _mn * _amp + 1);
+    _i += 1;
+  );
+  gfx_set(1, 1, 1, 0.06); gfx_line(WFX, _cy, WFX + WFW - 1, _cy);
+  // zona fuera de la region
+  _x0 = f2x(R0); _x0 > WFX ? ( gfx_set(0, 0, 0, 0.35); gfx_rect(WFX, WFY, min(_x0, WFX + WFW) - WFX, WFVH, 1); );
+  _x1 = f2x(R1); _x1 < WFX + WFW ? ( gfx_set(0, 0, 0, 0.35); gfx_rect(max(_x1, WFX), WFY, WFX + WFW - max(_x1, WFX), WFVH, 1); );
+  // regla de tiempo
+  _sec = SN / SSR; _tick = _span / SSR < 2 ? 0.1 : _span / SSR < 10 ? 0.5 : _span / SSR < 40 ? 2 : 10;
+  fnt(7); _t = ceil(VZ0 / SSR / _tick) * _tick;
+  while (_t * SSR < VZ1) ( _xx = f2x(_t * SSR); gfx_set(1, 1, 1, 0.10); gfx_line(_xx, WFY, _xx, WFY + 5 * SC);
+    gfx_set(0.5, 0.53, 0.6, 1); sprintf(#s, _tick < 1 ? "%.1f" : "%d", _t); text_l(#s, _xx + 2 * SC, WFY, 12 * SC); _t += _tick; );
+  // cortes de los chops
+  CHOPS ? (
+    _k = 1;
+    loop(NCH - 1,
+      _xx = f2x(CHP[_k]);
+      (_xx >= WFX && _xx < WFX + WFW) ? (
+        _hv = hover_id == 1000 + _k;
+        gfx_set(1, 1, 1, _hv ? 0.95 : 0.55); gfx_line(_xx, WFY + 14 * SC, _xx, WFY + WFVH);
+        hit_add(_xx - 4 * SC, WFY + 14 * SC, 8 * SC, WFVH - 14 * SC, 1000 + _k);
+      );
+      _k += 1;
+    );
+    fnt(4); _k = 0;
+    loop(NCH, _xx = f2x(CHP[_k]); (_xx >= WFX - 20 && _xx < WFX + WFW) ? ( gfx_set(0.9, 0.92, 0.96, 0.9); sprintf(#s, "%d", _k + 1); text_l(#s, max(WFX, _xx) + 3 * SC, WFY + 13 * SC, 12 * SC); ); _k += 1; );
+  );
+  // banderas: inicio / fin arriba, loop abajo
+  (!CHOPS && LOOPM && !ONESHOT) ? (
+    _x0 = f2x(LPS); _x1 = f2x(LPE); gfx_set(0.93, 0.86, 0.40, 0.08); gfx_rect(max(WFX, _x0), WFY, max(0, min(WFX + WFW, _x1) - max(WFX, _x0)), WFVH, 1);
+    flag(703, LPS, "L", 0, 0.93, 0.86, 0.40); flag(704, LPE, "L", 0, 0.93, 0.86, 0.40);
+  );
+  flag(701, R0, "S", 1, 0.50, 0.92, 0.70); flag(702, R1, "E", 1, 0.97, 0.50, 0.42);
+  // cabezales de las voces que suenan
+  _v = 0; loop(MAXV, _vb = V0 + _v * VS; _vb[0] ? ( _xx = f2x(_vb[51]); (_xx >= WFX && _xx < WFX + WFW) ? ( gfx_set(1, 1, 1, 0.8 * _vb[14] + 0.2); gfx_line(_xx, WFY + 14 * SC, _xx, WFY + WFVH); ); ); _v += 1; );
+  // tira de vista completa
+  _oy = WFY + WFH - OVH;
+  gfx_set(0.08, 0.09, 0.115, 1); gfx_rect(WFX, _oy, WFW, OVH, 1);
+  _i = 0; loop(WFW, _b = floor(_i / WFW * PKN); _mxv = max(PKH[_b], -PKL[_b]); gfx_set(0.42, 0.78, 1.0, 0.45); gfx_line(WFX + _i, _oy + OVH * 0.5 - _mxv * OVH * 0.45, WFX + _i, _oy + OVH * 0.5 + _mxv * OVH * 0.45); _i += 1; );
+  gfx_set(1, 1, 1, hover_id == 705 ? 0.30 : 0.18); gfx_rect(WFX + VZ0 / SN * WFW, _oy, max(3 * SC, (VZ1 - VZ0) / SN * WFW), OVH, 1);
+  hit_add(WFX, _oy, WFW, OVH, 705);
+) : (
+  fnt(8); gfx_set(0.55, 0.58, 0.65, 1);
+  text_c(MISSING ? "Falta el archivo del sample (arrastralo de nuevo o elige otro)" : "Arrastra un sample aqui", WFX, WFY, WFW, WFH * 0.5 + 10 * SC);
+  fnt(2); text_c("o elige uno en el selector Sample de arriba (biblioteca REAPER/Data/Nube Sampler). wav, aif, flac, mp3, ogg", WFX, WFY + WFH * 0.5, WFW, 30 * SC);
+);
+
+// medidor de salida
+pk_l = max(m_l, pk_l * 0.999); pk_r = max(m_r, pk_r * 0.999);
+_ml = m_l; _mr = m_r; m_l *= 0.82; m_r *= 0.82;
+gfx_set(0.095, 0.105, 0.135, 1); gfx_rect(mtx, WFY, MTW, WFH, 1);
+_mt = WFY + 18 * SC; _mh = WFH - 36 * SC; _bw = 8 * SC; _k = 0;
+loop(2,
+  _xx = mtx + 5 * SC + _k * 11 * SC;
+  gfx_set(0.13, 0.14, 0.18, 1); gfx_rect(_xx, _mt, _bw, _mh, 1);
+  _pdb = 20 * log10((_k ? _mr : _ml) + 0.000000001); _lv = clamp((_pdb + 60) / 66, 0, 1);
+  _pdb > -0.1 ? gfx_set(1, 0.35, 0.3, 1) : _pdb > -6 ? gfx_set(0.95, 0.85, 0.35, 1) : gfx_set(0.42, 0.85, 0.55, 1);
+  gfx_rect(_xx, _mt + _mh * (1 - _lv), _bw, _mh * _lv, 1);
+  _pk = 20 * log10((_k ? pk_r : pk_l) + 0.000000001);
+  gfx_set(1, 1, 1, 0.6); _yy = _mt + _mh * (1 - clamp((_pk + 60) / 66, 0, 1)); gfx_line(_xx, _yy, _xx + _bw - 1, _yy);
+  _k += 1;
+);
+_pk = 20 * log10(max(pk_l, pk_r) + 0.000000001); _pk > -60 ? sprintf(#s, "%.0f", _pk) : strcpy(#s, "-inf");
+fnt(7); gfx_set(0.80, 0.82, 0.88, 1); text_c(#s, mtx, WFY + 2 * SC, MTW, 16 * SC);
+gfx_set(0.50, 0.53, 0.60, 1); text_c("OUT", mtx, _mt + _mh + 1 * SC, MTW, 16 * SC);
+hit_add(mtx, WFY, MTW, WFH, 403);
+
+// ---- secciones
+function sec(x, y, w, h, title, c) (
+  setcol(c);
+  gfx_set(0.10, 0.11, 0.14, 1); frect(x, y, w, h, 6 * SC);
+  acc(1); gfx_rect(x + 8 * SC, y + 8 * SC, 3 * SC, 11 * SC, 1);
+  fnt(4); acc(1); text_l(title, x + 16 * SC, y + 6 * SC, 14 * SC);
+);
+function row_layout(n) local(i, t, f)
+( t = 0; i = 0; loop(n, t += SW[i]; i += 1; ); f = (WW - 28 * SC - (n - 1) * GAP - t) / n; f < 0 ? f = 0;
+  i = 0; loop(n, SW[i] += f; i += 1; ); );
+function krow(y) ( y + 56 * SC; );
+
+// fila 1: SAMPLE, LOOP, TIEMPO
+SW[0] = 7 * KS + 16 * SC; SW[1] = 3 * KS + 130 * SC; SW[2] = 2 * KS + 150 * SC; row_layout(3);
+_x = 14 * SC; _y = r1y; _ky = krow(_y);
+_w = SW[0]; sec(_x, _y, _w, RH, "SAMPLE", 0);
+_kx = _x + (_w - 7 * KS) * 0.5 + KS * 0.5;
+pknob(5, _kx, _ky, KRAD, "Inicio", LOADED); _kx += KS;
+pknob(6, _kx, _ky, KRAD, "Fin", LOADED); _kx += KS;
+pknob(12, _kx, _ky, KRAD, "Fade in", 1); _kx += KS;
+pknob(13, _kx, _ky, KRAD, "Fade out", 1); _kx += KS;
+pknob(14, _kx, _ky, KRAD, "Raiz", !CHOPS && KTRK); _kx += KS;
+pknob(16, _kx, _ky, KRAD, "Tono", 1); _kx += KS;
+pknob(17, _kx, _ky, KRAD, "Fino", 1);
+button(857, _x + _w - 8 * SC - 92 * SC, _y + 5 * SC, 92 * SC, 17 * SC, KTRK ? "Sigue teclado" : "Tono fijo", KTRK);
+_x += _w + GAP; _w = SW[1]; sec(_x, _y, _w, RH, "LOOP", 5);
+_lpon = !CHOPS && !ONESHOT;
+_i = 0; loop(3, button(870 + _i, _x + _w - 8 * SC - (3 - _i) * 58 * SC, _y + 5 * SC, 55 * SC, 17 * SC, _i == 0 ? "Off" : _i == 1 ? "Adelante" : "Ping-pong", LOOPM == _i); _i += 1; );
+_kx = _x + 12 * SC + KS * 0.5;
+pknob(9, _kx, _ky, KRAD, "Inicio L", _lpon && LOOPM); _kx += KS;
+pknob(10, _kx, _ky, KRAD, "Fin L", _lpon && LOOPM); _kx += KS;
+pknob(11, _kx, _ky, KRAD, "Crossfade", _lpon && LOOPM == 1);
+fnt(7); gfx_set(0.55, 0.58, 0.65, 1);
+!_lpon ? text_l(CHOPS ? "(no se usa en Chops)" : "(no se usa en One-shot)", _kx + KS * 0.6, _ky - 6 * SC, 12 * SC);
+_x += _w + GAP; _w = SW[2]; sec(_x, _y, _w, RH, "TIEMPO", 2);
+button(873, _x + _w - 8 * SC - 2 * 54 * SC, _y + 5 * SC, 51 * SC, 17 * SC, "Normal", QUAL == 0);
+button(874, _x + _w - 8 * SC - 54 * SC, _y + 5 * SC, 51 * SC, 17 * SC, "Alta", QUAL == 1);
+_kx = _x + 12 * SC + KS * 0.5;
+pknob(18, _kx, _ky, KRAD, "Velocidad", SYNCN == 0); _kx += KS;
+pknob(20, _kx, _ky, KRAD, "Grano", STRETCH);
+_dx = _kx + KS * 0.5 + 8 * SC; _dw = _x + _w - 10 * SC - _dx;
+dropdown(875, _dx, _y + 32 * SC, _dw, 22 * SC, "A tempo", sync_name(SYNCN));
+fnt(7); gfx_set(0.62, 0.65, 0.72, 1);
+SYNCN > 0 && LOADED ? ( sprintf(#s, "%.1f BPM del sample", sync_beats(SYNCN) * 60 / ((R1 - R0) / SSR)); text_l(#s, _dx + 4 * SC, _y + 64 * SC, 12 * SC); ) :
+LOADED ? ( sprintf(#s, "region: %.2f s", (R1 - R0) / SSR); text_l(#s, _dx + 4 * SC, _y + 64 * SC, 12 * SC); );
+
+// fila 2: CHOPS y pads
+SW[0] = 3 * KS + 250 * SC; SW[1] = 8 * 42 * SC + 60 * SC; SW[2] = 2 * KS + 90 * SC; row_layout(3);
+_x = 14 * SC; _y = r2y; _ky = krow(_y);
+_w = SW[0]; sec(_x, _y, _w, RH, "CHOPS", 7);
+_i = 0; loop(3, button(880 + _i, _x + _w - 8 * SC - (3 - _i) * 76 * SC, _y + 5 * SC, 73 * SC, 17 * SC, _i == 0 ? "Transitorios" : _i == 1 ? "Iguales" : "A mano", CDET == _i); _i += 1; );
+_kx = _x + 12 * SC + KS * 0.5;
+pknob(23, _kx, _ky, KRAD, "Sensib.", CDET == 0); _kx += KS;
+pknob(24, _kx, _ky, KRAD, "Partes", CDET == 1); _kx += KS;
+pknob(25, _kx, _ky, KRAD, "1a nota", CHOPS);
+_bx = _kx + KS * 0.5 + 10 * SC; _bw = _x + _w - 10 * SC - _bx;
+button(883, _bx, _y + 30 * SC, _bw, 18 * SC, PLAYTHRU ? "Hasta el final del sample" : "Cada chop hasta su final", PLAYTHRU);
+button(884, _bx, _y + 52 * SC, _bw, 18 * SC, CHOKE ? "Choke: uno a la vez" : "Varios a la vez", CHOKE);
+fnt(7); gfx_set(0.62, 0.65, 0.72, 1); sprintf(#s, "%d chops", NCH); text_l(#s, _bx, _y + 74 * SC, 14 * SC);
+_x += _w + GAP; _w = SW[1]; sec(_x, _y, _w, RH, "PADS", 7);
+button(840, _x + _w - 8 * SC - 60 * SC, _y + 5 * SC, 60 * SC, 17 * SC, PADPAGE ? "17 - 32" : "1 - 16", PADPAGE);
+_pw = (_w - 24 * SC) / 8; _ph = 31 * SC; _px0 = _x + 12 * SC; _py0 = _y + 26 * SC;
+_i = 0;
+loop(16,
+  _k = _i + PADPAGE * 16; _xx = _px0 + (_i % 8) * _pw; _yy = _py0 + floor(_i / 8) * (_ph + 4 * SC);
+  _ex = _k < NCH;
+  CHPLAY[_k] && _ex ? gfx_set(1, 0.85, 0.45, 1) : _k == SEL && _ex ? gfx_set(0.42, 0.78, 1.0, 1) :
+  gfx_set(hover_id == 800 + _k && _ex ? 0.26 : 0.17, hover_id == 800 + _k && _ex ? 0.28 : 0.19, hover_id == 800 + _k && _ex ? 0.34 : 0.24, _ex ? 1 : 0.4);
+  frect(_xx, _yy, _pw - 4 * SC, _ph, 4 * SC);
+  (CHPLAY[_k] || _k == SEL) && _ex ? gfx_set(0.07, 0.08, 0.10, 1) : gfx_set(0.86, 0.88, 0.92, _ex ? 1 : 0.35);
+  fnt(5); sprintf(#s, "%d", _k + 1); text_l(#s, _xx + 5 * SC, _yy + 1 * SC, 14 * SC);
+  fnt(7); note_str(#n, CHB + _k); text_r(#n, _xx, _yy + _ph - 14 * SC, _pw - 9 * SC, 12 * SC);
+  _ex ? hit_add(_xx, _yy, _pw - 4 * SC, _ph, 800 + _k);
+  _i += 1;
+);
+_x += _w + GAP; _w = SW[2]; sprintf(#s, "CHOP %d", SEL + 1); sec(_x, _y, _w, RH, #s, 7);
+_kx = _x + 12 * SC + KS * 0.5;
+pknob(CHOP0 + 3 * SEL, _kx, _ky, KRAD, "Tono", SEL < NCH); _kx += KS;
+pknob(CHOP0 + 3 * SEL + 1, _kx, _ky, KRAD, "Ganancia", SEL < NCH);
+button(885, _kx + KS * 0.5 + 8 * SC, _y + 40 * SC, _x + _w - 10 * SC - (_kx + KS * 0.5 + 8 * SC), 20 * SC, "Reverso", slider(CHOP0 + 3 * SEL + 2));
+
+// fila 3: FILTRO, AMP, ENV 2
+SW[0] = 6 * KS + 16 * SC; SW[1] = 5 * KS + 16 * SC; SW[2] = 5 * KS + 16 * SC; row_layout(3);
+_x = 14 * SC; _y = r3y; _ky = krow(_y);
+_w = SW[0]; sec(_x, _y, _w, RH, "FILTRO", 3);
+_i = 0; loop(5, button(230 + _i, _x + _w - 8 * SC - (5 - _i) * 38 * SC, _y + 5 * SC, 35 * SC, 17 * SC, ft_name(_i), FT == _i); _i += 1; );
+_kx = _x + (_w - 6 * KS) * 0.5 + KS * 0.5; _fe = FT < 4;
+pknob(39, _kx, _ky, KRAD, "Corte", _fe); _kx += KS;
+pknob(40, _kx, _ky, KRAD, "Reso", _fe); _kx += KS;
+pknob(41, _kx, _ky, KRAD, "Drive", 1); _kx += KS;
+pknob(42, _kx, _ky, KRAD, "Env 2", _fe); _kx += KS;
+pknob(48, _kx, _ky, KRAD, "Teclado", _fe); _kx += KS;
+pknob(49, _kx, _ky, KRAD, "Velocidad", _fe);
+_x += _w + GAP; _w = SW[1]; sec(_x, _y, _w, RH, "AMP", 4);
+_kx = _x + (_w - 5 * KS) * 0.5 + KS * 0.5;
+pknob(33, _kx, _ky, KRAD, "Ataque", 1); _kx += KS;
+pknob(34, _kx, _ky, KRAD, "Decae", 1); _kx += KS;
+pknob(35, _kx, _ky, KRAD, "Sostiene", 1); _kx += KS;
+pknob(36, _kx, _ky, KRAD, "Relaja", !ONESHOT); _kx += KS;
+pknob(37, _kx, _ky, KRAD, "Velocidad", 1);
+_x += _w + GAP; _w = SW[2]; sec(_x, _y, _w, RH, "ENV 2", 5);
+_kx = _x + (_w - 5 * KS) * 0.5 + KS * 0.5;
+pknob(43, _kx, _ky, KRAD, "Ataque", 1); _kx += KS;
+pknob(44, _kx, _ky, KRAD, "Decae", 1); _kx += KS;
+pknob(45, _kx, _ky, KRAD, "Sostiene", 1); _kx += KS;
+pknob(46, _kx, _ky, KRAD, "Relaja", 1); _kx += KS;
+pknob(47, _kx, _ky, KRAD, "Tono", 1);
+
+// fila 4: VOZ, LFO, LO-FI, SALIDA
+SW[0] = 4 * KS + 16 * SC; SW[1] = 2 * KS + 110 * SC + 16 * SC; SW[2] = 2 * KS + 16 * SC; SW[3] = 3 * KS + 16 * SC; row_layout(4);
+_x = 14 * SC; _y = r4y; _ky = krow(_y);
+_w = SW[0]; sec(_x, _y, _w, RH, "VOZ", 6);
+dropdown(301, _x + _w - 8 * SC - 90 * SC, _y + 4 * SC, 90 * SC, 19 * SC, "", vmode_name(VMODE));
+_kx = _x + (_w - 4 * KS) * 0.5 + KS * 0.5;
+pknob(29, _kx, _ky, KRAD, "Voces", 1); _kx += KS;
+pknob(30, _kx, _ky, KRAD, "Glide", !CHOPS); _kx += KS;
+pknob(31, _kx, _ky, KRAD, "Bend", 1); _kx += KS;
+pknob(32, _kx, _ky, KRAD, "Vibrato", 1);
+_x += _w + GAP; _w = SW[1]; sec(_x, _y, _w, RH, "LFO", 8);
+_i = 0; loop(5, button(240 + _i, _x + _w - 8 * SC - (5 - _i) * 30 * SC, _y + 5 * SC, 27 * SC, 17 * SC, lfo_name(_i), LFS == _i); _i += 1; );
+_kx = _x + 12 * SC + KS * 0.5;
+pknob(51, _kx, _ky, KRAD, "Velocidad", 1); _kx += KS;
+pknob(54, _kx, _ky, KRAD, "Cantidad", 1); _kx += KS * 0.5 + 8 * SC;
+_pw = _x + _w - 10 * SC - _kx;
+dropdown(260, _kx, _y + 28 * SC, _pw, 20 * SC, "", dest_name(LFD));
+button(262, _kx, _y + 52 * SC, _pw * 0.5 - 2 * SC, 18 * SC, "A tempo", slider52 > 0);
+button(264, _kx + _pw * 0.5 + 2 * SC, _y + 52 * SC, _pw * 0.5 - 2 * SC, 18 * SC, "Nota", LFRT);
+_x += _w + GAP; _w = SW[2]; sec(_x, _y, _w, RH, "LO-FI", 9);
+_kx = _x + (_w - 2 * KS) * 0.5 + KS * 0.5;
+pknob(56, _kx, _ky, KRAD, "Bits", 1); _kx += KS;
+pknob(57, _kx, _ky, KRAD, "Muestreo", 1);
+_x += _w + GAP; _w = SW[3]; sec(_x, _y, _w, RH, "SALIDA", 10);
+_kx = _x + (_w - 3 * KS) * 0.5 + KS * 0.5;
+pknob(58, _kx, _ky, KRAD, "Paneo", 1); _kx += KS;
+pknob(59, _kx, _ky, KRAD, "Ancho", 1); _kx += KS;
+pknob(60, _kx, _ky, KRAD, "Volumen", 1);
+
+// ---- teclado en pantalla (en Chops, las teclas con chop van de color)
+setcol(0);
+_kx0 = 14 * SC + 76 * SC; _kw = WW - 14 * SC - _kx0;
+gfx_set(0.10, 0.11, 0.14, 1); frect(14 * SC, kby, 70 * SC, KBH, 6 * SC);
+button(600, 20 * SC, kby + 6 * SC, 26 * SC, 20 * SC, "<", 0);
+button(601, 52 * SC, kby + 6 * SC, 26 * SC, 20 * SC, ">", 0);
+note_str(#n, KBO); fnt(2); gfx_set(0.70, 0.73, 0.80, 1); text_c(#n, 14 * SC, kby + 28 * SC, 70 * SC, 20 * SC);
+function keymapped(n) ( CHOPS ? (n >= CHB && n < CHB + NCH) : 1; );
+_nw = 0; _i = 0; loop(37, !is_black(KBO + _i) ? _nw += 1; _i += 1; );
+_ww = _kw / _nw; _wx = _kx0; _i = 0;
+loop(37,
+  _n = KBO + _i;
+  !is_black(_n) ? (
+    _on = HELD[_n] || (kb_on && kb_note == _n);
+    _hv = hover_id == 500 + _i;
+    _on ? acc(1) : CHOPS && keymapped(_n) ? gfx_set(_hv ? 0.98 : 0.93, _hv ? 0.88 : 0.80, _hv ? 0.95 : 0.90, 1) :
+          gfx_set(_hv ? 0.86 : 0.80, _hv ? 0.88 : 0.82, _hv ? 0.92 : 0.86, CHOPS ? 0.55 : 1);
+    gfx_rect(_wx + 1, kby, _ww - 2, KBH, 1);
+    (!CHOPS && _n == ROOT) ? ( setcol(5); acc(1); gfx_circle(_wx + _ww * 0.5, kby + KBH - 22 * SC, 3 * SC, 1, 1); setcol(0); );
+    (_n % 12 == 0) ? ( note_str(#n, _n); fnt(7); gfx_set(0.35, 0.37, 0.42, 1); text_c(#n, _wx, kby + KBH - 14 * SC, _ww, 12 * SC); );
+    hit_add(_wx, kby, _ww, KBH, 500 + _i);
+    _wx += _ww;
+  );
+  _i += 1;
+);
+_wx = _kx0; _i = 0;
+loop(37,
+  _n = KBO + _i;
+  is_black(_n) ? (
+    _on = HELD[_n] || (kb_on && kb_note == _n);
+    _bx = _wx - _ww * 0.3; _hv = hover_id == 500 + _i;
+    _on ? acc(1) : CHOPS && keymapped(_n) ? gfx_set(0.55, 0.30, 0.45, 1) : gfx_set(_hv ? 0.24 : 0.12, _hv ? 0.25 : 0.13, _hv ? 0.30 : 0.16, 1);
+    gfx_rect(_bx, kby, _ww * 0.6, KBH * 0.6, 1);
+    hit_add(_bx, kby, _ww * 0.6, KBH * 0.6, 500 + _i);
+  ) : _wx += _ww;
+  _i += 1;
+);
+kb_vel = clamp(floor(40 + 87 * (my - kby) / KBH), 1, 127);
+
+// ---- pie
+hint_for(hover_id);
+gfx_set(0.06, 0.065, 0.085, 1); gfx_rect(0, WH - FOOTH, WW, FOOTH, 1);
+fnt(2); gfx_set(0.70, 0.73, 0.80, 1); text_l(#hint, 12 * SC, WH - FOOTH, FOOTH);
