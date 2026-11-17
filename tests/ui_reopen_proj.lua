@@ -1,14 +1,16 @@
--- Guarda la pestaña de demo, la vuelve a abrir desde el archivo (prueba de que el sample arrastrado se recupera) y
+-- Guarda la pestaña de demo, la vuelve a abrir desde su archivo (prueba de que el sample arrastrado se recupera) y
 -- escribe los parámetros en tests/out/dump.txt.
-local OUT = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") .. "/out"
-local tr = reaper.GetTrack(0, 0)
-local _, name = reaper.GetSetMediaTrackInfo_String(tr, "P_NAME", "", false)
-if name == "Nube Sampler demo" then
-  reaper.OnStopButton()
-  reaper.Main_SaveProjectEx(0, OUT .. "/_drop.rpp", 0)
-  reaper.Main_openProject("noprompt:" .. OUT .. "/_drop.rpp")
+local ROOT = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$")
+local OUT = ROOT .. "/out"
+local DEMO = dofile(ROOT .. "/tab.lua").find(OUT .. "/_tmp_ui.rpp") or 0   -- la pestaña de la demo, aunque no sea la activa
+local T = dofile(ROOT .. "/tab.lua")
+local tab = {path = OUT .. "/_tmp_ui.rpp"}
+if DEMO ~= 0 then
+  T.ensure(tab); reaper.OnStopButton()
+  reaper.Main_SaveProjectEx(0, tab.path, 0); T.reopen(tab, tab.path)
+  DEMO = T.find(tab.path)
 end
-tr = reaper.GetTrack(0, 0)
+local tr = reaper.GetTrack(DEMO, 0)
 local f = io.open(OUT .. "/dump.txt", "w")
 for p = 0, reaper.TrackFX_GetNumParams(tr, 0) - 1 do
   local _, n = reaper.TrackFX_GetParamName(tr, 0, p, ""); local _, v = reaper.TrackFX_GetFormattedParamValue(tr, 0, p, "")

@@ -59,7 +59,7 @@ def hover(x, y): focus(); cc(f"m:{pt(x, y)}")
 
 # ---- layout (área gráfica de 1100 x 798 pt)
 PRESETS, PRESETS_M = (270, 22), (160, 37)
-CLASICO, CHOPS, MANTENER, ONESHOT, REMUESTREO, ESTIRAR = (424, 22), (490, 22), (570, 22), (644, 22), (735, 22), (815, 22)
+CLASICO, CHOPS, ZONAS, MANTENER, ONESHOT, REMUESTREO, ESTIRAR = (421, 22), (481, 22), (541, 22), (615, 22), (687, 22), (775, 22), (855, 22)
 LIB = (192, 65)
 REVERSO, NORMALIZAR, AFINAR, ENPROY = (748, 65), (844, 65), (940, 65), (1036, 65)
 WFX, WFY, WFW, WFVH = 14, 84, 1036, 174
@@ -78,3 +78,8 @@ FTYPE = lambda i: (216.2 + 38 * i, 509.5)
 VMODE, VMODE_M = (252, 615.5), (207, 627)
 KB_Y = 755
 def white(i): return (90 + 45.27 * (i + 0.5), KB_Y)
+# fila 2 en Zonas (row_layout de 190 / 420 / 334 + reparto del sobrante)
+Z_CARGAR, Z_AUTO, Z_QUITAR = (128.3, 426), (75.2, 450), (181.5, 450)
+MAPX, MAPY, MAPW, MAPH = 258.67, 414, 438.67, 66
+def map_pt(note, vel, lo=24, hi=96): return (MAPX + (note - lo + 0.5) * MAPW / (hi - lo + 1), MAPY + MAPH - (vel - 0.5) / 127 * MAPH)
+Z_RAIZ, Z_DESDE, Z_HASTA, Z_VMIN, Z_VMAX = [(775.67 + 62 * i, 448) for i in range(5)]

@@ -50,8 +50,8 @@ def inrange(name, got, lo, hi):
 
 LOG = {}
 for l in (D / "log.txt").read_text().splitlines():
-    m = re.match(r"caso (\S+) \| frames (\S+) \| chops (\S+) \| nota (\S+)", l)
-    if m: LOG[m.group(1)] = dict(frames=float(m.group(2)), chops=float(m.group(3)), nota=float(m.group(4)))
+    m = re.match(r"caso (\S+) \| frames (\S+) \| chops (\S+) \| nota (\S+) \| zonas (\S+) \| MB (\S+)", l)
+    if m: LOG[m.group(1)] = dict(frames=float(m.group(2)), chops=float(m.group(3)), nota=float(m.group(4)), zonas=float(m.group(5)), mb=float(m.group(6)))
 
 for p in sorted(D.glob("*.wav")):
     if p.stem.startswith(("perf_", "smoke")): continue
@@ -247,7 +247,42 @@ scalar("nota detectada: 220 Hz a 44.1 kHz = 57.00", LOG["det_44k"]["nota"], 57.0
 a = load("reopen_a")
 inrange("guardar y reabrir: suena igual", np.abs(load("reopen_b") - a).max(), 0, 1e-7)
 inrange("audio guardado en el proyecto: suena igual sin el archivo", np.abs(load("embed") - a).max(), 0, 1e-7)
-inrange("sin guardarlo y sin el archivo: ya no suena igual", np.abs(load("noembed") - a).max(), 1e-3, 10)
+inrange("sin guardarlo y sin el archivo: silencio (no el sample por defecto)", db(np.abs(load("noembed")).max() + 1e-20), -400, -120)
+
+a = load("embed16_ref")
+inrange("audio de 16 bits guardado (empaquetado): exacto sin el archivo", np.abs(load("embed16") - a).max(), 0, 1e-7)
+scalar("16 bits: el proyecto guarda 2/3 (MB en base64)", LOG["embed16"]["mb"], round(48000 * 2 / 3 * 2 * 4 * 4 / 3 / 1e6, 1), 0.1)
+
+print("--- zonas")
+def zone_note(x, t0, t1, n, lvl, what):
+    scalar(f"{what}: {mtof(n):.2f} Hz", freq_ph(x[:, 0], mtof(n), t0, t1), mtof(n), 0.02)
+    scalar(f"{what}: nivel de su zona", tone(x[:, 0], mtof(n), t0, t1), lvl, 0.05)
+scalar("carpeta z_###: 3 zonas (otro.wav no entra)", LOG["z_num"]["zonas"], 3, 0)
+x = load("z_num")
+zone_note(x, 0.2, 0.55, 50, db(0.5), "nota 50 -> zona 48 (0-54)")
+zone_note(x, 0.8, 1.15, 55, db(0.25), "nota 55 -> zona 60 (55-66)")
+zone_note(x, 1.4, 1.75, 66, db(0.25), "nota 66 -> zona 60 (55-66)")
+zone_note(x, 2.0, 2.35, 67, db(0.125), "nota 67 -> zona 72 a 44.1 kHz (67-127)")
+zone_note(x, 2.6, 2.95, 72, db(0.125), "nota 72 = raiz de la zona 72 (44.1 kHz)")
+scalar("nombres de nota C3 / F#3 / Bb3: 3 zonas", LOG["z_names"]["zonas"], 3, 0)
+x = load("z_names")
+zone_note(x, 0.2, 0.55, 48, db(0.5), "C3 (48)")
+zone_note(x, 0.8, 1.15, 51, db(0.5), "nota 51 -> C3 (hasta la mitad: 51)")
+zone_note(x, 1.4, 1.75, 52, db(0.25), "nota 52 -> F#3")
+zone_note(x, 2.0, 2.35, 54, db(0.25), "F#3 (54)")
+zone_note(x, 2.6, 2.95, 58, db(0.125), "Bb3 (58, con bemol)")
+x = load("z_start")[:, 0]
+scalar("inicio 25 % en cada zona: zona 72 empieza en su rampa(12000)", x[I(0.1)], 0.45 * 12000 / 48000, 1e-6)
+scalar("inicio 25 % en cada zona: zona 60 empieza en su rampa(12000)", x[I(0.6)], 0.9 * 12000 / 48000, 1e-6)
+x = load("z_mono")
+zone_note(x, 0.65, 0.85, 67, db(0.125), "mono: la 2a nota cambia a la zona 72")
+inrange("mono: la 1a nota (zona 48) ya no suena", tone(x[:, 0], mtof(50), 0.65, 0.85), -400, -60)
+x = load("z_reopen")
+zone_note(x, 0.2, 0.55, 50, db(0.5), "reabierto: nota 50 -> zona 48")
+zone_note(x, 0.8, 1.15, 67, db(0.125), "reabierto: nota 67 -> zona 72")
+x = load("rel_lin")[:, 0]
+scalar("relajacion lineal 300 ms: a la mitad (150 ms) = -6 dB", db(np.abs(sg.hilbert(x))[I(0.65)]) - db(0.5), db(0.5), 0.15)
+inrange("relajacion lineal: silencio pasados los 300 ms", rms(x, 0.81, 0.95), -400, -120)
 
 print("--- presets y estres")
 for p in sorted(D.glob("preset*.wav"), key=lambda q: int(q.stem[6:])):

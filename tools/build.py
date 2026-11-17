@@ -13,7 +13,7 @@ FILE_SLIDER = "slider1:/Nube Sampler:Nube/Keys - Rhodes C4.wav:Sample"
 # curva de la perilla: 0 lineal, 1 log, 2 cuadrática, 3 cúbica
 # (nombre, defecto, mín, máx, paso, log_mid o None, lista o None, unidad, curva)
 SPEC = [
-    ("Modo", 0, 0, 1, 1, None, "Clasico,Chops", 8, 0),                                   # 2
+    ("Modo", 0, 0, 2, 1, None, "Clasico,Chops,Zonas", 8, 0),                                   # 2
     ("Disparo", 0, 0, 1, 1, None, "Mantener,One-shot", 8, 0),                             # 3
     ("Reproduccion", 0, 0, 1, 1, None, "Remuestreo,Estirar", 8, 0),                       # 4
     ("Inicio (%)", 0, 0, 100, 0.001, None, None, 1, 0),                                   # 5
@@ -85,7 +85,13 @@ N = 1 + len(SPEC)                          # último slider de parámetros
 PRESET_SLIDER = N + 1
 READOUTS = [("Notas sonando (lectura)", 0, 64, 1), ("Largo del sample (lectura, frames)", 0, 20000000, 1),
             ("Chops (lectura)", 0, 32, 1), ("Nota detectada (lectura)", -1, 128, 0.01)]
+# 1.1: van al final para que los proyectos guardados con la 1.0 no corran sus valores
+EXTRA = [("Zonas (lectura)", 0, 64, 1), ("Audio guardado en el proyecto (lectura, MB)", 0, 1000, 0.1),
+         ("Zonas: cargar la carpeta del sample", 0, 1, 1), ("Curva de relajacion", 0, 1, 1, "Exponencial,Lineal (como RS5k)"),
+         ("Zona seleccionada (lectura)", 0, 64, 1), ("Zona sel.: raiz (lectura)", 0, 127, 1),
+         ("Zona sel.: desde (lectura)", 0, 127, 1), ("Zona sel.: hasta (lectura)", 0, 127, 1)]
 RD0 = PRESET_SLIDER + 1
+EX0 = RD0 + len(READOUTS)
 
 
 def presets_enum():
@@ -111,6 +117,9 @@ def sliders():
     out.append(f"slider{PRESET_SLIDER}:0<0,{len(pn)},1{{-,{','.join(pn)}}}>-Cargar preset")
     for k, (name, mn, mx, st) in enumerate(READOUTS):
         out.append(f"slider{RD0 + k}:{num(mn if mn > 0 else 0)}<{num(mn)},{num(mx)},{num(st)}>-{name}")
+    for k, (name, mn, mx, st, *en) in enumerate(EXTRA):
+        enum = "{" + en[0] + "}" if en else ""
+        out.append(f"slider{EX0 + k}:0<{num(mn)},{num(mx)},{num(st)}{enum}>-{name}")
     return "\n".join(out)
 
 
@@ -141,6 +150,8 @@ def lua():
     logp = ", ".join(f"[{i}] = {{{num(mn)}, {num(mx)}, {num(lm)}}}" for i, (_, d, mn, mx, st, lm, *_r) in enumerate(SPEC, 2) if lm)
     return (f"-- generado por tools/build.py\nreturn {{ N = {N}, PRESET = {PRESET_SLIDER}, NPRESETS = {len(presets_enum())},\n"
             f"  CHOP0 = {CHOP0}, NACT = {RD0}, FRAMES = {RD0 + 1}, NCHOPS = {RD0 + 2}, DETECT = {RD0 + 3},\n"
+            f"  NZONES = {EX0}, EMBMB = {EX0 + 1}, ZLOAD = {EX0 + 2}, RELLIN = {EX0 + 3},\n"
+            f"  ZSEL = {EX0 + 4}, ZROOT = {EX0 + 5}, ZLO = {EX0 + 6}, ZHI = {EX0 + 7},\n"
             f"  LOGP = {{{logp}}} }}\n")
 
 
@@ -160,6 +171,8 @@ def main():
     txt = txt.replace("slider_NACT", f"slider{RD0}").replace("slider_FRAMES", f"slider{RD0 + 1}")
     txt = txt.replace("slider_NCHOPS", f"slider{RD0 + 2}").replace("slider_DETECT", f"slider{RD0 + 3}")
     txt = txt.replace("slider_PRESET", f"slider{PRESET_SLIDER}")
+    txt = txt.replace("slider_NZONES", f"slider{EX0}").replace("slider_EMBMB", f"slider{EX0 + 1}").replace("slider_ZLOAD", f"slider{EX0 + 2}").replace("slider_RELLIN", f"slider{EX0 + 3}")
+    for k, nm in enumerate(("ZSEL", "ZROOT", "ZLO", "ZHI")): txt = txt.replace(f"slider_{nm}", f"slider{EX0 + 4 + k}")
     DST.write_text(txt)
     (ROOT / "tests/params_gen.lua").write_text(lua())
     print(f"ok: {DST.name} ({txt.count(chr(10))} lineas, {N} sliders de parametros, {len(presets_enum())} presets)")

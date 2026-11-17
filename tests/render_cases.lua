@@ -4,7 +4,7 @@
 -- Las señales tienen que estar en REAPER/Data/Nube Sampler/zz_pruebas (lo hace tests/run.sh).
 local ROOT = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$")
 local OUT = ROOT .. "/out"
-local FX = "JS:Nube Sampler/nube_sampler.jsfx"
+local FX = dofile(debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") .. "/fx.lua")
 local LIB = reaper.GetResourcePath() .. "/Data/Nube Sampler/zz_pruebas"
 local P = dofile(ROOT .. "/params_gen.lua")
 os.execute('mkdir -p "' .. OUT .. '"')
@@ -111,6 +111,15 @@ local CASES = {
   {"reopen_b", "noise_st", C4, with(B, {[16] = 3, [38] = 1, [39] = 2000}), 1.4, nil, {reopen = true}},
   {"embed", "noise_st", C4, with(B, {[16] = 3, [38] = 1, [39] = 2000, [62] = 1}), 1.4, nil, {reopen = true, hide = true}},
   {"noembed", "noise_st", C4, with(B, {[16] = 3, [38] = 1, [39] = 2000}), 1.4, nil, {reopen = true, hide = true}},
+  {"embed16", "pcm16", C4, with(B, {[16] = 3, [62] = 1}), 1.4, nil, {reopen = true, hide = true}},
+  {"embed16_ref", "pcm16", C4, with(B, {[16] = 3}), 1.4},
+  -- zonas (opción zload: "Zonas: cargar la carpeta del sample")
+  {"z_num", "zonas/z_060", {N(0.1, 0.6, 50), N(0.7, 1.2, 55), N(1.3, 1.8, 66), N(1.9, 2.4, 67), N(2.5, 3.0, 72)}, B, 3.2, nil, {zload = true}},
+  {"z_names", "notas/n F#3", {N(0.1, 0.6, 48), N(0.7, 1.2, 51), N(1.3, 1.8, 52), N(1.9, 2.4, 54), N(2.5, 3.0, 58)}, B, 3.2, nil, {zload = true}},
+  {"z_start", "rampz/r_060", {N(0.1, 0.4, 72), N(0.6, 0.9, 60)}, with(B, {[5] = 25}), 1.0, nil, {zload = true}},
+  {"z_mono", "zonas/z_060", {N(0.1, 0.6, 50), N(0.4, 0.9, 67)}, with(B, {[28] = 1}), 1.0, nil, {zload = true}},
+  {"z_reopen", "zonas/z_060", {N(0.1, 0.6, 50), N(0.7, 1.2, 67)}, B, 1.4, nil, {zload = true, reopen = true}},
+  {"rel_lin", "sine440", {N(0.1, 0.5, 60)}, with(B, {[36] = 300, [P.RELLIN] = 1}), 1.0},
   {"stress", "../Nube/Keys - Rhodes C4", {}, with(B, {[36] = 2000}), 3},
   {"stress_st", "../Nube/Loop - Chill 90 BPM 4 compases", {}, with(B, {[4] = 1, [29] = 8}), 3},
 }
@@ -121,7 +130,8 @@ for _, c in ipairs(CASES) do if c[1] == "ch_trans" then for k = 0, 7 do table.in
 local PHRASE = {N(0.0, 0.5, 36, 100), N(0.5, 1.0, 38, 100), N(1.0, 1.5, 41, 100), N(1.6, 3.0, 60, 100), N(1.6, 3.0, 64, 100), N(1.6, 3.0, 67, 100)}
 for p = 1, P.NPRESETS do CASES[#CASES + 1] = {"preset" .. p, "../Nube/Loop - Chill 90 BPM 4 compases", PHRASE, {[P.PRESET] = p}, 4} end
 
-reaper.Main_OnCommand(40859, 0) -- nueva pestaña
+local T = dofile(ROOT .. "/tab.lua")
+local tab = T.open(OUT .. "/_tmp_test.rpp")   -- pestaña propia; al final se la busca por ruta para cerrarla
 local function setup_project(bpm)
   reaper.GetSetProjectInfo(0, "PROJECT_SRATE", 48000, true)
   reaper.GetSetProjectInfo(0, "PROJECT_SRATE_USE", 1, true)
@@ -139,6 +149,7 @@ for i = 0, maxi do local _, s = reaper.TrackFX_FormatParamValue(tr, fx0, 0, i, "
 reaper.TrackFX_Delete(tr, fx0)
 
 local function render(name)
+  T.ensure(tab)
   local file = OUT .. "/" .. name .. ".wav"
   os.remove(file)
   reaper.GetSetProjectInfo(0, "RENDER_SETTINGS", 0, true)
@@ -148,7 +159,7 @@ local function render(name)
   reaper.GetSetProjectInfo(0, "RENDER_TAILFLAG", 0, true)
   reaper.GetSetProjectInfo_String(0, "RENDER_FILE", OUT, true)
   reaper.GetSetProjectInfo_String(0, "RENDER_PATTERN", name, true)
-  reaper.Main_OnCommand(42230, 0)
+  T.render(tab)
 end
 local function rd(fx, p) local _, s = reaper.TrackFX_GetFormattedParamValue(tr, fx, p - 1, ""); return s end
 
@@ -181,21 +192,20 @@ for _, c in ipairs(CASES) do
         else reaper.TrackFX_SetParam(tr, fx, s - 1, v) end
       end
     end
+    if opt.zload then reaper.TrackFX_SetParam(tr, fx, P.ZLOAD - 1, 1) end
     local hidden
     if opt.reopen then
       local rpp = OUT .. "/_reopen_" .. name .. ".rpp"
       reaper.Main_SaveProjectEx(0, rpp, 0)
       if opt.hide then hidden = LIB .. "/" .. smp .. ".wav"; os.rename(hidden, hidden .. ".escondido") end
-      reaper.Main_openProject("noprompt:" .. rpp)
+      T.reopen(tab, rpp)
       tr = reaper.GetTrack(0, 0); fx = 0
     end
     render(name)
     if hidden then os.rename(hidden .. ".escondido", hidden) end
-    log("caso", name, "| frames", rd(fx, P.FRAMES), "| chops", rd(fx, P.NCHOPS), "| nota", rd(fx, P.DETECT), "| sample", rd(fx, 1))
+    log("caso", name, "| frames", rd(fx, P.FRAMES), "| chops", rd(fx, P.NCHOPS), "| nota", rd(fx, P.DETECT), "| zonas", rd(fx, P.NZONES), "| MB", rd(fx, P.EMBMB), "| sample", rd(fx, 1))
   end
 end
-reaper.Main_SaveProjectEx(0, OUT .. "/_tmp_test.rpp", 0)
-reaper.Main_openProject("noprompt:" .. OUT .. "/_tmp_test.rpp")
-reaper.Main_OnCommand(40860, 0) -- cerrar pestaña
+T.close(tab)
 log("done")
 logf:close()
