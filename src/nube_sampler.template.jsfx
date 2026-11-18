@@ -2,7 +2,7 @@ desc:Nube Sampler - sampler (clasico, chops, zonas multi-sample, one-shot, loops
 //tags: sampler instrument slicer chops one-shot loop timestretch 808 lofi mpc
 //author: Kev Meneses + Claude (Claude Code)
 //license: GPL-3.0-or-later
-//version: 1.1.0
+//version: 1.2.0
 
 //@GEN:SLIDERS@
 
@@ -909,7 +909,22 @@ function preset_name(n)
   n == 13 ? "Lo-fi - SP 12 bits" :
   n == 14 ? "Lo-fi - Cassette" :
   n == 15 ? "Reverso - Swell" :
-  n == 16 ? "Por defecto" : "";
+  n == 16 ? "Instrumento - Piano / keys" :
+  n == 17 ? "Instrumento - Pluck corto" :
+  n == 18 ? "Instrumento - Cuerdas lentas (loop)" :
+  n == 19 ? "Instrumento - Lead mono con glide" :
+  n == 20 ? "Instrumento - Vocal afinado (legato)" :
+  n == 21 ? "808 - Saturado" :
+  n == 22 ? "808 - Corto (drill)" :
+  n == 23 ? "Bajo - Filtrado (mono)" :
+  n == 24 ? "Bateria - Golpe afinable (velocidad)" :
+  n == 25 ? "Lo-fi - Vinilo lento" :
+  n == 26 ? "Lo-fi - Telefono / radio" :
+  n == 27 ? "FX - Tremolo a tempo (1/16)" :
+  n == 28 ? "FX - Filtro que respira (1/2)" :
+  n == 29 ? "FX - Paneo que gira (1/4)" :
+  n == 30 ? "Textura - Granular lenta" :
+  n == 31 ? "Por defecto" : "";
 );
 function load_preset(n) local(emb)
 (
@@ -930,7 +945,22 @@ function load_preset(n) local(emb)
   n == 12 ? ( sset(19, 5); sset(8, 1); sset(15, 0); sset(36, 20); ) :
   n == 13 ? ( sset(56, 12); sset(57, 26040); sset(38, 1); sset(39, 11000); sset(41, 4); sset(60, -1.5); ) :
   n == 14 ? ( sset(56, 14); sset(57, 32000); sset(50, 0); sset(51, 0.6); sset(53, 0); sset(54, 1.5); sset(38, 1); sset(39, 7000); sset(41, 3); sset(60, -1); ) :
-  n == 15 ? ( sset(7, 1); sset(12, 200); sset(33, 300); sset(36, 400); );
+  n == 15 ? ( sset(7, 1); sset(12, 200); sset(33, 300); sset(36, 400); ) :
+  n == 16 ? ( sset(33, 1); sset(36, 800); sset(37, 60); ) :
+  n == 17 ? ( sset(34, 400); sset(35, 0); sset(36, 200); sset(38, 1); sset(39, 3000); sset(42, 30); sset(44, 300); ) :
+  n == 18 ? ( sset(33, 400); sset(36, 1200); sset(8, 1); sset(9, 30); sset(10, 80); sset(51, 5); sset(53, 0); sset(54, 1); ) :
+  n == 19 ? ( sset(28, 2); sset(30, 80); sset(36, 150); sset(51, 5.5); sset(53, 0); sset(54, 1); ) :
+  n == 20 ? ( sset(28, 2); sset(30, 40); sset(33, 5); sset(36, 200); ) :
+  n == 21 ? ( sset(28, 2); sset(30, 60); sset(38, 1); sset(39, 2000); sset(41, 12); sset(36, 150); ) :
+  n == 22 ? ( sset(28, 2); sset(30, 110); sset(34, 700); sset(35, 0); sset(36, 80); ) :
+  n == 23 ? ( sset(28, 1); sset(38, 0); sset(39, 400); sset(40, 20); sset(42, 40); sset(44, 250); sset(36, 100); ) :
+  n == 24 ? ( sset(3, 1); sset(36, 30); sset(37, 70); ) :
+  n == 25 ? ( sset(16, -4); sset(38, 1); sset(39, 6000); sset(56, 14); ) :
+  n == 26 ? ( sset(38, 2); sset(39, 1500); sset(40, 20); sset(56, 10); sset(57, 11025); ) :
+  n == 27 ? ( sset(50, 3); sset(52, 3); sset(53, 2); sset(54, 100); sset(55, 1); ) :
+  n == 28 ? ( sset(38, 0); sset(39, 800); sset(40, 30); sset(52, 12); sset(53, 1); sset(54, 50); ) :
+  n == 29 ? ( sset(52, 9); sset(53, 3); sset(54, 80); ) :
+  n == 30 ? ( sset(4, 1); sset(18, 25); sset(20, 200); sset(8, 2); sset(33, 1500); sset(36, 3000); sset(59, 180); );
   CUR_PRESET = n; upd = 1;
 );
 
@@ -1312,13 +1342,17 @@ function zone_at(n, vel) local(i, z, r)
 ( r = -1; i = 0; loop(ZN, z = ZT + i * ZF; (n >= z[3] && n <= z[4] && vel >= z[5] && vel <= z[6]) ? r = i; i += 1; ); r; );
 function menu_presets() local(r, i)
 (
-  #m = "#PRESETS (no cambian el sample)|>Clasico";
-  i = 1; loop(4, strcat(#m, i == 4 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
-  strcat(#m, "|>One-shot"); loop(2, strcat(#m, i == 6 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
-  strcat(#m, "|>Chops"); loop(4, strcat(#m, i == 10 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
-  strcat(#m, "|>Loops"); loop(2, strcat(#m, i == 12 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
-  strcat(#m, "|>Lo-fi y FX"); loop(3, strcat(#m, i == 15 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
-  strcat(#m, "|"); strcat(#m, preset_name(16));
+  #m = "#PRESETS (no cambian el sample)";
+  strcat(#m, "|>Clasico"); i = 1; loop(4, strcat(#m, i == 4 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>One-shot"); i = 5; loop(2, strcat(#m, i == 6 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Chops"); i = 7; loop(4, strcat(#m, i == 10 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Loops"); i = 11; loop(2, strcat(#m, i == 12 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Lo-fi y FX"); i = 13; loop(3, strcat(#m, i == 15 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Instrumentos"); i = 16; loop(5, strcat(#m, i == 20 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>808 y bajos"); i = 21; loop(3, strcat(#m, i == 23 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Bateria"); i = 24; loop(1, strcat(#m, i == 24 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|>Mas lo-fi y FX"); i = 25; loop(6, strcat(#m, i == 30 ? "|<" : "|"); strcat(#m, preset_name(i)); i += 1; );
+  strcat(#m, "|"); strcat(#m, preset_name(31));
   gfx_x = dd_x; gfx_y = dd_y;
   r = gfx_showmenu(#m);
   r >= 2 ? ( load_preset(r - 1); update_params(); );
