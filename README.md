@@ -12,7 +12,7 @@ named like `ep_048.wav` or `Rhodes C4.wav` maps itself) modes; hold or one-shot;
 forward / ping-pong loops with crossfade; Hermite or anti-aliased Kaiser-sinc interpolation; automatic root-note detection
 with one-click tuning; filter, two envelopes, LFO, poly / mono / legato with glide (808 slides), lo-fi (bits and sample rate),
 pan, width, normalize; drag-and-drop loading, all the audio can be stored inside the project (no length limit, 16-bit
-audio packed losslessly); linear release like RS5k; 16 presets and a 14-sample
+audio packed losslessly); linear release like RS5k; 31 presets and a 14-sample
 factory library (all synthesized, no third-party recordings).
 
 **Install** — with [ReaPack](https://reapack.com): *Extensions → ReaPack → Import repositories*, paste
@@ -72,7 +72,7 @@ Nube EQ, Nube Comp, Nube Verb y los demás Nube.
 - **Interfaz**: forma de onda con zoom (rueda) y vista completa, banderas S / E / L arrastrables, cortes de chops,
   cabezales de las voces que suenan, escuchar desde cualquier punto (mantener clic), medidor, teclado en pantalla
   (en Chops colorea las teclas con chop), ayuda de cada control en el pie.
-- **16 presets** (no cambian el sample): instrumento, 808 con glide, pad ping-pong, textura estirada, batería, chops MPC,
+- **31 presets** (no cambian el sample): instrumento, 808 con glide, pad ping-pong, textura estirada, batería, chops MPC,
   16 partes, vocal, chops y loops a tempo, vinilo a tempo, SP 12 bits, cassette, reverso.
 - **Biblioteca de fábrica** (`samples/Nube`, 14 samples sintetizados con `tools/make_library.py`): Rhodes, 808,
   kick / snare / hats / clap / rim, vocal "aah", pad, arpegio de guitarra y loop chill a 90 BPM, vinilo, kalimba.
@@ -135,7 +135,7 @@ abrir 0.7 s) exacto en float32. Un comentario `//` en la misma línea que el có
   guardar y reabrir, audio guardado en el proyecto sin el archivo (float y 16 bits empaquetado, exacto), sin el archivo y
   sin guardarlo = silencio, **zonas** (carpeta numerada y con nombres de nota con # y b, qué zona suena en cada borde por
   frecuencia ±0.02 Hz y nivel ±0.05 dB, zona a 44.1 kHz, inicio % por zona, mono entre zonas, reabrir), relajación lineal,
-  16 presets y estrés.
+  31 presets y estrés.
 - `tests/rs5k/run.sh`: la prueba clave de las zonas, contra los 17 RS5k del Rhodes de "Nube baja" (ver arriba). No abre
   el proyecto del usuario: copia del texto del .rpp los bloques de los RS5k a una pista nueva en una pestaña propia.
 - `tests/ui_test.py`: 29 pruebas con el mouse (31 con `NUBE_DROP=1`) (requiere `tests/reopen.sh`; no correrlo si alguien usa la computadora):

@@ -1,5 +1,5 @@
 -- generado por tools/build.py
-return { N = 158, PRESET = 159, NPRESETS = 16,
+return { N = 158, PRESET = 159, NPRESETS = 31,
   CHOP0 = 63, NACT = 160, FRAMES = 161, NCHOPS = 162, DETECT = 163,
   NZONES = 164, EMBMB = 165, ZLOAD = 166, RELLIN = 167,
   ZSEL = 168, ZROOT = 169, ZLO = 170, ZHI = 171,
